@@ -15,6 +15,28 @@
 
 html { scroll-behavior: smooth; }
 
+/* ---- dark theme vars and system preference ---- */
+@media (prefers-color-scheme: dark) {
+  /* if user has no explicit setting, start in dark */
+  html:not([data-theme]) {
+    --accent: #6BA1FF;
+    --text: #eee;
+    --muted: #aaa;
+    --border: #444;
+    --bg: #111;
+    --bg-alt: #222;
+  }
+}
+
+html[data-theme="dark"] {
+  --accent: #6BA1FF;
+  --text: #eee;
+  --muted: #aaa;
+  --border: #444;
+  --bg: #111;
+  --bg-alt: #222;
+}
+
 body {
   font-family: var(--font);
   color: var(--text);

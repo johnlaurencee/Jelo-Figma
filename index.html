@@ -19,6 +19,7 @@
       <li><a href="#skills">Skills</a></li>
       <li><a href="#projects">Projects</a></li>
     </ul>
+    <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
   </nav>
 
   <!-- ── HERO ────────────────────────────────────────────────────── -->
@@ -151,6 +152,27 @@
       <a href="mailto:Johnlaurence.ong@my.jru.edu">Johnlaurence.ong@my.jru.edu</a>
     </div>
   </footer>
+
+  <script>
+    (function(){
+      const toggle = document.getElementById('theme-toggle');
+      const root = document.documentElement;
+      const stored = localStorage.getItem('theme');
+      if (stored) {
+        root.setAttribute('data-theme', stored);
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        root.setAttribute('data-theme', 'dark');
+      }
+      toggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+      toggle.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+      });
+    })();
+  </script>
 
 </body>
 </html>
