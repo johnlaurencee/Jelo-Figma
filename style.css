@@ -2,12 +2,12 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --accent: #314DDF;
-  --text: #111;
-  --muted: #666;
-  --border: #e5e5e5;
-  --bg: #fff;
-  --bg-alt: #f7f8fc;
+  --accent: #6BA1FF;
+  --text: #eee;
+  --muted: #aaa;
+  --border: #444;
+  --bg: #111;
+  --bg-alt: #222;
   --radius: 12px;
   --max-w: 1100px;
   --font: 'Inter', sans-serif;
@@ -51,7 +51,7 @@ section { padding: 96px 40px; }
   justify-content: center;
   padding: 0 48px;
   height: 64px;
-  background: rgba(255,255,255,.92);
+  background: rgba(17,17,17,.92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
@@ -81,19 +81,29 @@ section { padding: 96px 40px; }
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background: #e8e8e8;
+  background-image: url('https://www.figma.com/api/mcp/asset/7299da83-39c5-4e99-9659-8f0c3856dbf0');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   text-align: left;
   padding: 40px 80px;
 }
 
 .hero::before {
-  display: none;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .hero__text {
   position: relative;
   z-index: 2;
-  color: #000;
+  color: #fff;
   max-width: 600px;
 }
 
@@ -110,35 +120,36 @@ section { padding: 96px 40px; }
   object-position: center;
 }
 
-.hero__greeting { font-size: 18px; font-weight: 500; color: #000; margin-bottom: 12px; }
+.hero__greeting { font-size: 18px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
 
 .hero__name {
-  font-size: clamp(60px, 8vw, 120px);
+  font-size: clamp(50px, 6vw, 100px);
   font-weight: 900;
   line-height: 1;
-  color: #000;
+  color: #fff;
   margin-bottom: 20px;
 }
 
-.hero__subtitle { font-size: 16px; color: #000; max-width: 600px; margin-bottom: 32px; line-height: 1.6; }
+.hero__subtitle { font-size: 16px; color: rgba(255,255,255,0.9); max-width: 600px; margin-bottom: 32px; line-height: 1.6; }
 
 .hero__social { display: flex; gap: 16px; justify-content: flex-start; }
 
 .hero__social a {
-  font-size: 0;
+  font-size: 20px;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #fff;
-  border: none;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
   cursor: pointer;
-  transition: transform .15s;
+  transition: background .15s, transform .15s;
 }
 
-.hero__social a:hover { transform: scale(1.1); }
+.hero__social a:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
 
 /* ── ABOUT ──────────────────────────────────────────────────────── */
 #about {
