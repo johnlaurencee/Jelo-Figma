@@ -80,9 +80,9 @@ section { padding: 96px 40px; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background: #e8e8e8;
-  text-align: center;
+  text-align: left;
   padding: 40px 80px;
 }
 
