@@ -152,7 +152,7 @@ section { padding: 96px 40px; }
 #about {
   background: #000;
   color: #fff;
-  padding: 120px 192px;
+  padding: 160px 480px 160px 192px;
   display: flex;
   justify-content: center;
 }
