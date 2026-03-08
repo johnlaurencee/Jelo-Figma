@@ -98,12 +98,13 @@ section { padding: 96px 40px; }
 .hero {
   padding-top: 64px;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   max-width: var(--max-w);
   margin: 0 auto;
-  gap: 64px;
   padding-left: 40px;
   padding-right: 40px;
 }
@@ -336,9 +337,7 @@ section { padding: 96px 40px; }
   .navbar__links { gap: 18px; }
 
   .hero {
-    grid-template-columns: 1fr;
     padding: 100px 24px 60px;
-    gap: 36px;
     min-height: auto;
   }
   .hero__photo { aspect-ratio: 1/1; max-width: 280px; }
