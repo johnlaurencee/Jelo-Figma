@@ -78,15 +78,15 @@ section { padding: 96px 40px; }
 .hero {
   position: relative;
   min-height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  justify-content: center;
   background-image: url('https://www.figma.com/api/mcp/asset/7299da83-39c5-4e99-9659-8f0c3856dbf0');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  text-align: center;
-  padding: 40px 20px;
+  text-align: left;
+  padding: 40px 60px;
 }
 
 .hero::before {
@@ -94,7 +94,7 @@ section { padding: 96px 40px; }
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
+  right: 50%;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1;
@@ -104,6 +104,7 @@ section { padding: 96px 40px; }
   position: relative;
   z-index: 2;
   color: #fff;
+  max-width: 500px;
 }
 
 .hero__photo {
@@ -131,7 +132,7 @@ section { padding: 96px 40px; }
 
 .hero__subtitle { font-size: 18px; color: rgba(255,255,255,0.9); max-width: 460px; margin-bottom: 32px; line-height: 1.7; }
 
-.hero__social { display: flex; gap: 16px; }
+.hero__social { display: flex; gap: 16px; justify-content: flex-start; }
 
 .hero__social a {
   font-size: 14px;
