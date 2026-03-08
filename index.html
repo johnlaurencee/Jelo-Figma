@@ -19,7 +19,6 @@
       <li><a href="#skills">Skills</a></li>
       <li><a href="#projects">Projects</a></li>
     </ul>
-    <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
   </nav>
 
   <!-- ── HERO ────────────────────────────────────────────────────── -->
@@ -32,9 +31,6 @@
         <a href="https://www.facebook.com/johnlaurencence" aria-label="Facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
         <a href="https://www.instagram.com/johnlaurencence/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
       </div>
-    </div>
-    <div class="hero__photo">
-      <img src="https://www.figma.com/api/mcp/asset/7299da83-39c5-4e99-9659-8f0c3856dbf0" alt="John Laurence Ong" />
     </div>
   </section>
 
@@ -155,24 +151,7 @@
   </footer>
 
   <script>
-    (function(){
-      const toggle = document.getElementById('theme-toggle');
-      const root = document.documentElement;
-      const stored = localStorage.getItem('theme');
-      if (stored) {
-        root.setAttribute('data-theme', stored);
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        root.setAttribute('data-theme', 'dark');
-      }
-      toggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
-      toggle.addEventListener('click', () => {
-        const current = root.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        toggle.textContent = next === 'dark' ? '☀️' : '🌙';
-      });
-    })();
+    // Theme toggle removed
   </script>
 
 </body>
