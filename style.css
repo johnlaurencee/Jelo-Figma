@@ -135,21 +135,18 @@ section { padding: 96px 40px; }
 .hero__social { display: flex; gap: 16px; justify-content: flex-start; }
 
 .hero__social a {
-  font-size: 20px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
+  font-size: 12px;
+  font-weight: 500;
   color: #fff;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  padding: 4px 12px;
+  transition: background .15s, color .15s;
   cursor: pointer;
-  transition: background .15s, transform .15s;
+  white-space: nowrap;
 }
 
-.hero__social a:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+.hero__social a:hover { background: #fff; color: #000; }
 
 /* ── ABOUT ──────────────────────────────────────────────────────── */
 #about {
