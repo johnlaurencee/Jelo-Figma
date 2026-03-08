@@ -196,19 +196,19 @@ section { padding: 96px 40px; }
 }
 
 /* ── QUOTE ──────────────────────────────────────────────────────── */
-.quote { background: var(--text); text-align: center; }
+.quote { background: #fff; text-align: center; }
 
 .quote blockquote { max-width: 720px; margin: 0 auto; }
 
 .quote__heading {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 700;
-  color: #fff;
+  color: #000;
   margin-bottom: 16px;
   line-height: 1.4;
 }
 
-.quote__body { font-size: 15px; color: #aaa; line-height: 1.8; }
+.quote__body { font-size: 15px; color: #000; line-height: 1.8; }
 
 /* ── SKILLS ─────────────────────────────────────────────────────── */
 #skills { background: var(--bg); }
