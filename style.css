@@ -96,8 +96,7 @@ section { padding: 96px 40px; }
 
 /* ── HERO ───────────────────────────────────────────────────────── */
 .hero {
-  padding-top: 64px;
-  min-height: 100vh;
+  padding-top: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
