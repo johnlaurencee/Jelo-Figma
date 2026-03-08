@@ -158,13 +158,13 @@ section { padding: 96px 40px; }
 }
 
 .about {
-  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 0 40px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   align-items: center;
-  justify-content: center;
 }
 
 .about__photo { border-radius: var(--radius); overflow: hidden; aspect-ratio: 3/4; width: 45%; max-width: 500px; }
