@@ -160,7 +160,7 @@ section { padding: 96px 40px; }
 .about {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 80px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
