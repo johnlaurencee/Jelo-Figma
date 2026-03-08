@@ -78,33 +78,22 @@ section { padding: 96px 40px; }
 .hero {
   position: relative;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   align-items: center;
-  background-image: url('https://www.figma.com/api/mcp/asset/7299da83-39c5-4e99-9659-8f0c3856dbf0');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #e8e8e8;
   text-align: left;
-  padding: 40px 60px;
+  padding: 40px 80px;
 }
 
 .hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 50%;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  display: none;
 }
 
 .hero__text {
   position: relative;
   z-index: 2;
-  color: #fff;
-  max-width: 500px;
+  color: #000;
+  max-width: 600px;
 }
 
 .hero__photo {
@@ -120,31 +109,35 @@ section { padding: 96px 40px; }
   object-position: center;
 }
 
-.hero__greeting { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
+.hero__greeting { font-size: 18px; font-weight: 500; color: #000; margin-bottom: 12px; }
 
 .hero__name {
-  font-size: clamp(50px, 6vw, 80px);
-  font-weight: 700;
-  line-height: 1.1;
-  color: #fff;
+  font-size: clamp(60px, 8vw, 120px);
+  font-weight: 900;
+  line-height: 1;
+  color: #000;
   margin-bottom: 20px;
 }
 
-.hero__subtitle { font-size: 18px; color: rgba(255,255,255,0.9); max-width: 460px; margin-bottom: 32px; line-height: 1.7; }
+.hero__subtitle { font-size: 16px; color: #000; max-width: 600px; margin-bottom: 32px; line-height: 1.6; }
 
 .hero__social { display: flex; gap: 16px; justify-content: flex-start; }
 
 .hero__social a {
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  border: 1px solid #fff;
-  border-radius: 999px;
-  padding: 6px 18px;
-  transition: background .15s, color .15s;
+  font-size: 0;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s;
 }
 
-.hero__social a:hover { background: #fff; color: #000; }
+.hero__social a:hover { transform: scale(1.1); }
 
 /* ── ABOUT ──────────────────────────────────────────────────────── */
 #about {
