@@ -195,7 +195,7 @@ section { padding: 96px 40px; }
 /* ── QUOTE ──────────────────────────────────────────────────────── */
 .quote { background: #fff; text-align: center; }
 
-.quote blockquote { max-width: 720px; margin: 0 auto; }
+.quote blockquote { max-width: 1200px; margin: 0 auto; }
 
 .quote__heading {
   font-size: clamp(20px, 3vw, 28px);
@@ -203,6 +203,7 @@ section { padding: 96px 40px; }
   color: #000;
   margin-bottom: 16px;
   line-height: 1.4;
+  white-space: nowrap;
 }
 
 .quote__body { font-size: 15px; color: #000; line-height: 1.8; }
