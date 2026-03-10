@@ -390,6 +390,14 @@ section { padding: 96px 40px; }
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-top: 0;
+}
+
+.project-entry__expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 .project-entry__category {
