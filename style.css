@@ -373,6 +373,7 @@ section { padding: 96px 40px; }
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 92px;
 }
 
 .project-entry__file-btn {
