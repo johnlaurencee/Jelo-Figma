@@ -234,7 +234,8 @@
             <img src="Screenshot 2026-03-10 181235.png" alt="Simple and Multiple Linear Regression" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('LinearRegression.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('Ong_LinearRegression.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openNotebookLR()">View Notebook file</button>
           </div>
         </div>
         <div class="project-entry__right">
@@ -1140,6 +1141,660 @@ plt.show()</code></pre>
     </div>
   </div>
 
+  <!-- ── NOTEBOOK MODAL LR ──────────────────────────────────────── -->
+  <div id="notebook-modal-lr" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
+    <div class="pdf-modal__backdrop" onclick="closeNotebookLR()"></div>
+    <div class="pdf-modal__box text-modal__box nb-modal__box">
+      <button class="pdf-modal__close" onclick="closeNotebookLR()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Simple and Multiple Linear Regression</p>
+
+        <!-- Cell 1: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">CODE PROVIDED</h2>
+        </div>
+
+        <!-- Cell 2: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 1. Load a sample dataset
+df = sns.load_dataset(&#39;tips&#39;)
+
+# 1.1. Display Attributes
+print(&quot;--- Dataset Attributes ---&quot;)
+print(df.info())
+
+# 1.2. Display Sample Data (First 5 rows)
+print(&quot;\n--- Sample Data (Top 5 Rows) ---&quot;)
+print(df.head())
+
+# 1.3. Quick Statistical Summary
+print(&quot;\n--- Statistical Summary ---&quot;)
+print(df.describe())
+
+# 2. Calculate Correlation
+correlation_matrix = df[[&#39;total_bill&#39;, &#39;tip&#39;]].corr()
+correlation_value = correlation_matrix.loc[&#39;total_bill&#39;, &#39;tip&#39;]
+print(f&quot;Pearson Correlation Coefficient: {correlation_value:.4f}&quot;)
+
+# 3. Generate Scatter Plot
+plt.figure(figsize=(10, 6))
+sns.regplot(data=df, x=&#39;total_bill&#39;, y=&#39;tip&#39;, scatter_kws={&#39;alpha&#39;:0.5}, line_kws={&#39;color&#39;:&#39;red&#39;})
+plt.title(f&#39;Total Bill vs Tip Correlation: {correlation_value:.4f}&#39;, fontsize=15)
+plt.xlabel(&#39;Total Bill ($)&#39;)
+plt.ylabel(&#39;Tip ($)&#39;)
+plt.grid(True, linestyle=&#39;--&#39;, alpha=0.6)
+
+# Visualize all numerical correlations
+plt.figure(figsize=(8, 6))
+sns.heatmap(df.select_dtypes(include=[&#39;number&#39;]).corr(), annot=True, cmap=&#39;coolwarm&#39;, fmt=&quot;.2f&quot;)
+plt.title(&quot;Correlation Heatmap&quot;)
+plt.show()</code></pre>
+        </div>
+
+        <!-- Cell 3: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+# 1. Generate synthetic data (y = 3x + 4 + noise)
+np.random.seed(42)
+X = 2 * np.random.rand(100, 1)
+y = 4 + 3 * X + np.random.randn(100, 1)
+
+# 2. Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 3. Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# 4. Predict
+y_pred = model.predict(X_test)
+
+# 5. Evaluation Metrics
+print(f&quot;Coefficient (Slope): {model.coef_[0][0]:.2f}&quot;)
+print(f&quot;Intercept: {model.intercept_[0]:.2f}&quot;)
+print(&quot;-&quot; * 30)
+print(f&quot;Mean Squared Error (MSE): {mean_squared_error(y_test, y_pred):.2f}&quot;)
+print(f&quot;R-squared (R2) Score: {r2_score(y_test, y_pred):.2f}&quot;)
+
+# 6. Plot
+plt.scatter(X_test, y_test, color=&#39;blue&#39;, label=&#39;Actual Data&#39;)
+plt.plot(X_test, y_pred, color=&#39;red&#39;, linewidth=2, label=&#39;Regression Line&#39;)
+plt.xlabel(&#39;Feature (X)&#39;)
+plt.ylabel(&#39;Target (y)&#39;)
+plt.legend()
+plt.show()</code></pre>
+        </div>
+
+        <!-- Cell 4: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>print(&quot;\n&quot; + &quot;=&quot;*30)
+print(&quot;LINEAR REGRESSION PREDICTOR&quot;)
+print(&quot;=&quot;*30)
+print(&quot;The model is trained. Enter a value for X to see the predicted Y.&quot;)
+print(&quot;Type &#39;exit&#39; to close the program.&quot;)
+
+while True:
+    user_input = input(&quot;\nEnter value for X: &quot;)
+    if user_input.lower() == &#39;exit&#39;:
+        print(&quot;Exiting.. Goodbye!&quot;)
+        break
+    try:
+        x_new = float(user_input)
+        x_val = np.array([[x_new]])
+        y_val = model.predict(x_val)
+        print(f&quot;&gt;&gt;&gt; Predicted Y: {y_val[0][0]:.4f}&quot;)
+    except ValueError:
+        print(&quot;Invalid input! Please enter a numerical value.&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 5: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Modularization</h2>
+          <h3 class="nb-md-h3">Code 1 &mdash; Import and Loads</h3>
+        </div>
+
+        <!-- Cell 6: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = sns.load_dataset(&#39;tips&#39;)</code></pre>
+        </div>
+
+        <!-- Cell 7: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>These are used to initialize all the required libraries for data handling and visualization. Afterwards, a sample dataset is loaded and stored for analysis.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import pandas as pd</code> &ndash; use for data handling and DataFrame operations</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import seaborn as sns</code> &ndash; use for data visualization and built-in datasets</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import matplotlib.pyplot as plt</code> &ndash; use for plotting graphs</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">sns.load_dataset(&#39;tips&#39;)</code> &ndash; loads the built-in &ldquo;tips&rdquo; dataset as a pandas DataFrame</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>After importing the required libraries, the dataset is loaded using Seaborn and stored in a Pandas DataFrame. This ensures that the data is structured, readable, and ready for inspection and analysis.</p>
+        </div>
+
+        <!-- Cell 8: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Displaying Dataset</h3>
+        </div>
+
+        <!-- Cell 9: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>print(&quot;--- Dataset Attributes ---&quot;)
+print(df.info())
+
+print(&quot;\n--- Sample Data (Top 5 Rows) ---&quot;)
+print(df.head())
+
+print(&quot;\n--- Statistical Summary ---&quot;)
+print(df.describe())</code></pre>
+        </div>
+
+        <!-- Cell 10: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to check the dataset&rsquo;s structure, contents, and basic statistical properties.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.info()</code> &ndash; checks the column names, data types, and non-null counts</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.head()</code> &ndash; shows the first few rows</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.describe()</code> &ndash; summarizes numerical data</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>After loading the dataset, its attributes are displayed to confirm column accessibility and data types. Sample rows are then shown to provide an overview of the data values, followed by a statistical summary to understand the distribution and range of numerical features.</p>
+        </div>
+
+        <!-- Cell 11: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Correlation</h3>
+        </div>
+
+        <!-- Cell 12: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Calculate Pearson Correlation
+correlation_matrix = df[[&#39;total_bill&#39;, &#39;tip&#39;]].corr()
+correlation_value = correlation_matrix.loc[&#39;total_bill&#39;, &#39;tip&#39;]
+print(f&quot;Pearson Correlation Coefficient: {correlation_value:.4f}&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 13: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This block is used to measure the linear relationship between numerical variables using Pearson correlation.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df[[&#39;total_bill&#39;, &#39;tip&#39;]]</code> &ndash; columns selected for analysis</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">.corr()</code> &ndash; computes the Pearson correlation matrix</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">.corr().loc[&#39;total_bill&#39;, &#39;tip&#39;]</code> &ndash; extracts the correlation value between total bill and tip</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>After selecting the relevant numerical columns, a correlation matrix is generated. The Pearson correlation coefficient between the total bill and tip is then extracted and displayed, providing a numerical representation of their relationship.</p>
+        </div>
+
+        <!-- Cell 14: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Scatter Plot and Heatmap</h3>
+        </div>
+
+        <!-- Cell 15: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Scatter plot with regression line
+plt.figure(figsize=(10, 6))
+sns.regplot(
+    data=df, x=&#39;total_bill&#39;, y=&#39;tip&#39;,
+    scatter_kws={&#39;alpha&#39;: 0.5}, line_kws={&#39;color&#39;: &#39;red&#39;}
+)
+plt.title(f&#39;Total Bill vs Tip Correlation: {correlation_value:.4f}&#39;, fontsize=15)
+plt.xlabel(&#39;Total Bill ($)&#39;)
+plt.ylabel(&#39;Tip ($)&#39;)
+plt.grid(True, linestyle=&#39;--&#39;, alpha=0.6)
+plt.show()
+
+# Correlation heatmap
+plt.figure(figsize=(8, 6))
+sns.heatmap(
+    df.select_dtypes(include=[&#39;number&#39;]).corr(),
+    annot=True, cmap=&#39;coolwarm&#39;, fmt=&quot;.2f&quot;
+)
+plt.title(&quot;Correlation Heatmap&quot;)
+plt.show()</code></pre>
+        </div>
+
+        <!-- Cell 16: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to visually represent the relationships identified during the correlation analysis.</p>
+          <ul>
+            <li>Scatter plot &ndash; shows the relationship between total bill and tip</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">sns.regplot()</code> &ndash; generates a scatter plot with a regression line</li>
+            <li>Heatmap &ndash; visualizes correlations among numerical variables</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>After calculating the correlation, a scatter plot with a regression line is created to illustrate how tip values change with respect to total bill amounts. A correlation heatmap is then generated to display the relationships among all numerical features.</p>
+        </div>
+
+        <!-- Cell 17: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Code 2</h2>
+          <h3 class="nb-md-h3">Imports and Library</h3>
+        </div>
+
+        <!-- Cell 18: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split</code></pre>
+        </div>
+
+        <!-- Cell 19: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to initialize all required libraries for numerical computation, machine learning, model evaluation, and data visualization.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">numpy</code> &ndash; handles numerical operations and array manipulation</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">matplotlib.pyplot</code> &ndash; creates data visualizations</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">LinearRegression</code> &ndash; implements the linear regression model</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">mean_squared_error</code> &ndash; measures prediction error</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">r2_score</code> &ndash; evaluates model performance</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">train_test_split</code> &ndash; splits data into training and testing sets</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>All necessary libraries are imported to support data generation, model training, evaluation, and visualization. This setup ensures that all required functions are available before executing the remaining blocks of code.</p>
+        </div>
+
+        <!-- Cell 20: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Synthetic Data Generation</h3>
+        </div>
+
+        <!-- Cell 21: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Generate synthetic data: y = 3x + 4 + noise
+np.random.seed(42)
+X = 2 * np.random.rand(100, 1)
+y = 4 + 3 * X + np.random.randn(100, 1)</code></pre>
+        </div>
+
+        <!-- Cell 22: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to generate a synthetic dataset that follows a linear relationship with added random noise. The generated data simulates real-world data behavior.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.seed(42)</code> &ndash; ensures reproducibility across runs</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.rand(100, 1)</code> &ndash; generates random feature values</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.randn(100, 1)</code> &ndash; generates random noise</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>First, a random seed is set to ensure reproducibility. Next, the feature variable X is generated and scaled. Finally, the target variable y is computed using a linear equation with added random noise to simulate real-world variability.</p>
+        </div>
+
+        <!-- Cell 23: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Splitting Dataset</h3>
+        </div>
+
+        <!-- Cell 24: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)</code></pre>
+        </div>
+
+        <!-- Cell 25: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to divide the dataset into training and testing sets to evaluate the model on unseen data.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">train_test_split()</code> &ndash; splits the dataset into training and testing subsets</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">test_size=0.2</code> &ndash; allocates 20% of the data for testing</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">random_state=42</code> &ndash; ensures consistent data split across runs</li>
+          </ul>
+        </div>
+
+        <!-- Cell 26: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Model Initialization and Training</h3>
+        </div>
+
+        <!-- Cell 27: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Initialize and train the Linear Regression model
+model = LinearRegression()
+model.fit(X_train, y_train)</code></pre>
+        </div>
+
+        <!-- Cell 28: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to initialize and train the linear regression model using the training data. The model learns the optimal slope and intercept that best represent the relationship between the feature and the target variable.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">LinearRegression()</code> &ndash; initializes the linear regression model</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.fit()</code> &ndash; trains the model using the training data</li>
+          </ul>
+        </div>
+
+        <!-- Cell 29: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Prediction and Model Evaluation</h3>
+        </div>
+
+        <!-- Cell 30: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Make predictions using the test set
+y_pred = model.predict(X_test)
+
+# Output Evaluation Metrics
+print(f&quot;Coefficient (Slope): {model.coef_[0][0]:.2f}&quot;)
+print(f&quot;Intercept: {model.intercept_[0]:.2f}&quot;)
+print(&quot;-&quot; * 30)
+print(f&quot;Mean Squared Error (MSE): {mean_squared_error(y_test, y_pred):.2f}&quot;)
+print(f&quot;R-squared (R2) Score: {r2_score(y_test, y_pred):.2f}&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 31: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to generate predictions using the trained model and evaluate its performance using numerical metrics. It also displays the learned parameters of the linear regression model.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.predict()</code> &ndash; generates predicted values using the test dataset</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.coef_</code> &ndash; retrieves the slope of the regression line</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.intercept_</code> &ndash; retrieves the intercept of the regression line</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">mean_squared_error()</code> &ndash; measures the average squared prediction error</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">r2_score()</code> &ndash; evaluates how well the model fits the data</li>
+          </ul>
+        </div>
+
+        <!-- Cell 32: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Evaluation of Results</h3>
+        </div>
+
+        <!-- Cell 33: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Plotting the results
+plt.scatter(X_test, y_test, color=&#39;blue&#39;, label=&#39;Actual Data&#39;)
+plt.plot(X_test, y_pred, color=&#39;red&#39;, linewidth=2, label=&#39;Regression Line&#39;)
+plt.xlabel(&#39;Feature (X)&#39;)
+plt.ylabel(&#39;Target (y)&#39;)
+plt.legend()
+plt.show()</code></pre>
+        </div>
+
+        <!-- Cell 34: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is used to visually compare the actual data points with the values predicted by the linear regression model. The actual test data points are plotted as a scatter plot. The regression line is overlaid to show the model&rsquo;s predicted relationship. Axis labels and a legend are added for clarity.</p>
+        </div>
+
+        <!-- Cell 35: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Code 3 &mdash; User Input and Loop</h2>
+        </div>
+
+        <!-- Cell 36: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>print(&quot;\n&quot; + &quot;=&quot;*30)
+print(&quot;LINEAR REGRESSION PREDICTOR&quot;)
+print(&quot;=&quot;*30)
+print(&quot;The model is trained. Enter a value for X to see the predicted Y.&quot;)
+print(&quot;Type &#39;exit&#39; to close the program.&quot;)
+
+while True:
+    user_input = input(&quot;\nEnter value for X: &quot;)
+    if user_input.lower() == &#39;exit&#39;:
+        print(&quot;Exiting.. Goodbye!&quot;)
+        break
+    try:
+        x_new = float(user_input)
+        x_val = np.array([[x_new]])
+        y_val = model.predict(x_val)
+        print(f&quot;&gt;&gt;&gt; Predicted Y: {y_val[0][0]:.4f}&quot;)
+    except ValueError:
+        print(&quot;Invalid input! Please enter a numerical value.&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 37: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This block allows user interaction with the trained linear regression model. It continuously accepts user input, processes the input, and outputs the predicted value until the user chooses to exit.</p>
+          <ul>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">while True</code> &ndash; creates a continuous loop for repeated predictions</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">input()</code> &ndash; accepts user input for prediction</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">float()</code> &ndash; converts the user input to a numerical value</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.array()</code> &ndash; reshapes the input for prediction</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.predict()</code> &ndash; generates the predicted output</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">try-except</code> &ndash; handles invalid or non-numerical input</li>
+          </ul>
+        </div>
+
+        <!-- Cell 38: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Selected Noisy Data (Caf&eacute; Sales)</h2>
+          <h3 class="nb-md-h3">Dataset Selection and Preparation</h3>
+        </div>
+
+        <!-- Cell 39: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import numpy as np
+
+# LOAD DIRTY DATA
+df = pd.read_csv(&quot;/content/dirty_cafe_sales.csv&quot;)
+df = df.drop(columns=[&quot;Transaction ID&quot;], errors=&quot;ignore&quot;)
+
+# PLACEHOLDERS
+PLACEHOLDERS = [&quot;ERROR&quot;, &quot;UNKNOWN&quot;, &quot;N/A&quot;, &quot;NA&quot;, &quot;null&quot;, &quot;None&quot;, &quot;&quot;, &quot;nan&quot;, &quot;NaN&quot;]
+
+# CLEAN NUMERIC
+num_cols = [&quot;Quantity&quot;, &quot;Price Per Unit&quot;, &quot;Total Spent&quot;]
+for c in num_cols:
+    df[c] = df[c].astype(str).str.strip().replace(PLACEHOLDERS, np.nan)
+    df[c] = pd.to_numeric(df[c], errors=&quot;coerce&quot;)
+
+# SMART IMPUTATION: Total = Quantity * Price
+mask_total = df[&quot;Total Spent&quot;].isna() &amp; df[&quot;Quantity&quot;].notna() &amp; df[&quot;Price Per Unit&quot;].notna()
+df.loc[mask_total, &quot;Total Spent&quot;] = df.loc[mask_total, &quot;Quantity&quot;] * df.loc[mask_total, &quot;Price Per Unit&quot;]
+
+mask_qty = df[&quot;Quantity&quot;].isna() &amp; df[&quot;Total Spent&quot;].notna() &amp; df[&quot;Price Per Unit&quot;].notna() &amp; (df[&quot;Price Per Unit&quot;] != 0)
+df.loc[mask_qty, &quot;Quantity&quot;] = df.loc[mask_qty, &quot;Total Spent&quot;] / df.loc[mask_qty, &quot;Price Per Unit&quot;]
+
+mask_price = df[&quot;Price Per Unit&quot;].isna() &amp; df[&quot;Total Spent&quot;].notna() &amp; df[&quot;Quantity&quot;].notna() &amp; (df[&quot;Quantity&quot;] != 0)
+df.loc[mask_price, &quot;Price Per Unit&quot;] = df.loc[mask_price, &quot;Total Spent&quot;] / df.loc[mask_price, &quot;Quantity&quot;]
+
+# Quantity should be integer-like
+df[&quot;Quantity&quot;] = np.round(df[&quot;Quantity&quot;]).astype(&quot;Int64&quot;)
+
+# Median fallback
+for c in num_cols:
+    df[c] = df[c].fillna(df[c].median())
+
+# CLEAN CATEGORICAL
+cat_cols = [&quot;Item&quot;, &quot;Payment Method&quot;, &quot;Location&quot;]
+for c in cat_cols:
+    if c in df.columns:
+        df[c] = df[c].astype(str).str.strip().replace(PLACEHOLDERS, &quot;Unknown&quot;)
+
+# DATE &rarr; FEATURES
+df[&quot;Transaction Date&quot;] = pd.to_datetime(df[&quot;Transaction Date&quot;], errors=&quot;coerce&quot;)
+if df[&quot;Transaction Date&quot;].notna().any():
+    df[&quot;Transaction Date&quot;] = df[&quot;Transaction Date&quot;].fillna(df[&quot;Transaction Date&quot;].mode()[0])
+df[&quot;trans_month&quot;] = df[&quot;Transaction Date&quot;].dt.month
+df[&quot;trans_day&quot;]   = df[&quot;Transaction Date&quot;].dt.day
+df[&quot;trans_dow&quot;]   = df[&quot;Transaction Date&quot;].dt.dayofweek
+df = df.drop(columns=[&quot;Transaction Date&quot;])
+
+# OPTIONAL: drop Payment Method
+if &quot;Payment Method&quot; in df.columns:
+    df = df.drop(columns=[&quot;Payment Method&quot;])
+
+# REMOVE DUPLICATES
+before = len(df)
+df = df.drop_duplicates()
+after = len(df)
+print(f&quot;Duplicates removed: {before - after}&quot;)
+
+# OUTLIER HANDLING (Winsorize)
+Q1 = df[&quot;Total Spent&quot;].quantile(0.25)
+Q3 = df[&quot;Total Spent&quot;].quantile(0.75)
+IQR = Q3 - Q1
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+outliers_count = ((df[&quot;Total Spent&quot;] &lt; lower) | (df[&quot;Total Spent&quot;] &gt; upper)).sum()
+print(f&quot;Outliers detected (Total Spent): {outliers_count}&quot;)
+df[&quot;Total Spent&quot;] = df[&quot;Total Spent&quot;].clip(lower, upper)
+
+# SAVE CLEANED
+df.to_csv(&quot;/content/cleaned_cafe_sales.csv&quot;, index=False)
+df.head()</code></pre>
+        </div>
+
+        <!-- Cell 40: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Attribute Selection</h3>
+        </div>
+
+        <!-- Cell 41: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+# LOAD CLEANED DATA
+df = pd.read_csv(&quot;/content/cleaned_cafe_sales.csv&quot;)
+
+print(&quot;--- Dataset Attributes ---&quot;)
+print(df.info())
+print(&quot;\n--- Sample Data (Top 5 Rows) ---&quot;)
+print(df.head())
+print(&quot;\n--- Statistical Summary ---&quot;)
+print(df.describe())
+
+# ENCODE CATEGORICAL FEATURES
+df_model = pd.get_dummies(df, columns=[&quot;Item&quot;, &quot;Location&quot;], drop_first=True)
+
+target = &quot;Total Spent&quot;
+
+# CORRELATION
+corr = df_model.select_dtypes(include=[&quot;number&quot;]).corr()
+target_corr = corr[target].sort_values(ascending=False)
+
+print(&quot;\nCorrelation with Total Spent (Top 15):&quot;)
+print(target_corr.head(15))
+
+# BEST FEATURE FOR SIMPLE REGRESSION
+best_feature = target_corr.index[1]
+print(&quot;\nBest predictor for SIMPLE regression:&quot;, best_feature)
+
+# HEATMAP
+plt.figure(figsize=(10, 7))
+sns.heatmap(df_model.select_dtypes(include=[&quot;number&quot;]).corr(), annot=True, cmap=&quot;coolwarm&quot;, fmt=&quot;.2f&quot;)
+plt.title(&quot;Correlation Heatmap (Encoded Numeric Features)&quot;)
+plt.show()
+
+# VIF (Variance Inflation Factor)
+X_for_vif = df_model.drop(columns=[target]).select_dtypes(include=[np.number])
+X_for_vif = X_for_vif.loc[:, X_for_vif.nunique() &gt; 1]
+vif_df = pd.DataFrame()
+vif_df[&quot;Feature&quot;] = X_for_vif.columns
+vif_df[&quot;VIF&quot;] = [variance_inflation_factor(X_for_vif.values, i) for i in range(X_for_vif.shape[1])]
+print(&quot;\n--- VIF Results (Top 15 highest) ---&quot;)
+print(vif_df.sort_values(&quot;VIF&quot;, ascending=False).head(15))</code></pre>
+        </div>
+
+        <!-- Cell 42: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Model Building and Performance Evaluation</h3>
+        </div>
+
+        <!-- Cell 43: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+target = &quot;Total Spent&quot;
+
+# SIMPLE LINEAR REGRESSION
+X_simple = df_model[[best_feature]]
+y = df_model[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X_simple, y, test_size=0.2, random_state=42)
+
+simple_model = LinearRegression()
+simple_model.fit(X_train, y_train)
+y_pred_simple = simple_model.predict(X_test)
+
+print(&quot;\n=== SIMPLE LINEAR REGRESSION ===&quot;)
+print(&quot;Slope:&quot;, simple_model.coef_[0])
+print(&quot;Intercept:&quot;, simple_model.intercept_)
+print(&quot;MAE:&quot;, mean_absolute_error(y_test, y_pred_simple))
+print(&quot;RMSE:&quot;, np.sqrt(mean_squared_error(y_test, y_pred_simple)))
+print(&quot;R&sup2;:&quot;, r2_score(y_test, y_pred_simple))
+
+plt.figure(figsize=(7, 5))
+plt.scatter(X_test, y_test, alpha=0.6)
+plt.plot(X_test, y_pred_simple, color=&quot;red&quot;)
+plt.xlabel(best_feature)
+plt.ylabel(&quot;Total Spent&quot;)
+plt.title(&quot;Simple Linear Regression&quot;)
+plt.show()
+
+# MULTIPLE LINEAR REGRESSION
+predictors = [c for c in target_corr.index if c != target]
+multi_features = predictors[:3]
+if best_feature not in multi_features:
+    multi_features[-1] = best_feature
+
+X_multi = df_model[multi_features]
+y = df_model[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X_multi, y, test_size=0.2, random_state=42)
+
+multi_model = LinearRegression()
+multi_model.fit(X_train, y_train)
+y_pred_multi = multi_model.predict(X_test)
+
+print(&quot;\n=== MULTIPLE LINEAR REGRESSION ===&quot;)
+print(&quot;Intercept:&quot;, multi_model.intercept_)
+for feat, coef in zip(multi_features, multi_model.coef_):
+    print(f&quot;{feat}: {coef}&quot;)
+print(&quot;MAE:&quot;, mean_absolute_error(y_test, y_pred_multi))
+print(&quot;RMSE:&quot;, np.sqrt(mean_squared_error(y_test, y_pred_multi)))
+print(&quot;R&sup2;:&quot;, r2_score(y_test, y_pred_multi))
+
+# RESIDUAL PLOT
+residuals = y_test - y_pred_multi
+plt.figure(figsize=(7, 5))
+plt.scatter(y_pred_multi, residuals, alpha=0.6)
+plt.axhline(0, color=&quot;red&quot;, linestyle=&quot;--&quot;)
+plt.xlabel(&quot;Predicted Total Spent&quot;)
+plt.ylabel(&quot;Residuals&quot;)
+plt.title(&quot;Residual Plot (Multiple Linear Regression)&quot;)
+plt.show()
+
+# SAVE FINAL ENCODED DATASET
+df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False)</code></pre>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -1226,8 +1881,16 @@ plt.show()</code></pre>
       document.getElementById('text-modal-5').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openNotebookLR() {
+      document.getElementById('notebook-modal-lr').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNotebookLR() {
+      document.getElementById('notebook-modal-lr').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeNotebook(); closeNotebookWW(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
   </script>
 
