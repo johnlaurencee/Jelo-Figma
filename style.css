@@ -330,8 +330,16 @@ section { padding: 96px 40px; }
 .projects__list {
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 0;
 }
+
+.project-entry {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-entry:first-child { padding-top: 0; }
+.project-entry:last-child  { border-bottom: none; }
 
 .project-entry {
   display: grid;

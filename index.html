@@ -156,8 +156,53 @@
         </div>
       </div>
 
+      <!-- Entry 2 -->
+      <div class="project-entry">
+        <div class="project-entry__left">
+          <div class="project-entry__img">
+            <img src="https://www.figma.com/api/mcp/asset/4f9b500c-a7d8-4dbc-92a4-9c3addbe69af" alt="PT-P2 kNN Predictive Modelling" />
+          </div>
+          <div class="project-entry__file-btns">
+            <button class="project-entry__file-btn" onclick="openPdf('PT-P2-Ong_JohnLaurence.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('PT_P2_Ong_JohnLaurence.ipynb')">View Notebook file</button>
+          </div>
+        </div>
+        <div class="project-entry__right">
+          <div class="project-entry__right-text">
+            <h3 class="project-entry__category">PT-P2 kNN Predictive Modelling</h3>
+            <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; k-Nearest Neighbors in Government Operations: Performance, Technical Validation, and Ethical Consideration</p>
+            <p class="project-entry__label">Description:</p>
+            <p class="project-entry__desc">The activity demonstrates the use of the k-Nearest Neighbors (kNN) algorithm to perform predictive analytics using the Iris dataset. The project involves loading the dataset, splitting it into training and testing data, building the model, generating predictions, evaluating performance, and visualizing the results&hellip;</p>
+            <p class="project-entry__label">The &ldquo;So What&rdquo;:</p>
+            <p class="project-entry__desc">Learning predictive analytics and machine learning techniques is valuable because many industries now rely on data-driven decision making&hellip;</p>
+          </div>
+          <button class="project-entry__view-more" onclick="openTextModal2()">View more</button>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </section>  <!-- ── TEXT MODAL 2 ─────────────────────────────────────────── -->
+  <div id="text-modal-2" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal2()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal2()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">PT-P2 kNN Predictive Modelling</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">The activity demonstrates the use of the k-Nearest Neighbors (kNN) algorithm to perform predictive analytics using the Iris dataset. The project involves loading the dataset, splitting it into training and testing data, building the model, generating predictions, evaluating performance, and visualizing the results to analyze how parameters affect classification accuracy.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">The activity uses Python libraries such as sklearn datasets and Matplotlib for machine learning and visualization. Methods like train_test_split() dividing the dataset into 80% training data and 20% testing data, allowing the model to be evaluated on unseen data also the kNN value was set to 5 for the model to consider 5 nearest data points when making a decision. The fit() method trains the model, while predict() generates predictions. Evaluation tools such as accuracy_score(), classification_report(), and confusion_matrix() are used to measure the model&rsquo;s performance and analyze prediction results.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Learning predictive analytics and machine learning techniques is valuable because many industries now rely on data-driven decision making. Companies now look for people who have skills such as building predictive models, analyzing datasets, and evaluating model performance as it is now becoming a trend in the industry.</p>
+        <p class="text-modal__body">By understanding algorithms like kNN and using Python tools for data analysis, I can develop skills that will help me stay competitive and serve as my leverage to others in the industry.</p>
+
+        <h3 class="text-modal__heading">Reflection</h3>
+        <p class="text-modal__body">One of the challenges I have faced during this activity was that it was my first time using Python Notebook as well as predictive analytics and machine learning algorithms. Because of this, I find it difficult to understand how the environment works and how the code functions together to produce results. I overcame this challenge by familiarizing myself with the notebook environment and carefully studying how each part of the program function to better understand how the program works through the phases such as cleaning, split and testing, and evaluating the model.</p>
+      </div>
+    </div>
+  </div>
   <!-- ── TEXT MODAL ─────────────────────────────────────────────── -->
   <div id="text-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
     <div class="pdf-modal__backdrop" onclick="closeTextModal()"></div>
@@ -214,8 +259,16 @@
       document.getElementById('text-modal').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal2() {
+      document.getElementById('text-modal-2').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal2() {
+      document.getElementById('text-modal-2').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); }
     });
   </script>
 
