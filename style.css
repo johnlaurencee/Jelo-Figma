@@ -449,7 +449,7 @@ section { padding: 96px 40px; }
 
 .project-entry__view-more {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 24px;
   padding: 10px 32px;
   border: 1px solid #fff;
   border-radius: 999px;
@@ -460,6 +460,7 @@ section { padding: 96px 40px; }
   align-self: flex-start;
   transition: background .15s, color .15s;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .project-entry__view-more:hover {
