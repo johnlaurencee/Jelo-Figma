@@ -345,13 +345,13 @@ section { padding: 96px 40px; }
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 48px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .project-entry__left {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  justify-content: space-between;
 }
 
 .project-entry__img {
@@ -400,8 +400,6 @@ section { padding: 96px 40px; }
   justify-content: space-between;
   padding-top: 0;
   overflow: hidden;
-  /* Match left column total height: image (3/4 of 260px = 195px) + gap (16px) + 2 buttons (~82px) */
-  min-height: calc(260px * (4/3) + 16px + 82px);
 }
 
 .project-entry__right-text {
