@@ -345,13 +345,14 @@ section { padding: 96px 40px; }
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 48px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .project-entry__left {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
 }
 
 .project-entry__img {
@@ -373,7 +374,6 @@ section { padding: 96px 40px; }
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 92px;
 }
 
 .project-entry__file-btn {
@@ -398,7 +398,7 @@ section { padding: 96px 40px; }
 .project-entry__right {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding-top: 0;
   overflow: hidden;
 }
