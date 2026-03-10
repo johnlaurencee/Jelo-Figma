@@ -337,7 +337,7 @@ section { padding: 96px 40px; }
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 48px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .project-entry__left {
@@ -389,8 +389,16 @@ section { padding: 96px 40px; }
 .project-entry__right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
   padding-top: 0;
+  overflow: hidden;
+}
+
+.project-entry__right-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
 
 .project-entry__expanded {
