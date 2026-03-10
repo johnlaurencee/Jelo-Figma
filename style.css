@@ -351,8 +351,7 @@ section { padding: 96px 40px; }
 .project-entry__left {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 16px;
+  justify-content: space-between;
 }
 
 .project-entry__img {
