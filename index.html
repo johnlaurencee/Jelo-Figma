@@ -251,6 +251,27 @@
         </div>
       </div>
 
+      <!-- Entry 6 -->
+      <div class="project-entry">
+        <div class="project-entry__left">
+          <div class="project-entry__img">
+            <img src="LongQuiz1.png" alt="Long Quiz 1" />
+          </div>
+          <div class="project-entry__file-btns">
+          </div>
+        </div>
+        <div class="project-entry__right">
+          <div class="project-entry__right-text">
+            <h3 class="project-entry__category">Long Quiz 1</h3>
+            <p class="project-entry__label">Short Description:</p>
+            <p class="project-entry__desc">This activity focuses on analyzing a healthcare dataset containing patient attributes such as Age, BMI, Blood Pressure, Cholesterol level, and Smoking Status. The goal is to examine the dataset and determine how predictive modeling can be applied to identify relationships between patient health indicators.</p>
+            <p class="project-entry__label">Predictive Skills:</p>
+            <p class="project-entry__desc">This activity applies predictive modeling concepts such as target variable identification, feature analysis, and model selection. The k-Nearest Neighbors (kNN) algorithm is used because it is a classification model&hellip;</p>
+          </div>
+          <button class="project-entry__view-more" onclick="openTextModal6()">View more</button>
+        </div>
+      </div>
+
     </div>
   </section>  <!-- ── NOTEBOOK MODAL ───────────────────────────────────────── -->
   <div id="notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
@@ -1276,10 +1297,10 @@ df = sns.load_dataset(&#39;tips&#39;)</code></pre>
           <p><strong>Explanation</strong></p>
           <p>These are used to initialize all the required libraries for data handling and visualization. Afterwards, a sample dataset is loaded and stored for analysis.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import pandas as pd</code> &ndash; use for data handling and DataFrame operations</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import seaborn as sns</code> &ndash; use for data visualization and built-in datasets</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">import matplotlib.pyplot as plt</code> &ndash; use for plotting graphs</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">sns.load_dataset(&#39;tips&#39;)</code> &ndash; loads the built-in &ldquo;tips&rdquo; dataset as a pandas DataFrame</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">import pandas as pd</code> &ndash; use for data handling and DataFrame operations</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">import seaborn as sns</code> &ndash; use for data visualization and built-in datasets</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">import matplotlib.pyplot as plt</code> &ndash; use for plotting graphs</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">sns.load_dataset(&#39;tips&#39;)</code> &ndash; loads the built-in &ldquo;tips&rdquo; dataset as a pandas DataFrame</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
           <p>After importing the required libraries, the dataset is loaded using Seaborn and stored in a Pandas DataFrame. This ensures that the data is structured, readable, and ready for inspection and analysis.</p>
@@ -1307,9 +1328,9 @@ print(df.describe())</code></pre>
           <p><strong>Explanation</strong></p>
           <p>This is used to check the dataset&rsquo;s structure, contents, and basic statistical properties.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.info()</code> &ndash; checks the column names, data types, and non-null counts</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.head()</code> &ndash; shows the first few rows</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df.describe()</code> &ndash; summarizes numerical data</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">df.info()</code> &ndash; checks the column names, data types, and non-null counts</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">df.head()</code> &ndash; shows the first few rows</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">df.describe()</code> &ndash; summarizes numerical data</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
           <p>After loading the dataset, its attributes are displayed to confirm column accessibility and data types. Sample rows are then shown to provide an overview of the data values, followed by a statistical summary to understand the distribution and range of numerical features.</p>
@@ -1333,9 +1354,9 @@ print(f&quot;Pearson Correlation Coefficient: {correlation_value:.4f}&quot;)</co
           <p><strong>Explanation</strong></p>
           <p>This block is used to measure the linear relationship between numerical variables using Pearson correlation.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">df[[&#39;total_bill&#39;, &#39;tip&#39;]]</code> &ndash; columns selected for analysis</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">.corr()</code> &ndash; computes the Pearson correlation matrix</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">.corr().loc[&#39;total_bill&#39;, &#39;tip&#39;]</code> &ndash; extracts the correlation value between total bill and tip</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">df[[&#39;total_bill&#39;, &#39;tip&#39;]]</code> &ndash; columns selected for analysis</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">.corr()</code> &ndash; computes the Pearson correlation matrix</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">.corr().loc[&#39;total_bill&#39;, &#39;tip&#39;]</code> &ndash; extracts the correlation value between total bill and tip</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
           <p>After selecting the relevant numerical columns, a correlation matrix is generated. The Pearson correlation coefficient between the total bill and tip is then extracted and displayed, providing a numerical representation of their relationship.</p>
@@ -1376,7 +1397,7 @@ plt.show()</code></pre>
           <p>This is used to visually represent the relationships identified during the correlation analysis.</p>
           <ul>
             <li>Scatter plot &ndash; shows the relationship between total bill and tip</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">sns.regplot()</code> &ndash; generates a scatter plot with a regression line</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">sns.regplot()</code> &ndash; generates a scatter plot with a regression line</li>
             <li>Heatmap &ndash; visualizes correlations among numerical variables</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
@@ -1403,12 +1424,12 @@ from sklearn.model_selection import train_test_split</code></pre>
           <p><strong>Explanation</strong></p>
           <p>This is used to initialize all required libraries for numerical computation, machine learning, model evaluation, and data visualization.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">numpy</code> &ndash; handles numerical operations and array manipulation</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">matplotlib.pyplot</code> &ndash; creates data visualizations</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">LinearRegression</code> &ndash; implements the linear regression model</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">mean_squared_error</code> &ndash; measures prediction error</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">r2_score</code> &ndash; evaluates model performance</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">train_test_split</code> &ndash; splits data into training and testing sets</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">numpy</code> &ndash; handles numerical operations and array manipulation</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">matplotlib.pyplot</code> &ndash; creates data visualizations</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">LinearRegression</code> &ndash; implements the linear regression model</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">mean_squared_error</code> &ndash; measures prediction error</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">r2_score</code> &ndash; evaluates model performance</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">train_test_split</code> &ndash; splits data into training and testing sets</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
           <p>All necessary libraries are imported to support data generation, model training, evaluation, and visualization. This setup ensures that all required functions are available before executing the remaining blocks of code.</p>
@@ -1432,9 +1453,9 @@ y = 4 + 3 * X + np.random.randn(100, 1)</code></pre>
           <p><strong>Explanation</strong></p>
           <p>This is used to generate a synthetic dataset that follows a linear relationship with added random noise. The generated data simulates real-world data behavior.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.seed(42)</code> &ndash; ensures reproducibility across runs</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.rand(100, 1)</code> &ndash; generates random feature values</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.random.randn(100, 1)</code> &ndash; generates random noise</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">np.random.seed(42)</code> &ndash; ensures reproducibility across runs</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">np.random.rand(100, 1)</code> &ndash; generates random feature values</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">np.random.randn(100, 1)</code> &ndash; generates random noise</li>
           </ul>
           <p><strong>Task-by-Task Inspection</strong></p>
           <p>First, a random seed is set to ensure reproducibility. Next, the feature variable X is generated and scaled. Finally, the target variable y is computed using a linear equation with added random noise to simulate real-world variability.</p>
@@ -1456,9 +1477,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
           <p><strong>Explanation</strong></p>
           <p>This is used to divide the dataset into training and testing sets to evaluate the model on unseen data.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">train_test_split()</code> &ndash; splits the dataset into training and testing subsets</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">test_size=0.2</code> &ndash; allocates 20% of the data for testing</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">random_state=42</code> &ndash; ensures consistent data split across runs</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">train_test_split()</code> &ndash; splits the dataset into training and testing subsets</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">test_size=0.2</code> &ndash; allocates 20% of the data for testing</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">random_state=42</code> &ndash; ensures consistent data split across runs</li>
           </ul>
         </div>
 
@@ -1479,8 +1500,8 @@ model.fit(X_train, y_train)</code></pre>
           <p><strong>Explanation</strong></p>
           <p>This is used to initialize and train the linear regression model using the training data. The model learns the optimal slope and intercept that best represent the relationship between the feature and the target variable.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">LinearRegression()</code> &ndash; initializes the linear regression model</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.fit()</code> &ndash; trains the model using the training data</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">LinearRegression()</code> &ndash; initializes the linear regression model</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">model.fit()</code> &ndash; trains the model using the training data</li>
           </ul>
         </div>
 
@@ -1507,11 +1528,11 @@ print(f&quot;R-squared (R2) Score: {r2_score(y_test, y_pred):.2f}&quot;)</code><
           <p><strong>Explanation</strong></p>
           <p>This is used to generate predictions using the trained model and evaluate its performance using numerical metrics. It also displays the learned parameters of the linear regression model.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.predict()</code> &ndash; generates predicted values using the test dataset</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.coef_</code> &ndash; retrieves the slope of the regression line</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.intercept_</code> &ndash; retrieves the intercept of the regression line</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">mean_squared_error()</code> &ndash; measures the average squared prediction error</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">r2_score()</code> &ndash; evaluates how well the model fits the data</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">model.predict()</code> &ndash; generates predicted values using the test dataset</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">model.coef_</code> &ndash; retrieves the slope of the regression line</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">model.intercept_</code> &ndash; retrieves the intercept of the regression line</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">mean_squared_error()</code> &ndash; measures the average squared prediction error</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">r2_score()</code> &ndash; evaluates how well the model fits the data</li>
           </ul>
         </div>
 
@@ -1569,12 +1590,12 @@ while True:
           <p><strong>Explanation</strong></p>
           <p>This block allows user interaction with the trained linear regression model. It continuously accepts user input, processes the input, and outputs the predicted value until the user chooses to exit.</p>
           <ul>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">while True</code> &ndash; creates a continuous loop for repeated predictions</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">input()</code> &ndash; accepts user input for prediction</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">float()</code> &ndash; converts the user input to a numerical value</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">np.array()</code> &ndash; reshapes the input for prediction</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">model.predict()</code> &ndash; generates the predicted output</li>
-            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:&#39;Courier New&#39;,monospace;font-size:13px;">try-except</code> &ndash; handles invalid or non-numerical input</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">while True</code> &ndash; creates a continuous loop for repeated predictions</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">input()</code> &ndash; accepts user input for prediction</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">float()</code> &ndash; converts the user input to a numerical value</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">np.array()</code> &ndash; reshapes the input for prediction</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">model.predict()</code> &ndash; generates the predicted output</li>
+            <li><code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">try-except</code> &ndash; handles invalid or non-numerical input</li>
           </ul>
         </div>
 
@@ -1795,6 +1816,29 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <!-- ── TEXT MODAL 6 ─────────────────────────────────────────────── -->
+  <div id="text-modal-6" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Activity Details">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal6()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal6()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Long Quiz 1</p>
+
+        <p class="text-modal__section-label">Description</p>
+        <p class="text-modal__body">This activity focuses on analyzing a healthcare dataset containing patient attributes such as Age, BMI, Blood Pressure, Cholesterol level, and Smoking Status. The goal is to examine the dataset and determine how predictive modeling can be applied to identify relationships between patient health indicators. By analyzing these variables, we can determine which attribute can be used as the target variable. In my case I use Cholesterol and the predictor is the blood pressure. This activity demonstrates how healthcare data can be used to support predictive analysis and improve decision-making in medical environments.</p>
+
+        <p class="text-modal__section-label">Predictive Skills</p>
+        <p class="text-modal__body">This activity applies predictive modeling concepts such as target variable identification, feature analysis, and model selection. In this activity, the k-Nearest Neighbors (kNN) algorithm is used because it is a classification model. By examining the dataset, relevant variables that may influence a patient&rsquo;s health condition are identified. These features are then used to build a predictive model that analyzes patterns and relationships between variables. The dataset is divided into training and testing sets, with 80% used for training and 20% for testing, to evaluate how well the model performs on unseen data. Model performance is assessed using a confusion matrix and accuracy metrics.</p>
+
+        <p class="text-modal__section-label">The &ldquo;So What&rdquo;</p>
+        <p class="text-modal__body">Predictive analytics is widely used in the healthcare industry to help identify potential health risks and support early diagnosis. By learning how to analyze datasets and identify relationships between variables such as BMI, blood pressure, and cholesterol levels, we can better understand how predictive models assist healthcare professionals. By leveraging these skills, I can analyze health-related datasets and develop models that support better decision-making and improve patient care.</p>
+
+        <p class="text-modal__section-label">Reflection</p>
+        <p class="text-modal__body">One challenge I faced during this activity was understanding how to properly analyze the dataset and determine which variables were relevant for predictive modeling. Since healthcare datasets contain multiple features that may influence patient health, it was important to carefully examine the relationships between variables. I overcame this challenge by reviewing the dataset structure and identifying which attributes could potentially influence the target variable.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -1889,8 +1933,16 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('notebook-modal-lr').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal6() {
+      document.getElementById('text-modal-6').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal6() {
+      document.getElementById('text-modal-6').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
   </script>
 
