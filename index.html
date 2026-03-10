@@ -148,7 +148,7 @@
             <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Predictive Analytics Article</p>
             <p class="project-entry__label">Short Description:</p>
             <p class="project-entry__desc">Predictive analytics is a method that makes use of statistical algorithms, machine learning techniques, and historical data to find trends and predict future results. Predictive analytics is used by businesses in today&rsquo;s industries to better understand relationships, cause and effect, and trends. Businesses can use predictive analytics to turn raw information into useful insights that enhance operational effectiveness and strategic planning as they produce more and more data.</p>
-            <p class="project-entry__label">Predictive Skills:</p>
+            <p class="project-entry__label">The &ldquo;So What&rdquo;:</p>
             <p class="project-entry__desc">Gaining knowledge of predictive analytics is crucial because it enables professionals to evaluate data and make reasonable choices. Predictive analytics helps businesses anticipate risks, increase forecasting accuracy, and maximize performance&hellip;</p>
           </div>
           <button class="project-entry__view-more" onclick="openTextModal()">View more</button>
@@ -224,6 +224,29 @@
             <p class="project-entry__desc">This activity used Python libraries such as Pandas, NumPy, and Sklearn for data processing and machine learning. Data cleaning techniques were applied using functions such as drop_duplicates(), fillna(), dropna(), and MinMaxScaler() to prepare a reliable dataset for the kNN model&hellip;</p>
           </div>
           <button class="project-entry__view-more" onclick="openTextModal4()">View more</button>
+        </div>
+      </div>
+
+      <!-- Entry 5 -->
+      <div class="project-entry">
+        <div class="project-entry__left">
+          <div class="project-entry__img">
+            <img src="LinearRegression.png" alt="Simple and Multiple Linear Regression" />
+          </div>
+          <div class="project-entry__file-btns">
+            <button class="project-entry__file-btn" onclick="openPdf('LinearRegression.pdf')">View IEEE file</button>
+          </div>
+        </div>
+        <div class="project-entry__right">
+          <div class="project-entry__right-text">
+            <h3 class="project-entry__category">Simple and Multiple Linear Regression</h3>
+            <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; A Predictive Analysis of Caf&eacute; Sales Data Using Linear Regression and Attribute Selection</p>
+            <p class="project-entry__label">Short Description:</p>
+            <p class="project-entry__desc">This activity focuses on analyzing caf&eacute; sales data. The goal is to predict the target variable, Total Spent using different attribute variables from the Dirty Caf&eacute; Sales dataset. The process includes data exploration, cleaning noisy data, selecting important attributes using correlation analysis, and building both simple and multiple linear regression models.</p>
+            <p class="project-entry__label">Predictive Skills:</p>
+            <p class="project-entry__desc">This activity used Python libraries such as Pandas, NumPy, Scikit-learn, and Matplotlib for data preprocessing, modeling, and visualization. Correlation analysis was used to identify the strongest predictors of Total Spent, and model performance was measured using MAE, RMSE, and R&sup2;&hellip;</p>
+          </div>
+          <button class="project-entry__view-more" onclick="openTextModal5()">View more</button>
         </div>
       </div>
 
@@ -1095,6 +1118,28 @@ plt.show()</code></pre>
     </div>
   </div>
 
+  <!-- ── TEXT MODAL 5 ───────────────────────────────────────── -->
+  <div id="text-modal-5" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal5()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal5()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Simple and Multiple Linear Regression</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">This activity focuses on analyzing caf&eacute; sales data. The goal is to predict the target variable, Total Spent using different attribute variables from the Dirty Caf&eacute; Sales dataset. The process includes data exploration, cleaning noisy data, selecting important attributes using correlation analysis, and building both simple and multiple linear regression models. The models were then evaluated to determine how well they predict sales spending.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">This activity used Python libraries such as Pandas, NumPy, Scikit-learn, and Matplotlib for data preprocessing, modeling, and visualization. Data preparation included handling missing values, removing duplicates, and converting categorical variables into numerical format using one-hot encoding. Correlation analysis was also used to identify which variables have the strongest relationship with the target variable (Total Spent) so that only the most relevant predictors are used in the model. The dataset was then split into 80% training and 20% testing data to evaluate the model on unseen data. Model performance was measured using MAE, RMSE, and R&sup2; to assess prediction accuracy.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Linear regression has rapidly been used for businesses to predict different outcomes such as sales, demand, and customer behavior. By learning how to build regression models and analyze relationships between variables, I can understand how data can be used to support better decision making. By leveraging these skills, I can analyze datasets more effectively and develop predictive models that help organizations identify trends and improve strategies.</p>
+
+        <h3 class="text-modal__heading">Reflection</h3>
+        <p class="text-modal__body">One of the challenges I faced during this activity was working with a dirty dataset that contained missing values, inconsistencies, and outliers. It required careful inspection of the data to determine which values needed to be cleaned or transformed before building the regression model. I overcame this challenge by revisiting previous lessons and carefully analyzing the dataset to understand the relationships between variables. This helped me build a proper data cleaning pipeline and improve the reliability of the predictive model.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -1173,8 +1218,16 @@ plt.show()</code></pre>
       document.getElementById('notebook-modal-ww').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal5() {
+      document.getElementById('text-modal-5').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal5() {
+      document.getElementById('text-modal-5').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeNotebook(); closeNotebookWW(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeNotebook(); closeNotebookWW(); }
     });
   </script>
 
