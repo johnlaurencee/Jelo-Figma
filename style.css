@@ -570,18 +570,7 @@ section { padding: 96px 40px; }
 }
 
 .nb-cell--code {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.nb-cell__label {
-  font-size: 12px;
-  color: var(--muted);
-  font-family: 'Courier New', monospace;
-  white-space: nowrap;
-  padding-top: 14px;
-  min-width: 52px;
+  display: block;
 }
 
 .nb-md-h2 {

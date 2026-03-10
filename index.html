@@ -197,7 +197,6 @@
 
         <!-- Cell 2: Code -->
         <div class="nb-cell nb-cell--code">
-          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
           <pre class="nb-code"><code>import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
@@ -210,7 +209,7 @@ y = data.target
 
 # Splitting the data for training and testing
 from sklearn.model_selection import train_test_split
-X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.25, random_state = 5)
 
 # Create a KNeighborsClassifier object
 from sklearn.neighbors import KNeighborsClassifier
@@ -225,7 +224,7 @@ predictions = knn.predict(X_Test)
 # Check accuracy
 from sklearn.metrics import accuracy_score
 accuracy = accuracy_score(y_Test, predictions)
-print(&quot;Accuracy :&quot;, accuracy)
+print(&quot;Accuacy :&quot;, accuracy)
 
 # Evaluate model performance
 from sklearn.metrics import classification_report
@@ -239,11 +238,11 @@ cm = confusion_matrix(y_Test, predictions)
 # Visualization of the Scatter plot with predicted classes
 plt.figure(figsize=(8, 6))
 for i in range(3):
-    plt.scatter(X_Test[:,0][y_Test == i], X_Test[:, 1][y_Test == i], cmap=&#39;viridis&#39;)
+  plt.scatter(X_Test[:,0][y_Test == i], X_Test[:, 1][y_Test == i], cmap=&#39;viridis&#39;)
 plt.scatter(X_Test[:, 0], X_Test[:, 1], c=predictions, cmap=&#39;viridis&#39;, alpha=0.8)
 plt.xlabel(data.feature_names[0])
 plt.ylabel(data.feature_names[1])
-plt.title(&quot;Scatter Plot with Predicted Classes&quot;)
+plt.title(&quot;Scatter Plot with Predcted Classes&quot;)
 plt.legend()
 plt.show()
 
@@ -274,7 +273,6 @@ print(cm)</code></pre>
 
         <!-- Cell 5: Code -->
         <div class="nb-cell nb-cell--code">
-          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
           <pre class="nb-code"><code>import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris</code></pre>
         </div>
@@ -293,7 +291,6 @@ from sklearn.datasets import load_iris</code></pre>
 
         <!-- Cell 8: Code -->
         <div class="nb-cell nb-cell--code">
-          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
           <pre class="nb-code"><code># Load data
 data = load_iris()
 
@@ -315,17 +312,19 @@ y = data.target</code></pre>
 
         <!-- Cell 11: Code -->
         <div class="nb-cell nb-cell--code">
-          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
           <pre class="nb-code"><code># Splitting the data for training and testing
 from sklearn.model_selection import train_test_split
-X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, random_state = 0)</code></pre>
+X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# Train the model using the training data
+knn.fit(X_Train, y_Train)</code></pre>
         </div>
 
         <!-- Cell 12: Markdown -->
         <div class="nb-cell nb-cell--md">
           <p>We split the data to evaluate the model&rsquo;s performance on unseen data. This is done to train the model more accurately and fairly. If we train the system using the same data it was evaluated on, overfitting can occur, where the model does not truly learn but instead memorizes the data.</p>
-          <p>The <code>train_test_split</code> line randomly divides the dataset into four variables: X_train, X_test, y_train, and y_test. The test size is set to 20% to maintain a balance between having enough data for training and testing. The <code>random_state</code> parameter acts as a controller for the randomness of the split.</p>
-          <p>Setting the number of neighbors (k) to 5 means the model looks for the five nearest training points and decides the class based on the majority vote. The <code>.fit()</code> function stores the training data so the model can compute distances and find nearest neighbors when making predictions.</p>
+          <p>The <code>train_test_split</code> line randomly divides the dataset and stores the results into four (4) variables: X_train, X_test, y_train, and y_test. The test size is set to 20% to maintain a balance between having enough data for training and testing. Other common values include 0.25 and 0.3. Note: the higher the <code>test_size</code> the lower the accuracy result. The <code>random_state</code> parameter acts as a controller for the randomness of the split. Without it, each run may produce different results, which can affect accuracy.</p>
+          <p>Moreover, setting the number of neighbors (k) to 5 means the model looks for the five (5) nearest training points and decides the class based on the majority vote. Afterward, the <code>.fit()</code> function stores the training data. At this stage, no explicit equations are learned. Instead, the model now knows the training data and can compute distances, find nearest neighbors, and vote on class labels when making predictions.</p>
         </div>
 
         <!-- Cell 13: Markdown -->
@@ -333,24 +332,82 @@ X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, rando
           <h3 class="nb-md-h3">Prediction and Evaluation Metrics</h3>
         </div>
 
-        <!-- Cell 14: Markdown -->
-        <div class="nb-cell nb-cell--md">
-          <p>On these lines, it reports the overall accuracy of the model, specifically classification report, and error distribution. The <code>.predict</code> function generates predicted labels, <code>accuracy_score</code> computes the total correctness. The classification report summarizes the metrics per class, and the confusion matrix counts true vs predicted class outcomes.</p>
+        <!-- Cell 14: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Use the model to predict the test set
+predictions = knn.predict(X_Test)
+
+# Check accuracy
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_Test, predictions)
+print(&quot;Accuacy :&quot;, accuracy)
+
+# Evaluate model performance
+from sklearn.metrics import classification_report
+print(&quot;classification report&quot;)
+print(classification_report(y_Test, predictions))
+
+# Making a confusion matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_Test, predictions)</code></pre>
         </div>
 
         <!-- Cell 15: Markdown -->
         <div class="nb-cell nb-cell--md">
-          <h3 class="nb-md-h3">Visualization</h3>
+          <p>In these lines, the code reports the overall accuracy of the model, including the classification report and error distribution. The <code>.predict()</code> function generates the predicted labels, while <code>accuracy_score</code> compares the predicted values with the actual labels to compute the overall correctness of the model.</p>
+          <p>The classification report summarizes performance metrics for each class, such as precision, recall, and F1-score. The confusion matrix is used to show the count of true versus predicted class outcomes, helping to visualize where the model makes correct predictions and where it makes errors.</p>
         </div>
 
         <!-- Cell 16: Markdown -->
         <div class="nb-cell nb-cell--md">
-          <p>On these lines, it creates visualizations such as a scatter plot and heatmap to illustrate the results. The scatter plot gives a quick sense of class separation and the heatmap shows which classes get confused with each other. <code>plt.scatter(x, y, c=labels, cmap, alpha)</code> colors points by class. <code>plt.imshow(cm, cmap=&apos;Blues&apos;)</code> displays the confusion matrix as an image, and <code>plt.xticks</code> / <code>plt.yticks</code> assign class names to axes for clarity.</p>
+          <h3 class="nb-md-h3">Visualization</h3>
         </div>
 
-        <!-- Cell 17: Markdown -->
+        <!-- Cell 17: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Visualization of the Scatter plot with predicted classes
+plt.figure(figsize=(8, 6))
+for i in range(3):
+  plt.scatter(X_Test[:,0][y_Test == i], X_Test[:, 1][y_Test == i], cmap=&#39;viridis&#39;)
+plt.scatter(X_Test[:, 0], X_Test[:, 1], c=predictions, cmap=&#39;viridis&#39;, alpha=0.8)
+plt.xlabel(data.feature_names[0])
+plt.ylabel(data.feature_names[1])
+plt.title(&quot;Scatter Plot with Predcted Classes&quot;)
+plt.legend()
+plt.show()
+
+# Confusion matrix visualization
+plt.figure(figsize=(8, 6))
+plt.imshow(cm, cmap=&#39;Blues&#39;)
+plt.colorbar()
+plt.title(&quot;Confusion Matrix&quot;)
+plt.xlabel(&quot;Prediction Label&quot;)
+plt.ylabel(&quot;True Label&quot;)
+plt.xticks(ticks=range(3), labels=data.target_names)
+plt.yticks(ticks=range(3), labels=data.target_names)
+plt.show()
+
+print(&quot;Confusion matrix :&quot;)
+print(cm)</code></pre>
+        </div>
+
+        <!-- Cell 18: Markdown -->
         <div class="nb-cell nb-cell--md">
-          <h3 class="nb-md-h3">Output Analysis</h3>
+          <p>In these lines, the code creates visualizations such as a scatter plot and a heatmap to illustrate the results. The scatter plot gives a quick sense of class separation, while the heatmap shows which classes are confused with each other.</p>
+          <p>The <code>plt.scatter(x, y, c=labels, cmap, alpha)</code> parameters are used to color the points by class. We plot the test set using two features and include a legend to make the class labels readable.</p>
+          <p>On the other hand, <code>plt.imshow(cm, cmap=&#39;Blues&#39;)</code> displays the confusion matrix as an image, while <code>plt.xticks()</code> and <code>plt.yticks()</code> assign class names to the axes for better clarity.</p>
+        </div>
+
+        <!-- Cell 19: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Output Analysis and Experiment</h3>
+        </div>
+
+        <!-- Cell 20: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>The purpose of this program is to build, train, and evaluate a K Nearest Neighbors (KNN) classification using the Iris dataset. It is trying to predict species of an Iris flower which is the Iris-setosa, Iris-versicolor, and Iris-virginica represented by y and four numerical features (Sepal length, Sepal width, Petal Length, and Petal Width).</p>
+          <p>The K Nearest Neighbor determines how many nearby data the model compare &mdash; it can be classified into 3 classes: Small k (1&ndash;3) this model is highly sensitive to individual data, Moderate k (5&ndash;7) is the balance, and Large k (10&ndash;15) becomes more efficient but may underfit which ignores the important patterns. The higher the <code>test_size</code> the lower the accuracy result. Additionally, increasing the kNN to 7 creates precision, recall, and f1 almost 1.00.</p>
+          <p>On the other hand, confusion matrix provides a detailed breakdown of prediction results, showing the correct predictions, misclassification, and which classes are confused with one another. From the confusion matrix result Iris-setosa is classified correctly and the other two is where the most error occurs. Moreover, the misclassification occurs between the Iris-versicolor and Iris-virginica because these two species have overlapping features.</p>
         </div>
 
       </div>
