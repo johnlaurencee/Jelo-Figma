@@ -686,12 +686,339 @@ print(classification_report(y_test, y_pred))</code></pre>
         <!-- Cell 7: Markdown -->
         <div class="nb-cell nb-cell--md">
           <h2 class="nb-md-h2">Phase 1 - Data Noise Auditing</h2>
-          <h3 class="nb-md-h3">Baseline Run</h3>
+          <h3 class="nb-md-h3">Inconsistent</h3>
         </div>
 
-        <!-- Cell 8: Code -->
+        <!-- Cell 8: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>All string will be transform into a numerical values (0 and 1) which will result to a normalized and consistent range of data, preventing a bias feature of the model training. Categorical values are converted into a ML readable numeric formats through the one-hot coding. Irrelevant data and identifier are removed to reduce noise.</p>
+        </div>
+
+        <!-- Cell 9: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Module 2 - Preparation</h2>
+          <h3 class="nb-md-h3">Import and Load Dataset</h3>
+        </div>
+
+        <!-- Cell 10: Code -->
         <div class="nb-cell nb-cell--code">
-          <pre class="nb-code"><code>df_raw = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)
+          <pre class="nb-code"><code>import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# Load the dataset
+df_raw = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)</code></pre>
+        </div>
+
+        <!-- Cell 11: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This are used to initiliazes all the required or utilized libraries for data processing and machine learning. Afterwards, it read the cleaned file you have created.</p>
+          <ul>
+            <li>pandas &ndash; Loading and handling of datasets</li>
+            <li>train_test_split &ndash; Splits the data into training and testing</li>
+            <li>KNeighborsClassifier &ndash; Implement kNN classification model</li>
+            <li>accuracy_score &ndash; Computes the model accuracy</li>
+            <li>confusion matrix &ndash; Shows the predictions compare to true labels.</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>The cleaned dataset that is created earlier will be successfully loaded into the memory as a Pandas DataFrame. This confirms that the preprocessing of pipeline earlier has produced a usable dataset which will be used for the baseline model preparation and evaluation.</p>
+        </div>
+
+        <!-- Cell 12: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Baseline Data Preparation and Feature Target Separation</h3>
+        </div>
+
+        <!-- Cell 13: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Keep only numeric columns (automatically removes categorical/string noise)
+# Drop rows with any remaining missing values
+df_naive = df_raw.select_dtypes(include=[&#39;number&#39;]).dropna()
+
+# Separate features (X) and target variable (y)
+X_naive = df_naive.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_naive = df_naive[&#39;Purchase_Likelihood&#39;]</code></pre>
+        </div>
+
+        <!-- Cell 14: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This creates a simplified version of the dataset by keeping only the numeric values and removing any rows that have missing values. Afterwards, it will split into features and target variable.</p>
+          <ul>
+            <li>select_dtypes(include=[&#39;number&#39;]) &ndash; This keeps only the numeric values then drop the string, categorical text, and object columns.</li>
+            <li>.dropna() &ndash; This will drop or remove any row that contains the value NaN</li>
+            <li>X_naive &ndash; These are called predictor variable in which it takes all columns except Purchase_Likelihood</li>
+            <li>y_naive &ndash; This is the column you want to predict.</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>This is called naive because it is simple and fast. It will simplify the dataset and will only retain the numeric values to ensure a compatibility with the kNN algorithm. Moreover, it will drop all the missing values to ensure that no incomplete data enters the model. By removing the non-numeric values and NaN will improve the data quality. Additionally, the seperation of features and target variables are used to supervised learning.</p>
+        </div>
+
+        <!-- Cell 15: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Train-Test Split and Model Training</h3>
+        </div>
+
+        <!-- Cell 16: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X_naive, y_naive, test_size=0.2, random_state=42
+)
+
+# Train k-NN classifier (k = 5)
+knn_naive = KNeighborsClassifier(n_neighbors=5)
+knn_naive.fit(X_train, y_train)</code></pre>
+        </div>
+
+        <!-- Cell 17: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This is the actual training for the kNN model.</p>
+          <ul>
+            <li>test_size = 0.2 &ndash; this splits your data into 80% training that is used to learn the pattern, 20% is the testing data, which is used to evaluate the performance</li>
+            <li>kNeighborsClassifier &ndash; this creates model with the value of 5 most similar customer to predict new customer.</li>
+            <li>fit() &ndash; This stores the training data</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>The dataset is divided into training and testing to avoid biased evaluation of the model&rsquo;s performance. This separation allows the model to learn from one portion of the data, reducing the risk of overfitting. Training the kNN model using the baseline classifier enables the model to effectively learn and identify patterns from the numeric features in the dataset. Through this process, the model compares feature similarities among data points, which will supports the accurate classification during the testing phase.</p>
+        </div>
+
+        <!-- Cell 18: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Model Evaluation</h3>
+        </div>
+
+        <!-- Cell 19: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Predict and evaluate model performance
+y_pred = knn_naive.predict(X_test)
+
+print(f&quot;Baseline Accuracy: {accuracy_score(y_test, y_pred):.2%}&quot;)
+print(&quot;Baseline Confusion Matrix:\n&quot;, confusion_matrix(y_test, y_pred))</code></pre>
+        </div>
+
+        <!-- Cell 20: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This evaluates how well you trained the kNN model performs on unseen data</p>
+          <ul>
+            <li>y_pred &ndash; It utilizes the trained kNN model to predict the Purchase_Likelihood which will then be compared to the true labels</li>
+            <li>accuracy &ndash; The computation of accuracy is correct predictions / total predictions. This is called the Baseline accuracy because this is only the first and simple.</li>
+            <li>.2% &ndash; Formats the result into 2 decimal places only</li>
+            <li>confusion matrix &ndash; This tells you where the model is making mistakes.</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>This step evaluates the baseline model using accuracy and a confusion matrix. These results help show how well the model is performing and where it creates mistakes. By looking at the error distribution, we can better understand the model&rsquo;s strengths and weaknesses. This evaluation also serves as a reference point for comparing the performance of more advanced modeling approaches later on.</p>
+        </div>
+
+        <!-- Cell 21: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Module 3 - Model Training</h2>
+          <h3 class="nb-md-h3">Import and Load Data</h3>
+        </div>
+
+        <!-- Cell 22: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+df = pd.read_csv(&quot;./cleaned_knn_data.csv&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 23: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This loads all the required libraries needed for data processing, model training, and evaluation.</p>
+          <ul>
+            <li>pandas &ndash; Loading and handling of datasets</li>
+            <li>train_test_split &ndash; Splits the data into training and testing</li>
+            <li>KNeighborsClassifier &ndash; Implement kNN classification model</li>
+            <li>accuracy_score &ndash; Computes the model accuracy</li>
+            <li>confusion matrix &ndash; Shows the predictions compare to true labels.</li>
+            <li>classification_report &ndash; Provides precision, recall, and F1-score</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>This prepares the environment for machine learning by importing all necessary tools. Without these libraries, data handling, model training, and evaluation would not be possible.</p>
+        </div>
+
+        <!-- Cell 24: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Handling Missing Values</h3>
+        </div>
+
+        <!-- Cell 25: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Handle remaining NaNs (prevents: ValueError: Input X contains NaN)
+if df.isnull().values.any():
+    print(f&quot;Detecting {df.isnull().sum().sum()} missing values...&quot;)
+    df = df.fillna(df.median(numeric_only=True))
+    print(&quot;Missing values handled.&quot;)</code></pre>
+        </div>
+
+        <!-- Cell 26: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This checks the dataset for missing values then applies strategy to handle them correctly.</p>
+          <ul>
+            <li>isnull() &ndash; Detects the NaN values in dataset</li>
+            <li>.values.any() &ndash; Checks if at least one NaN exist</li>
+            <li>df.isnull().sum() &ndash; Counts the NaN values per column.</li>
+            <li>.sum() &ndash; totals them across the entire DataFrame</li>
+            <li>df.median(numeric_only=True) &ndash; Computes the median for each numeric column</li>
+            <li>fillna() &ndash; Replaces the NaN values in numeric column with their own median.</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>It firstly verifies the dataset whether they contains any missing values. If missing is detected, it increase the total number and replace them using the median of the own column. Using the median will help reduce the impact of outliers. The process will surely clean the dataset for machine learning.</p>
+        </div>
+
+        <!-- Cell 27: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Split-Train, Predict and Evaluate</h3>
+        </div>
+
+        <!-- Cell 28: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>target_col = &quot;Purchase_Likelihood&quot;
+
+# Features and target
+X = df.drop(columns=[target_col])
+y = df[target_col]
+
+# Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train (k = 5)
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+
+# Predict
+y_pred = knn.predict(X_test)
+
+# Evaluate
+print(f&quot;Accuracy Score: {accuracy_score(y_test, y_pred):.2%}&quot;)
+print(&quot;Confusion Matrix:&quot;)
+print(confusion_matrix(y_test, y_pred))
+print(&quot;Classification Report:&quot;)
+print(classification_report(y_test, y_pred))</code></pre>
+        </div>
+
+        <!-- Cell 29: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p><strong>Explanation</strong></p>
+          <p>This prepares the dataset for machine learning, trains the kNN classification model, and evaluate the performance using the standard classification metrics.</p>
+          <ul>
+            <li>target_col &ndash; Specifies the target variables to be predicted.</li>
+            <li>drop() &ndash; Removed the specified column</li>
+            <li>train_test_split &ndash; Splits the data from training and testing.</li>
+            <li>KNeighborsClassifier &ndash; Implements the kNN classification algorithm.</li>
+            <li>fit() &ndash; Trains the model using training data</li>
+            <li>predict() &ndash; Generates predictions on unseen data</li>
+            <li>accuracy_score &ndash; The overall prediction accuracy</li>
+            <li>confusion_matrix &ndash; Compares the predicted labels with the actual labels</li>
+            <li>classification_report &ndash; Provides precision, recall, F1 score, and support.</li>
+          </ul>
+          <p><strong>Task-by-Task Inspection</strong></p>
+          <p>It begins identifying the target variables, in this case the Purchase_Likelihood, and then separate it from the feature set. The data set then split into training and testing to create an unbiased model predictions. Afterwards, the model predicts the outcome for the test set.</p>
+          <p>The model will then show the model&rsquo;s performance using the accuracy, confusion matrix, and classification report, providing insights of how model is doing well predicting the Purchase_Likelihood.</p>
+        </div>
+
+        <!-- Cell 30: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Phase 3 - Model Training and Evaluation</h2>
+        </div>
+
+        <!-- Cell 31: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import MinMaxScaler
+
+print(&quot;\n--- Baseline Run ---&quot;)
+df_raw = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)
+
+# Keep only numeric columns
+df_baseline = df_raw.select_dtypes(include=[&#39;number&#39;])
+
+# Remove rows with missing values (baseline requirement)
+df_baseline = df_baseline.dropna()
+
+X_naive = df_baseline.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_naive = df_baseline[&#39;Purchase_Likelihood&#39;]
+
+X_train, X_test, y_train, y_test = train_test_split(X_naive, y_naive, test_size=0.2, random_state=42)
+
+knn_naive = KNeighborsClassifier(n_neighbors=5)
+knn_naive.fit(X_train, y_train)
+y_pred_naive = knn_naive.predict(X_test)
+
+print(f&quot;Baseline Accuracy: {accuracy_score(y_test, y_pred_naive):.2%}&quot;)
+print(&quot;Baseline Confusion Matrix:\n&quot;, confusion_matrix(y_test, y_pred_naive))
+
+# Optimized Run (cleaned + processed dataset)
+print(&quot;\n--- Optimized Run ---&quot;)
+df_prepared = pd.read_csv(&#39;cleaned_knn_data.csv&#39;)
+
+# Safety check for NaNs
+if df_prepared.isnull().values.any():
+    print(f&quot;Detecting {df_prepared.isnull().sum().sum()} missing values...&quot;)
+    df_prepared = df_prepared.fillna(df_prepared.median(numeric_only=True))
+    print(&quot;Missing values handled.&quot;)
+
+X_opt = df_prepared.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_opt = df_prepared[&#39;Purchase_Likelihood&#39;]
+
+X_train_opt, X_test_opt, y_train_opt, y_test_opt = train_test_split(X_opt, y_opt, test_size=0.2, random_state=42)
+
+knn_opt = KNeighborsClassifier(n_neighbors=5)
+knn_opt.fit(X_train_opt, y_train_opt)
+y_pred_opt = knn_opt.predict(X_test_opt)
+
+print(f&quot;Optimized Accuracy: {accuracy_score(y_test_opt, y_pred_opt):.2%}&quot;)
+print(&quot;Optimized Confusion Matrix:\n&quot;, confusion_matrix(y_test_opt, y_pred_opt))
+print(&quot;Classification Report:\n&quot;, classification_report(y_test_opt, y_pred_opt))
+
+# k Parameter Optimization
+print(&quot;\n--- k Parameter Optimization ---&quot;)
+accuracies = []
+
+for k in range(1, 21):
+    knn_k = KNeighborsClassifier(n_neighbors=k)
+    knn_k.fit(X_train_opt, y_train_opt)
+    y_pred_k = knn_k.predict(X_test_opt)
+    acc = accuracy_score(y_test_opt, y_pred_k)
+    accuracies.append(acc)
+    print(f&quot;k={k}: Accuracy={acc:.2%}&quot;)
+
+# Plot Accuracy vs k
+plt.figure(figsize=(15, 7))
+plt.plot(range(1, 21), accuracies, marker=&#39;o&#39;)
+plt.title(&#39;k-NN Accuracy vs k (Optimized Dataset)&#39;)
+plt.xlabel(&#39;k value&#39;)
+plt.ylabel(&#39;Accuracy&#39;)
+plt.xticks(range(1, 21))
+plt.grid(True)
+plt.show()</code></pre>
+        </div>
+
+        <!-- Cell 32: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Baseline Run</h2>
+        </div>
+
+        <!-- Cell 33: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>print(&quot;\n--- Baseline Run ---&quot;)
+df_raw = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)
 
 # Keep only numeric columns
 df_baseline = df_raw.select_dtypes(include=[&#39;number&#39;])
@@ -712,12 +1039,12 @@ print(f&quot;Baseline Accuracy: {accuracy_score(y_test, y_pred_naive):.2%}&quot;
 print(&quot;Baseline Confusion Matrix:\n&quot;, confusion_matrix(y_test, y_pred_naive))</code></pre>
         </div>
 
-        <!-- Cell 9: Markdown -->
+        <!-- Cell 34: Markdown -->
         <div class="nb-cell nb-cell--md">
-          <h3 class="nb-md-h3">Optimized Run</h3>
+          <h2 class="nb-md-h2">Optimized Run</h2>
         </div>
 
-        <!-- Cell 10: Code -->
+        <!-- Cell 35: Code -->
         <div class="nb-cell nb-cell--code">
           <pre class="nb-code"><code># Optimized Run (cleaned + processed dataset)
 print(&quot;\n--- Optimized Run ---&quot;)
