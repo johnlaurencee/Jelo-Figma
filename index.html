@@ -273,6 +273,28 @@
         </div>
       </div>
 
+      <!-- Entry 7 -->
+      <div class="project-entry">
+        <div class="project-entry__left">
+          <div class="project-entry__img">
+            <img src="PrelimExam.jpg" alt="Preliminary Examination" />
+          </div>
+          <div class="project-entry__file-btns">
+          </div>
+        </div>
+        <div class="project-entry__right">
+          <div class="project-entry__right-text">
+            <h3 class="project-entry__category">Preliminary Examination</h3>
+            <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Set B11</p>
+            <p class="project-entry__label">Short Description:</p>
+            <p class="project-entry__desc">This Set B analyzes the dataset that examines the relationship between the Unit Price of a smartphone accessory and the Quantity Sold across different stores. The goal is to determine how price affects the sales by identifying the predictor variable (Unit Price) and the target variable (Quantity Sold).</p>
+            <p class="project-entry__label">Predictive Skills:</p>
+            <p class="project-entry__desc">I apply predictive modeling concepts such as target variable identification, correlation analysis, and model interpretation. A scatterplot is used to visualize the relationship between Unit Price and Quantity Sold&hellip;</p>
+          </div>
+          <button class="project-entry__view-more" onclick="openTextModal7()">View more</button>
+        </div>
+      </div>
+
     </div>
   </section>  <!-- ── NOTEBOOK MODAL ───────────────────────────────────────── -->
   <div id="notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
@@ -1839,6 +1861,28 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <!-- ── TEXT MODAL 7 ─────────────────────────────────────────────── -->
+  <div id="text-modal-7" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Activity Details">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal7()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal7()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Preliminary Examination</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">This Set B analyzes the dataset that examines the relationship between the Unit Price of a smartphone accessory and the Quantity Sold across different stores. The goal is to determine how price affects the sales by identifying the predictor variable (Unit Price) and the target variable (Quantity Sold). Using the scatterplots and regression analysis, the exam demonstrates how data can reveal patterns and relationships that help support forecasting and decision-making.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">I apply predictive modeling concepts such as target variable identification, correlation analysis, and model interpretation. A scatterplot is used to visualize the relationship between Unit Price and Quantity Sold, which shows a strong negative relationship where higher prices lead to lower sales.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Predictive analytics helps businesses understand how pricing affects demand and supports better decision-making. By analyzing data relationships, companies can make informed decisions about pricing strategies, inventory management, and sales forecasting. By equipping myself with these skills, I can better analyze datasets, interpret patterns between variables, and apply predictive techniques to support data-driven decisions in real-world business scenarios.</p>
+
+        <h3 class="text-modal__heading">Reflection</h3>
+        <p class="text-modal__body">One challenge I faced during the exam was interpreting the slope and intercept because I was not able to review the topic beforehand. However, by analyzing the scatterplot and the regression equation, I understood that the negative slope meant that higher prices lead to lower sales. Reviewing the concepts after the exam helped me better understand how regression models explain relationships between variables and support predictive analysis.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -1941,8 +1985,16 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('text-modal-6').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal7() {
+      document.getElementById('text-modal-7').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal7() {
+      document.getElementById('text-modal-7').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
   </script>
 
