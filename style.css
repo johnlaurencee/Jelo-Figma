@@ -513,6 +513,15 @@ section { padding: 96px 40px; }
   padding: 48px 40px 40px;
 }
 
+.text-modal__project-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
 .text-modal__heading {
   font-size: 18px;
   font-weight: 700;
