@@ -1995,6 +1995,22 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
+
+    // ── SCROLL REVEAL ──────────────────────────────────────────────
+    (function () {
+      var selectors = '.about__top-row, .about__course-alignment, .quote blockquote, .skills__block, .project-entry, .footer';
+      var els = document.querySelectorAll(selectors);
+      els.forEach(function (el) { el.classList.add('reveal'); });
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { observer.observe(el); });
+    })();
   </script>
 
 </body>
