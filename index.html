@@ -164,26 +164,200 @@
           </div>
           <div class="project-entry__file-btns">
             <button class="project-entry__file-btn" onclick="openPdf('PT-P2-Ong_JohnLaurence.pdf')">View IEEE file</button>
-            <a class="project-entry__file-btn" href="PT_P2_Ong_JohnLaurence.ipynb" download>View Notebook file</a>
+            <button class="project-entry__file-btn" onclick="openNotebook()">View Notebook file</button>
           </div>
         </div>
         <div class="project-entry__right">
           <div class="project-entry__right-text">
             <h3 class="project-entry__category">PT-P2 kNN Predictive Modelling</h3>
             <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; k-Nearest Neighbors in Government Operations: Performance, Technical Validation, and Ethical Consideration</p>
-            <p class="project-entry__label">Description:</p>
-            <p class="project-entry__desc">The activity demonstrates the use of the k-Nearest Neighbors (kNN) algorithm to perform predictive analytics using the Iris dataset. The project involves loading the dataset, splitting it into training and testing data, building the model, generating predictions, evaluating performance, and visualizing the results&hellip;</p>
-            <p class="project-entry__label">Predictive Skills:</p>
-            <p class="project-entry__desc">The activity uses Python libraries such as sklearn and Matplotlib. Methods like train_test_split() divide the dataset into 80% training and 20% testing data. The kNN value was set to 5, and evaluation tools such as accuracy_score(), classification_report(), and confusion_matrix() are used to measure performance&hellip;</p>
+            <p class="project-entry__label">Short Description:</p>
+            <p class="project-entry__desc">The activity demonstrates the use of the k-Nearest Neighbors (kNN) algorithm to perform predictive analytics using the Iris dataset. The project involves loading the dataset, splitting it into training and testing data, building the model, generating predictions, evaluating performance, and visualizing the results to analyze how parameters affect classification accuracy.</p>
             <p class="project-entry__label">The &ldquo;So What&rdquo;:</p>
-            <p class="project-entry__desc">Learning predictive analytics and machine learning techniques is valuable because many industries now rely on data-driven decision making&hellip;</p>
+            <p class="project-entry__desc">Learning predictive analytics and machine learning techniques is valuable because many industries now rely on data-driven decision making. Companies now look for people who have skills such as building predictive models, analyzing datasets, and evaluating model performance&hellip;</p>
           </div>
           <button class="project-entry__view-more" onclick="openTextModal2()">View more</button>
         </div>
       </div>
 
     </div>
-  </section>  <!-- ── TEXT MODAL 2 ─────────────────────────────────────────── -->
+  </section>  <!-- ── NOTEBOOK MODAL ───────────────────────────────────────── -->
+  <div id="notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
+    <div class="pdf-modal__backdrop" onclick="closeNotebook()"></div>
+    <div class="pdf-modal__box text-modal__box nb-modal__box">
+      <button class="pdf-modal__close" onclick="closeNotebook()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">PT-P2 kNN Predictive Modelling</p>
+
+        <!-- Cell 1: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Lab Exercise PT-P2 (Initial Predicition Model - kNN)</h2>
+          <h3 class="nb-md-h3">Original Code and Execution</h3>
+        </div>
+
+        <!-- Cell 2: Code -->
+        <div class="nb-cell nb-cell--code">
+          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
+          <pre class="nb-code"><code>import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+
+# Load data
+data = load_iris()
+
+# Separate features and target
+X = data.data
+y = data.target
+
+# Splitting the data for training and testing
+from sklearn.model_selection import train_test_split
+X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# Create a KNeighborsClassifier object
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors = 5)
+
+# Train the model using the training data
+knn.fit(X_Train, y_Train)
+
+# Use the model to predict the test set
+predictions = knn.predict(X_Test)
+
+# Check accuracy
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_Test, predictions)
+print(&quot;Accuracy :&quot;, accuracy)
+
+# Evaluate model performance
+from sklearn.metrics import classification_report
+print(&quot;classification report&quot;)
+print(classification_report(y_Test, predictions))
+
+# Making a confusion matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_Test, predictions)
+
+# Visualization of the Scatter plot with predicted classes
+plt.figure(figsize=(8, 6))
+for i in range(3):
+    plt.scatter(X_Test[:,0][y_Test == i], X_Test[:, 1][y_Test == i], cmap=&#39;viridis&#39;)
+plt.scatter(X_Test[:, 0], X_Test[:, 1], c=predictions, cmap=&#39;viridis&#39;, alpha=0.8)
+plt.xlabel(data.feature_names[0])
+plt.ylabel(data.feature_names[1])
+plt.title(&quot;Scatter Plot with Predicted Classes&quot;)
+plt.legend()
+plt.show()
+
+# Confusion matrix visualization
+plt.figure(figsize=(8, 6))
+plt.imshow(cm, cmap=&#39;Blues&#39;)
+plt.colorbar()
+plt.title(&quot;Confusion Matrix&quot;)
+plt.xlabel(&quot;Prediction Label&quot;)
+plt.ylabel(&quot;True Label&quot;)
+plt.xticks(ticks=range(3), labels=data.target_names)
+plt.yticks(ticks=range(3), labels=data.target_names)
+plt.show()
+
+print(&quot;Confusion matrix :&quot;)
+print(cm)</code></pre>
+        </div>
+
+        <!-- Cell 3: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Code Organization and Explanation</h2>
+        </div>
+
+        <!-- Cell 4: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Setup &amp; Imports</h3>
+        </div>
+
+        <!-- Cell 5: Code -->
+        <div class="nb-cell nb-cell--code">
+          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
+          <pre class="nb-code"><code>import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris</code></pre>
+        </div>
+
+        <!-- Cell 6: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>The code presented above is used to access external libraries that are available for your program. It is usually a good practice to place these at the very top of the code to help other programmers understand which imports or libraries are being utilized. This also helps keep the code clean and avoids confusion.</p>
+          <p>The given code utilizes <code>import matplotlib.pyplot</code> with the alias <code>plt</code>, which enables plotting and visualization. On the other hand, <code>from sklearn.datasets import load_iris</code> loads a sample machine learning dataset.</p>
+          <p>There are many available libraries you can use, such as Plotly, Seaborn, and others. Make sure to use only the libraries your program actually needs, because fewer imports result in faster program startup times, and unused libraries can take up memory.</p>
+        </div>
+
+        <!-- Cell 7: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Data Acquisition</h3>
+        </div>
+
+        <!-- Cell 8: Code -->
+        <div class="nb-cell nb-cell--code">
+          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
+          <pre class="nb-code"><code># Load data
+data = load_iris()
+
+# Separate features and target
+X = data.data
+y = data.target</code></pre>
+        </div>
+
+        <!-- Cell 9: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>The code above is used as a dictionary containing a set of input data (features) and target data (labels). Machine learning models cannot work without this data. The <code>load_iris()</code> function loads the dataset into memory and stores it in a variable called <code>data</code>.</p>
+          <p>We separate <code>X</code> and <code>y</code> because X is fed into the model as input, and the model&rsquo;s predicted results are compared to y. Without X, the model cannot learn. Without y, the model cannot check whether its predictions are correct.</p>
+        </div>
+
+        <!-- Cell 10: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Train/Test Splitting and Model Building &amp; Training</h3>
+        </div>
+
+        <!-- Cell 11: Code -->
+        <div class="nb-cell nb-cell--code">
+          <div class="nb-cell__label">In&nbsp;[&nbsp;]:</div>
+          <pre class="nb-code"><code># Splitting the data for training and testing
+from sklearn.model_selection import train_test_split
+X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size = 0.2, random_state = 0)</code></pre>
+        </div>
+
+        <!-- Cell 12: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>We split the data to evaluate the model&rsquo;s performance on unseen data. This is done to train the model more accurately and fairly. If we train the system using the same data it was evaluated on, overfitting can occur, where the model does not truly learn but instead memorizes the data.</p>
+          <p>The <code>train_test_split</code> line randomly divides the dataset into four variables: X_train, X_test, y_train, and y_test. The test size is set to 20% to maintain a balance between having enough data for training and testing. The <code>random_state</code> parameter acts as a controller for the randomness of the split.</p>
+          <p>Setting the number of neighbors (k) to 5 means the model looks for the five nearest training points and decides the class based on the majority vote. The <code>.fit()</code> function stores the training data so the model can compute distances and find nearest neighbors when making predictions.</p>
+        </div>
+
+        <!-- Cell 13: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Prediction and Evaluation Metrics</h3>
+        </div>
+
+        <!-- Cell 14: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>On these lines, it reports the overall accuracy of the model, specifically classification report, and error distribution. The <code>.predict</code> function generates predicted labels, <code>accuracy_score</code> computes the total correctness. The classification report summarizes the metrics per class, and the confusion matrix counts true vs predicted class outcomes.</p>
+        </div>
+
+        <!-- Cell 15: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Visualization</h3>
+        </div>
+
+        <!-- Cell 16: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <p>On these lines, it creates visualizations such as a scatter plot and heatmap to illustrate the results. The scatter plot gives a quick sense of class separation and the heatmap shows which classes get confused with each other. <code>plt.scatter(x, y, c=labels, cmap, alpha)</code> colors points by class. <code>plt.imshow(cm, cmap=&apos;Blues&apos;)</code> displays the confusion matrix as an image, and <code>plt.xticks</code> / <code>plt.yticks</code> assign class names to axes for clarity.</p>
+        </div>
+
+        <!-- Cell 17: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Output Analysis</h3>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TEXT MODAL 2 ───────────────────────────────────────── -->
   <div id="text-modal-2" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
     <div class="pdf-modal__backdrop" onclick="closeTextModal2()"></div>
     <div class="pdf-modal__box text-modal__box">
@@ -261,6 +435,14 @@
       document.getElementById('text-modal').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openNotebook() {
+      document.getElementById('notebook-modal').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNotebook() {
+      document.getElementById('notebook-modal').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     function openTextModal2() {
       document.getElementById('text-modal-2').classList.add('pdf-modal--open');
       document.body.style.overflow = 'hidden';
@@ -270,7 +452,7 @@
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeNotebook(); }
     });
   </script>
 
