@@ -242,7 +242,7 @@ section { padding: 96px 40px; }
   font-size: clamp(28px, 4vw, 40px);
   letter-spacing: 1px;
   text-transform: none;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
 }
 
 .skills {
@@ -250,7 +250,7 @@ section { padding: 96px 40px; }
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 32px;
 }
 
 .skills__block-title { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
@@ -272,6 +272,13 @@ section { padding: 96px 40px; }
   border-radius: var(--radius);
   padding: 10px;
   background: var(--bg-alt);
+  transition: border-color .2s, box-shadow .2s;
+  cursor: pointer;
+}
+
+.skill-icon img:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(107,161,255,.35);
 }
 
 .skill-icon span { font-size: 12px; color: var(--muted); text-align: center; }
@@ -287,6 +294,13 @@ section { padding: 96px 40px; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
+  transition: border-color .2s, box-shadow .2s;
+  cursor: default;
+}
+
+.soft-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(107,161,255,.35);
 }
 
 .soft-item strong { display: block; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
