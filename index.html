@@ -203,6 +203,30 @@
         </div>
       </div>
 
+      <!-- Entry 4 -->
+      <div class="project-entry">
+        <div class="project-entry__left">
+          <div class="project-entry__img">
+            <img src="Datacleaning.png" alt="WW-P2 Data Cleaning" />
+          </div>
+          <div class="project-entry__file-btns">
+            <button class="project-entry__file-btn" onclick="openPdf('OngWW2-datacleaning.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openNotebookWW()">View Notebook file</button>
+          </div>
+        </div>
+        <div class="project-entry__right">
+          <div class="project-entry__right-text">
+            <h3 class="project-entry__category">WW-P2 Data Cleaning</h3>
+            <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Evaluating the Impact of Data Cleaning on k-Nearest Neighbors Performance</p>
+            <p class="project-entry__label">Short Description:</p>
+            <p class="project-entry__desc">In this exercise, a customer dataset is used to assess how data cleaning impacts the k-Nearest Neighbors (kNN) model&rsquo;s performance. The goal is to predict Purchase_Likelihood based on different customer attributes. The dataset initially contained noisy, inconsistent, and missing values, which could affect the model&rsquo;s predictions. By applying preprocessing steps such as handling missing values, encoding categorical data, and scaling features, the cleaned dataset improved the model&rsquo;s accuracy compared to the raw dataset.</p>
+            <p class="project-entry__label">The &ldquo;So What&rdquo;:</p>
+            <p class="project-entry__desc">Learning data cleaning and predictive analytics is very important because it serves as the foundation of a well-performing machine learning model. In real-world scenarios, datasets are rarely clean or complete, so understanding different data preprocessing techniques is essential&hellip;</p>
+          </div>
+          <button class="project-entry__view-more" onclick="openTextModal4()">View more</button>
+        </div>
+      </div>
+
     </div>
   </section>  <!-- ── NOTEBOOK MODAL ───────────────────────────────────────── -->
   <div id="notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
@@ -459,6 +483,25 @@ print(cm)</code></pre>
     </div>
   </div>
 
+  <!-- ── TEXT MODAL 4 ───────────────────────────────────────── -->
+  <div id="text-modal-4" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal4()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal4()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">WW-P2 Data Cleaning</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">In this exercise, a customer dataset is used to assess how data cleaning impacts the k-Nearest Neighbors (kNN) model&rsquo;s performance. The goal is to predict Purchase_Likelihood based on different customer attributes. The dataset initially contained noisy, inconsistent, and missing values, which could affect the model&rsquo;s predictions. By applying preprocessing steps such as handling missing values, encoding categorical data, and scaling features, the cleaned dataset improved the model&rsquo;s accuracy compared to the raw dataset.</p>
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">This activity used Python libraries such as Pandas, NumPy, and Sklearn for data processing and machine learning. Data cleaning techniques were used such as handling missing values, removing inconsistent data, converting categorical values into numeric form, and scaling features to ensure consistency. Methods like <code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">train_test_split()</code> dividing the dataset into 80% training data and 20% testing data, allowing the model to be evaluated on unseen data also the kNN value was set to 5 for the model to consider 5 nearest data points when making a decision. The <code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">fit()</code> method trains the model. Evaluation tools such as <code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">accuracy_score()</code>, <code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">classification_report()</code>, and <code style="background:#1e1e1e;color:#79c0ff;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;">confusion_matrix()</code> are used to measure the model&rsquo;s performance and analyze prediction results.</p>
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Learning data cleaning and predictive analytics is very important because it serves as the foundation of a well-performing machine learning model. In real-world scenarios, datasets are rarely clean or complete, so understanding different data preprocessing techniques is essential. By developing these skills, I can properly prepare and analyze data, which helps ensure that the model uses reliable information and produces more accurate predictions.</p>
+        <h3 class="text-modal__heading">Reflection</h3>
+        <p class="text-modal__body">Finding the best way to clean the dataset which had a lot of noise and inconsistent data was one of the difficulties I encountered during this task. Since this was my first time doing data preprocessing like normalization and standardization, it was initially challenging to decide which values should remain, change, or drop. By thoroughly examining the dataset and determining which attributes were relevant to the target value, I was able to overcome this obstacle. I was able to lower the noise and enhance the accuracy of the model by determining the crucial variables and managing irrelevant or noisy data.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── TEXT MODAL 2 ───────────────────────────────────────── -->
   <div id="text-modal-2" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Full Description">
     <div class="pdf-modal__backdrop" onclick="closeTextModal2()"></div>
@@ -499,6 +542,232 @@ print(cm)</code></pre>
       </div>
     </div>
   </div>
+  <!-- ── NOTEBOOK MODAL WW ──────────────────────────────────────── -->
+  <div id="notebook-modal-ww" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
+    <div class="pdf-modal__backdrop" onclick="closeNotebookWW()"></div>
+    <div class="pdf-modal__box text-modal__box nb-modal__box">
+      <button class="pdf-modal__close" onclick="closeNotebookWW()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">WW-P2 Data Cleaning</p>
+
+        <!-- Cell 1: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Code For Data Cleaning Pipeline</h3>
+        </div>
+
+        <!-- Cell 2: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+df = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)
+
+df = df.drop_duplicates(subset=[&#39;Customer_ID&#39;])
+
+df.loc[(df[&#39;Age&#39;] &gt; 100) | (df[&#39;Age&#39;] &lt; 0), &#39;Age&#39;] = np.nan
+df.loc[df[&#39;Annual_Income&#39;] &lt; 0, &#39;Annual_Income&#39;] = np.nan
+
+df[&#39;Age&#39;] = df[&#39;Age&#39;].fillna(df[&#39;Age&#39;].median())
+df[&#39;Annual_Income&#39;] = df[&#39;Annual_Income&#39;].fillna(df[&#39;Annual_Income&#39;].median())
+df[&#39;Total_Spend&#39;] = df[&#39;Total_Spend&#39;].fillna(df[&#39;Total_Spend&#39;].median())
+
+df[&#39;Gender&#39;] = df[&#39;Gender&#39;].str.strip().str.lower().replace({
+    &#39;m&#39;: &#39;Male&#39;, &#39;male&#39;: &#39;Male&#39;, &#39;f&#39;: &#39;Female&#39;, &#39;female&#39;: &#39;Female&#39;, &#39;fem&#39;: &#39;Female&#39;
+})
+df[&#39;Device_Type&#39;] = df[&#39;Device_Type&#39;].str.strip().str.capitalize()
+
+df[&#39;Purchase_Volume&#39;] = pd.cut(df[&#39;Items_Purchased&#39;],
+                              bins=[0, 15, 35, 51],
+                              labels=[&#39;Low&#39;, &#39;Medium&#39;, &#39;High&#39;])
+
+region_tax_data = pd.DataFrame({
+    &#39;Store_Region&#39;: [&#39;North&#39;, &#39;South&#39;, &#39;East&#39;, &#39;West&#39;],
+    &#39;Tax_Rate&#39;: [0.05, 0.07, 0.06, 0.08]
+    })
+df = pd.merge(df, region_tax_data, on=&#39;Store_Region&#39;, how=&#39;left&#39;)
+
+scaler = MinMaxScaler()
+numeric_cols = [&#39;Age&#39;, &#39;Annual_Income&#39;, &#39;Total_Spend&#39;, &#39;Items_Purchased&#39;,
+                    &#39;Last_Logon_Days&#39;, &#39;Support_Calls&#39;, &#39;Tax_Rate&#39;]
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+df = pd.get_dummies(df, columns=[&#39;Gender&#39;, &#39;Device_Type&#39;, &#39;Store_Region&#39;, &#39;Purchase_Volume&#39;])
+
+cols_to_drop = [&#39;Membership_Score&#39;, &#39;Newsletter_Sub&#39;, &#39;Customer_ID&#39;, &#39;Purchase_Date&#39;]
+df_final = df.drop(columns=cols_to_drop)
+
+# Save the prepared dataset
+df_final.to_csv(&#39;cleaned_knn_data.csv&#39;, index=False)
+print(&quot;Data Preparation Complete. Final shape:&quot;, df_final.shape)</code></pre>
+        </div>
+
+        <!-- Cell 3: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Code For Implementing kNN with raw dataset</h3>
+        </div>
+
+        <!-- Cell 4: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# Load the adjust dataset
+df_raw = pd.read_csv(&#39;./adjusted_noisy_knn_300.csv&#39;)
+
+# --- Baseline Preparation ---
+# 1. Keep only numeric columns (this automatically drops string &#39;noise&#39;)
+# 2. Drop rows with any remaining NaN values
+df_naive = df_raw.select_dtypes(include=[&#39;number&#39;]).dropna()
+
+# Separate Features (X) and Target (y)
+X_naive = df_naive.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_naive = df_naive[&#39;Purchase_Likelihood&#39;]
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X_naive, y_naive, test_size=0.2, random_state=42)
+
+# Train k-NN (k=5)
+knn_naive = KNeighborsClassifier(n_neighbors=5)
+knn_naive.fit(X_train, y_train)
+
+# Evaluate
+y_pred = knn_naive.predict(X_test)
+print(f&quot;Baseline Accuracy: {accuracy_score(y_test, y_pred):.2%}&quot;)
+print(&quot;Baseline Confusion Matrix:\n&quot;, confusion_matrix(y_test, y_pred))</code></pre>
+        </div>
+
+        <!-- Cell 5: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Code For Implementing kNN with prepared dataset</h3>
+        </div>
+
+        <!-- Cell 6: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# 1. Load the prepared dataset
+df_prepared = pd.read_csv(&quot;./cleaned_knn_data.csv&quot;)
+
+# --- SAFETY CHECK: HANDLE REMAINING NaNs ---
+if df_prepared.isnull().values.any():
+    print(f&quot;Detecting {df_prepared.isnull().sum().sum()} missing values...&quot;)
+    df_prepared = df_prepared.fillna(df_prepared.median(numeric_only=True))
+    print(&quot;Missing values handled.&quot;)
+
+# 2. Separate Features (X) and Target (y)
+target_col = &quot;Purchase_Likelihood&quot;
+X = df_prepared.drop(columns=[target_col])
+y = df_prepared[target_col]
+
+# 3. Split the Data (80% Training, 20% Testing)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# 4. Train the k-NN Model (Optimized Run with k=5)
+knn = KNeighborsClassifier(n_neighbors=20)
+knn.fit(X_train, y_train)
+
+# 5. Evaluate the Model
+y_pred = knn.predict(X_test)
+
+print(f&quot;Accuracy Score: {accuracy_score(y_test, y_pred):.2%}&quot;)
+print(&quot;Confusion Matrix:&quot;)
+print(confusion_matrix(y_test, y_pred))
+print(&quot;Classification Report:&quot;)
+print(classification_report(y_test, y_pred))</code></pre>
+        </div>
+
+        <!-- Cell 7: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h2 class="nb-md-h2">Phase 1 - Data Noise Auditing</h2>
+          <h3 class="nb-md-h3">Baseline Run</h3>
+        </div>
+
+        <!-- Cell 8: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code>df_raw = pd.read_csv(&#39;adjusted_noisy_knn_300.csv&#39;)
+
+# Keep only numeric columns
+df_baseline = df_raw.select_dtypes(include=[&#39;number&#39;])
+
+# Remove rows with missing values (baseline requirement)
+df_baseline = df_baseline.dropna()
+
+X_naive = df_baseline.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_naive = df_baseline[&#39;Purchase_Likelihood&#39;]
+
+X_train, X_test, y_train, y_test = train_test_split(X_naive, y_naive, test_size=0.2, random_state=0)
+
+knn_naive = KNeighborsClassifier(n_neighbors=5)
+knn_naive.fit(X_train, y_train)
+y_pred_naive = knn_naive.predict(X_test)
+
+print(f&quot;Baseline Accuracy: {accuracy_score(y_test, y_pred_naive):.2%}&quot;)
+print(&quot;Baseline Confusion Matrix:\n&quot;, confusion_matrix(y_test, y_pred_naive))</code></pre>
+        </div>
+
+        <!-- Cell 9: Markdown -->
+        <div class="nb-cell nb-cell--md">
+          <h3 class="nb-md-h3">Optimized Run</h3>
+        </div>
+
+        <!-- Cell 10: Code -->
+        <div class="nb-cell nb-cell--code">
+          <pre class="nb-code"><code># Optimized Run (cleaned + processed dataset)
+print(&quot;\n--- Optimized Run ---&quot;)
+df_prepared = pd.read_csv(&#39;cleaned_knn_data.csv&#39;)
+
+# Safety check for NaNs
+if df_prepared.isnull().values.any():
+    print(f&quot;Detecting {df_prepared.isnull().sum().sum()} missing values...&quot;)
+    df_prepared = df_prepared.fillna(df_prepared.median(numeric_only=True))
+    print(&quot;Missing values handled.&quot;)
+
+X_opt = df_prepared.drop(columns=[&#39;Purchase_Likelihood&#39;])
+y_opt = df_prepared[&#39;Purchase_Likelihood&#39;]
+
+X_train_opt, X_test_opt, y_train_opt, y_test_opt = train_test_split(X_opt, y_opt, test_size=0.2, random_state=42)
+
+knn_opt = KNeighborsClassifier(n_neighbors=5)
+knn_opt.fit(X_train_opt, y_train_opt)
+y_pred_opt = knn_opt.predict(X_test_opt)
+
+print(f&quot;Optimized Accuracy: {accuracy_score(y_test_opt, y_pred_opt):.2%}&quot;)
+print(&quot;Optimized Confusion Matrix:\n&quot;, confusion_matrix(y_test_opt, y_pred_opt))
+print(&quot;Classification Report:\n&quot;, classification_report(y_test_opt, y_pred_opt))
+
+# k Parameter Optimization
+print(&quot;\n--- k Parameter Optimization ---&quot;)
+accuracies = []
+
+for k in range(1, 21):
+    knn_k = KNeighborsClassifier(n_neighbors=k)
+    knn_k.fit(X_train_opt, y_train_opt)
+    y_pred_k = knn_k.predict(X_test_opt)
+    acc = accuracy_score(y_test_opt, y_pred_k)
+    accuracies.append(acc)
+    print(f&quot;k={k}: Accuracy={acc:.2%}&quot;)
+
+# Plot Accuracy vs k
+plt.figure(figsize=(15, 7))
+plt.plot(range(1, 21), accuracies, marker=&#39;o&#39;)
+plt.title(&#39;k-NN Accuracy vs k (Optimized Dataset)&#39;)
+plt.xlabel(&#39;k value&#39;)
+plt.ylabel(&#39;Accuracy&#39;)
+plt.xticks(range(1, 21))
+plt.grid(True)
+plt.show()</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -561,8 +830,24 @@ print(cm)</code></pre>
       document.getElementById('text-modal-3').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal4() {
+      document.getElementById('text-modal-4').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal4() {
+      document.getElementById('text-modal-4').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
+    function openNotebookWW() {
+      document.getElementById('notebook-modal-ww').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNotebookWW() {
+      document.getElementById('notebook-modal-ww').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeNotebook(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeNotebook(); closeNotebookWW(); }
     });
   </script>
 
