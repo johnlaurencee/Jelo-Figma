@@ -130,16 +130,24 @@
   <!-- ── PROJECTS ──────────────────────────────────────────────────── -->
     <section id="projects" class="projects">
     <h2 class="section-title">Projects</h2>
-    <div class="projects__list">
+    <div class="projects__tabs" role="tablist" aria-label="Project terms">
+      <button class="projects__tab projects__tab--active" type="button" role="tab" aria-selected="true" aria-controls="prelims-panel" id="prelims-tab" data-tab-target="prelims-panel">Prelims</button>
+      <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="midterms-panel" id="midterms-tab" data-tab-target="midterms-panel">Midterms</button>
+      <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="finals-panel" id="finals-tab" data-tab-target="finals-panel">Finals</button>
+    </div>
+
+    <div class="projects__panels">
+      <div class="projects__panel projects__panel--active" id="prelims-panel" role="tabpanel" aria-labelledby="prelims-tab">
+        <div class="projects__list">
 
       <!-- Entry 1 -->
       <div class="project-entry">
         <div class="project-entry__left">
           <div class="project-entry__img">
-            <img src="https://www.figma.com/api/mcp/asset/4f9b500c-a7d8-4dbc-92a4-9c3addbe69af" alt="Predictive Analytics Article" />
+            <img src="Research-Cover.png" alt="Predictive Analytics Article" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('PredictiveAnalytics.pdf')">View Article</button>
+            <button class="project-entry__file-btn" onclick="openPdf('PredictiveAnalytics-Research.pdf')">View Article</button>
           </div>
         </div>
         <div class="project-entry__right">
@@ -159,10 +167,10 @@
       <div class="project-entry">
         <div class="project-entry__left">
           <div class="project-entry__img">
-            <img src="Screenshot 2026-03-10 171506.png" alt="PT-P2 kNN Predictive Modelling" />
+            <img src="prelim/Screenshot 2026-03-10 171506.png" alt="PT-P2 kNN Predictive Modelling" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('PT-P2-Ong_JohnLaurence.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('prelim/PT-P2-Ong_JohnLaurence.pdf')">View IEEE file</button>
             <button class="project-entry__file-btn" onclick="openNotebook()">View Notebook file</button>
           </div>
         </div>
@@ -183,10 +191,10 @@
       <div class="project-entry">
         <div class="project-entry__left">
           <div class="project-entry__img">
-            <img src="Screenshot 2026-03-10 171625.png" alt="Addendum Activity" />
+            <img src="prelim/Screenshot 2026-03-10 171625.png" alt="Addendum Activity" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('123.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('prelim/123.pdf')">View IEEE file</button>
             <button class="project-entry__file-btn" onclick="openNotebook()">View Notebook file</button>
           </div>
         </div>
@@ -207,10 +215,10 @@
       <div class="project-entry">
         <div class="project-entry__left">
           <div class="project-entry__img">
-            <img src="Datacleaning.png" alt="WW-P2 Data Cleaning" />
+            <img src="prelim/Datacleaning.png" alt="WW-P2 Data Cleaning" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('OngWW2-datacleaning.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('prelim/OngWW2-datacleaning.pdf')">View IEEE file</button>
             <button class="project-entry__file-btn" onclick="openNotebookWW()">View Notebook file</button>
           </div>
         </div>
@@ -231,10 +239,10 @@
       <div class="project-entry">
         <div class="project-entry__left">
           <div class="project-entry__img">
-            <img src="Screenshot 2026-03-10 181235.png" alt="Simple and Multiple Linear Regression" />
+            <img src="prelim/Screenshot 2026-03-10 181235.png" alt="Simple and Multiple Linear Regression" />
           </div>
           <div class="project-entry__file-btns">
-            <button class="project-entry__file-btn" onclick="openPdf('Ong_LinearRegression.pdf')">View IEEE file</button>
+            <button class="project-entry__file-btn" onclick="openPdf('prelim/Ong_LinearRegression.pdf')">View IEEE file</button>
             <button class="project-entry__file-btn" onclick="openNotebookLR()">View Notebook file</button>
           </div>
         </div>
@@ -295,6 +303,85 @@
         </div>
       </div>
 
+        </div>
+      </div>
+
+      <div class="projects__panel" id="midterms-panel" role="tabpanel" aria-labelledby="midterms-tab" hidden>
+        <div class="projects__list">
+          <div class="project-entry">
+            <div class="project-entry__left">
+              <div class="project-entry__img">
+                <img src="midterms/A Logistic Regression Approach for Dengue Prediction Using Clinical Indicators.png" alt="Logistic Regression Dengue Prediction" />
+              </div>
+              <div class="project-entry__file-btns">
+                <button class="project-entry__file-btn" onclick="openPdf('midterms/ONG_Exercise_PTM1_report.pdf')">View IEEE file</button>
+                <button class="project-entry__file-btn" onclick="openFile('midterms/ONG_Exercise_PTM1_notebook.ipynb')">View Notebook file</button>
+              </div>
+            </div>
+            <div class="project-entry__right">
+              <div class="project-entry__right-text">
+                <h3 class="project-entry__category">Logistic Regression</h3>
+                <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; A Logistic Regression Approach for Dengue Prediction Using Clinical Indicators</p>
+                <p class="project-entry__label">Short Description:</p>
+                <p class="project-entry__desc">This midterm activity applies logistic regression to predict dengue outcomes using clinical indicators. The project focuses on preparing health-related data, selecting relevant predictors, training a classification model, and evaluating how well the model supports early identification of possible dengue cases.</p>
+                <p class="project-entry__label">Predictive Skills:</p>
+                <p class="project-entry__desc">The activity strengthens skills in binary classification, feature preparation, model fitting, and performance evaluation using a real-world healthcare context.</p>
+              </div>
+              <button class="project-entry__view-more" onclick="openTextModal8()">View more</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="projects__panel" id="finals-panel" role="tabpanel" aria-labelledby="finals-tab" hidden>
+        <div class="projects__list">
+          <div class="project-entry">
+            <div class="project-entry__left">
+              <div class="project-entry__img">
+                <img src="finals/Predicting Teacher Demand in Philippine Public Schools Using Machine Learning A Comparative Study of Multiple Linear Regression, Decision Tree, and Random Forest Models.png" alt="Teacher Demand Machine Learning Study" />
+              </div>
+              <div class="project-entry__file-btns">
+                <button class="project-entry__file-btn" onclick="openPdf('finals/FinalProject_IEEE_Ong.pdf')">View IEEE file</button>
+                <button class="project-entry__file-btn" onclick="openFile('finals/FinalProject_Ong.ipynb')">View Notebook file</button>
+              </div>
+            </div>
+            <div class="project-entry__right">
+              <div class="project-entry__right-text">
+                <h3 class="project-entry__category">Final Project</h3>
+                <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Predicting Teacher Demand in Philippine Public Schools Using Machine Learning: A Comparative Study of Multiple Linear Regression, Decision Tree, and Random Forest Models</p>
+                <p class="project-entry__label">Short Description:</p>
+                <p class="project-entry__desc">This final project compares multiple machine learning models to predict teacher demand in Philippine public schools. It explores how educational datasets can be used to support planning, resource allocation, and more data-driven decision-making in the public education sector.</p>
+                <p class="project-entry__label">Predictive Skills:</p>
+                <p class="project-entry__desc">The project applies regression and tree-based modeling, model comparison, performance evaluation, and interpretation of predictive results for a practical workforce planning problem.</p>
+              </div>
+              <button class="project-entry__view-more" onclick="openTextModal9()">View more</button>
+            </div>
+          </div>
+
+          <div class="project-entry">
+            <div class="project-entry__left">
+              <div class="project-entry__img">
+                <img src="finals/A Comparative Analysis of MLR and Linear SVM using Wine Dataset.png" alt="MLR and Linear SVM Wine Dataset Comparison" />
+              </div>
+              <div class="project-entry__file-btns">
+                <button class="project-entry__file-btn" onclick="openPdf('finals/Ong_PT-F2.pdf')">View IEEE file</button>
+                <button class="project-entry__file-btn" onclick="openFile('finals/Ong_PT_F2Model_Comparison.ipynb')">View Notebook file</button>
+              </div>
+            </div>
+            <div class="project-entry__right">
+              <div class="project-entry__right-text">
+                <h3 class="project-entry__category">Model Comparison</h3>
+                <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; A Comparative Analysis of MLR and Linear SVM using Wine Dataset</p>
+                <p class="project-entry__label">Short Description:</p>
+                <p class="project-entry__desc">This final activity compares Multiple Linear Regression and Linear SVM using the Wine dataset. The work examines how different algorithms perform on the same dataset and highlights the value of selecting a model based on data behavior, target goals, and evaluation results.</p>
+                <p class="project-entry__label">Predictive Skills:</p>
+                <p class="project-entry__desc">The activity develops skills in comparative modeling, dataset preparation, metric-based evaluation, and interpreting the strengths and limits of different machine learning approaches.</p>
+              </div>
+              <button class="project-entry__view-more" onclick="openTextModal10()">View more</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>  <!-- ── NOTEBOOK MODAL ───────────────────────────────────────── -->
   <div id="notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Notebook Viewer">
@@ -1882,6 +1969,72 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <!-- ── TEXT MODAL 8 ─────────────────────────────────────────────── -->
+  <div id="text-modal-8" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Activity Details">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal8()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal8()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Logistic Regression</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">This midterm activity applies logistic regression to predict dengue outcomes using clinical indicators. The project focuses on preparing health-related data, selecting relevant predictors, training a classification model, and evaluating how well the model supports early identification of possible dengue cases.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">The activity develops skills in binary classification, feature preparation, model fitting, and model evaluation. It also strengthens understanding of how health indicators can be transformed into meaningful predictors for clinical decision support.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Predictive analytics can support healthcare teams by helping identify possible disease risks earlier. By applying logistic regression to dengue prediction, this activity shows how data-driven models can assist screening, planning, and timely response in public health contexts.</p>
+
+        <h3 class="text-modal__heading">The Learning Reflection</h3>
+        <p class="text-modal__body">This activity helped me understand how classification models differ from regression models that predict continuous values. It also showed the importance of preparing clean input data and evaluating predictions carefully before using a model for real-world decisions.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TEXT MODAL 9 ─────────────────────────────────────────────── -->
+  <div id="text-modal-9" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Activity Details">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal9()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal9()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Final Project</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">This final project compares Multiple Linear Regression, Decision Tree, and Random Forest models to predict teacher demand in Philippine public schools. The project explores how machine learning can support education planning by analyzing patterns that may affect staffing needs.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">The project applies regression modeling, tree-based learning, model comparison, data preprocessing, and performance evaluation. Comparing several algorithms helps identify which model performs best for the dataset and which approach gives more useful predictions.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Teacher demand planning affects class sizes, school staffing, and resource distribution. By using predictive analytics, education leaders can make more informed decisions and better prepare for future workforce needs in public schools.</p>
+
+        <h3 class="text-modal__heading">The Learning Reflection</h3>
+        <p class="text-modal__body">This project helped me practice comparing models instead of relying on one algorithm immediately. It also showed that prediction work is not only about accuracy, but also about choosing a model that can be explained and applied to a real planning problem.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TEXT MODAL 10 ────────────────────────────────────────────── -->
+  <div id="text-modal-10" class="pdf-modal" role="dialog" aria-modal="true" aria-label="Activity Details">
+    <div class="pdf-modal__backdrop" onclick="closeTextModal10()"></div>
+    <div class="pdf-modal__box text-modal__box">
+      <button class="pdf-modal__close" onclick="closeTextModal10()" aria-label="Close">&times;</button>
+      <div class="text-modal__content">
+        <p class="text-modal__project-title">Model Comparison</p>
+        <h3 class="text-modal__heading">Description</h3>
+        <p class="text-modal__body">This final activity compares Multiple Linear Regression and Linear SVM using the Wine dataset. The work studies how different models respond to the same dataset and how evaluation results guide model selection.</p>
+
+        <h3 class="text-modal__heading">Predictive Skills</h3>
+        <p class="text-modal__body">The activity strengthens skills in preparing a dataset, training different models, comparing outputs, and interpreting performance metrics. It also highlights the importance of matching the algorithm to the type of problem and the behavior of the data.</p>
+
+        <h3 class="text-modal__heading">The &ldquo;So What&rdquo;</h3>
+        <p class="text-modal__body">Model comparison is an important part of machine learning because different algorithms can produce different results from the same data. Understanding these differences helps analysts choose stronger, more reliable models for real-world prediction tasks.</p>
+
+        <h3 class="text-modal__heading">The Learning Reflection</h3>
+        <p class="text-modal__body">This activity helped me see why testing multiple models is useful before deciding on a final approach. It also improved my understanding of how evaluation metrics can reveal the strengths and limitations of each model.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── PDF MODAL ───────────────────────────────────────────────── -->
   <div id="pdf-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
     <div class="pdf-modal__backdrop" onclick="closePdf()"></div>
@@ -1906,6 +2059,9 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('pdf-frame').src = src;
       document.getElementById('pdf-modal').classList.add('pdf-modal--open');
       document.body.style.overflow = 'hidden';
+    }
+    function openFile(src) {
+      window.open(src, '_blank', 'noopener,noreferrer');
     }
     function closePdf() {
       document.getElementById('pdf-modal').classList.remove('pdf-modal--open');
@@ -1992,13 +2148,53 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('text-modal-7').classList.remove('pdf-modal--open');
       document.body.style.overflow = '';
     }
+    function openTextModal8() {
+      document.getElementById('text-modal-8').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal8() {
+      document.getElementById('text-modal-8').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
+    function openTextModal9() {
+      document.getElementById('text-modal-9').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal9() {
+      document.getElementById('text-modal-9').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
+    function openTextModal10() {
+      document.getElementById('text-modal-10').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTextModal10() {
+      document.getElementById('text-modal-10').classList.remove('pdf-modal--open');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+    });
+
+    document.querySelectorAll('.projects__tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var targetId = tab.getAttribute('data-tab-target');
+        document.querySelectorAll('.projects__tab').forEach(function (item) {
+          var isActive = item === tab;
+          item.classList.toggle('projects__tab--active', isActive);
+          item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        document.querySelectorAll('.projects__panel').forEach(function (panel) {
+          var isActive = panel.id === targetId;
+          panel.hidden = !isActive;
+          panel.classList.toggle('projects__panel--active', isActive);
+        });
+      });
     });
 
     // ── SCROLL REVEAL ──────────────────────────────────────────────
     (function () {
-      var selectors = '.about__top-row, .about__course-alignment, .quote blockquote, .skills__block, .project-entry, .footer';
+      var selectors = '.about__top-row, .about__course-alignment, .quote blockquote, .skills__block, .projects__tabs, .project-entry, .footer';
       var els = document.querySelectorAll(selectors);
       els.forEach(function (el) { el.classList.add('reveal'); });
       var observer = new IntersectionObserver(function (entries) {
