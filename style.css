@@ -277,11 +277,16 @@ section { padding: 96px 40px; }
   padding: 0;
 }
 
+.about__course-carousel {
+  position: relative;
+}
+
 .about__course-alignment {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px 32px;
+  min-height: 360px;
+  padding: 32px 96px 32px 36px;
   transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
 .about__course-alignment:hover {
@@ -291,10 +296,42 @@ section { padding: 96px 40px; }
 }
 .about__course-title { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 14px; }
 .about__course-intro { font-size: 14px; color: #ddd; line-height: 1.8; margin-bottom: 16px; text-align: justify; }
+.about__course-intro--last { margin-bottom: 0; }
 .about__course-list { padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
 .about__course-list li { font-size: 14px; color: #ddd; line-height: 1.75; }
 .about__course-list li strong { display: block; color: #fff; margin-bottom: 4px; }
 .about__course-list li p { text-align: justify; }
+
+.about__course-next {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: #fff;
+  background: transparent;
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+  z-index: 2;
+}
+
+.about__course-next:hover {
+  background: rgba(107,161,255,.12);
+  box-shadow: 0 6px 20px rgba(107,161,255,.4);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.about__course-next:focus-visible {
+  outline: 3px solid rgba(107,161,255,.45);
+  outline-offset: 4px;
+}
 .about__who-label { font-size: 32px; font-weight: 700; color: #fff; }
 .about__bio { font-size: 16px; color: #ddd; line-height: 1.8; max-width: 680px; }
 
@@ -864,6 +901,18 @@ section { padding: 96px 40px; }
   }
 
   .about { padding: 0; }
+
+  .about__course-alignment {
+    min-height: 0;
+    padding: 26px 76px 26px 26px;
+  }
+  .about__course-next {
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+  .about__course-next:hover { transform: translateY(-50%) scale(1.06); }
 
   .projects {
     padding: 0;
