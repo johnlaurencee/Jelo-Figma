@@ -32,6 +32,14 @@
         <a href="https://www.instagram.com/johnlaurencence/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
       </div>
     </div>
+
+    <div class="hero__photo" aria-hidden="true">
+      <img src="Picture.jpg" alt="Portrait of John Laurence Ong" />
+    </div>
+
+    <a class="hero__scroll-indicator" href="#about" aria-label="Scroll to the About section">
+      <span aria-hidden="true">↓</span>
+    </a>
   </section>
 
   <!-- ── ABOUT ────────────────────────────────────────────────────── -->
@@ -44,7 +52,7 @@
           I enjoy combining design thinking with technical skills to create functional and visually engaging solutions.
         </p>
         <h3 class="about__section-label">Education</h3>
-        <p class="about__edu">3rd Year – B.S. Information and Technology</p>
+        <p class="about__edu">4th Year – B.S. Information and Technology</p>
         <p class="about__edu">Jose Rizal University</p>
         <h3 class="about__section-label">Certifications</h3>
         <div class="about__certs">
@@ -127,13 +135,84 @@
   <!-- ── PROJECTS ──────────────────────────────────────────────────── -->
     <section id="projects" class="projects">
     <h2 class="section-title">Projects</h2>
-    <div class="projects__tabs" role="tablist" aria-label="Project terms">
-      <button class="projects__tab projects__tab--active" type="button" role="tab" aria-selected="true" aria-controls="prelims-panel" id="prelims-tab" data-tab-target="prelims-panel">Prelims</button>
-      <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="midterms-panel" id="midterms-tab" data-tab-target="midterms-panel">Midterms</button>
-      <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="finals-panel" id="finals-tab" data-tab-target="finals-panel">Finals</button>
+    <div class="projects__tabs projects__tabs--year" role="tablist" aria-label="Project years">
+      <button class="projects__tab projects__tab--active" type="button" role="tab" aria-selected="true" aria-controls="fourth-year-panel" id="fourth-year-tab" data-tab-target="fourth-year-panel">ITC-C508</button>
+      <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="third-year-panel" id="third-year-tab" data-tab-target="third-year-panel">ITC-C506</button>
     </div>
 
     <div class="projects__panels">
+      <div class="projects__panel projects__panel--active" id="fourth-year-panel" role="tabpanel" aria-labelledby="fourth-year-tab">
+        <div class="projects__tabs projects__tabs--nested-c508" role="tablist" aria-label="ITC-C508 terms">
+          <button class="projects__tab projects__tab--active" type="button" role="tab" aria-selected="true" aria-controls="c508-prelims-panel" id="c508-prelims-tab" data-tab-target="c508-prelims-panel">Prelims</button>
+          <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="c508-midterms-panel" id="c508-midterms-tab" data-tab-target="c508-midterms-panel">Midterms</button>
+          <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="c508-finals-panel" id="c508-finals-tab" data-tab-target="c508-finals-panel">Finals</button>
+        </div>
+
+        <div class="projects__panels">
+          <div class="projects__panel projects__panel--active" id="c508-prelims-panel" role="tabpanel" aria-labelledby="c508-prelims-tab">
+            <div class="projects__list">
+              <div class="project-entry project-entry--single">
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text course-topics">
+                    <article class="course-topic">
+                      <h3 class="project-entry__category project-entry__category--topic">Deep Learning-Based Predictive Models in Business Fields</h3>
+                      <p class="project-entry__desc">Big Data has now become efficiently collected by companies. It is so easy that companies' success depends on how much they have collected. This big data is used for machine learning specifically deep learning to translate this human language into computer, leveraging the power it possesses. Though with its advantage, more skill and knowledge as well as computers are needed to achieve its full potential.</p>
+                      <p class="project-entry__desc">With its commendable skill to handle complex works, businesses are turning their faces towards this invention. Different sectors: business, government, transportation, and education are few among the sectors who use Deep Learning and even in our daily operations minimizing human errors. One concrete example of how deep learning is applied to business is about hiring. With the increasing population and graduates, thousands of applicants are applying to a company. Assume that there are 1,000 applicants, their resumes expanding to 1 to 3 pages, about 1,000 to 3,000 pages need to be read by the HR, this problem highlights the extreme workload.</p>
+                      <p class="project-entry__desc">With the help of Deep Learning specifically NLP, HR workload is lessened tremendously because instead of them reading each applicant individually they are able to extract important information by parsing and matching where it converts resume into organized fields then compares the information with the job requirements.</p>
+                      <p class="project-entry__desc">Though with its results, deep learning models are considered as black box models because of their nature. However, AI as a whole is not black box. To solve this challenge there are different ways such as feature importance, confidence score, and according to my research Explainable AI (XAI) can also be used to explain how the deep learning model came up with the results. You can also use rule-based validation and most importantly still human presence. Make sure to involve yourself and decide for yourself.</p>
+                    </article>
+
+                    <article class="course-topic">
+                      <h3 class="project-entry__category project-entry__category--topic">Modern Organization using Natural Language Processing (NLP)</h3>
+                      <p class="project-entry__desc">Response to be added.</p>
+                    </article>
+
+                    <article class="course-topic">
+                      <h3 class="project-entry__category project-entry__category--topic">Course Expectation</h3>
+                      <p class="project-entry__desc">Response to be added.</p>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="projects__panel" id="c508-midterms-panel" role="tabpanel" aria-labelledby="c508-midterms-tab" hidden>
+            <div class="projects__list">
+              <div class="project-entry project-entry--single">
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text">
+                    <h3 class="project-entry__category">ITC-C508 Midterms</h3>
+                    <p class="project-entry__desc">No midterm entry added yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="projects__panel" id="c508-finals-panel" role="tabpanel" aria-labelledby="c508-finals-tab" hidden>
+            <div class="projects__list">
+              <div class="project-entry project-entry--single">
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text">
+                    <h3 class="project-entry__category">ITC-C508 Finals</h3>
+                    <p class="project-entry__desc">No final entry added yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="projects__panel" id="third-year-panel" role="tabpanel" aria-labelledby="third-year-tab" hidden>
+        <div class="projects__tabs projects__tabs--nested" role="tablist" aria-label="Project terms">
+          <button class="projects__tab projects__tab--active" type="button" role="tab" aria-selected="true" aria-controls="prelims-panel" id="prelims-tab" data-tab-target="prelims-panel">Prelims</button>
+          <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="midterms-panel" id="midterms-tab" data-tab-target="midterms-panel">Midterms</button>
+          <button class="projects__tab" type="button" role="tab" aria-selected="false" aria-controls="finals-panel" id="finals-tab" data-tab-target="finals-panel">Finals</button>
+        </div>
+
+        <div class="projects__panels">
       <div class="projects__panel projects__panel--active" id="prelims-panel" role="tabpanel" aria-labelledby="prelims-tab">
         <div class="projects__list">
 
@@ -376,6 +455,8 @@
               <button class="project-entry__view-more" onclick="openTextModal10()">View more</button>
             </div>
           </div>
+        </div>
+      </div>
         </div>
       </div>
     </div>
@@ -2169,25 +2250,45 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       if (e.key === 'Escape') { closePdf(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
 
-    document.querySelectorAll('.projects__tab').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        var targetId = tab.getAttribute('data-tab-target');
-        document.querySelectorAll('.projects__tab').forEach(function (item) {
-          var isActive = item === tab;
-          item.classList.toggle('projects__tab--active', isActive);
-          item.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        });
-        document.querySelectorAll('.projects__panel').forEach(function (panel) {
-          var isActive = panel.id === targetId;
-          panel.hidden = !isActive;
-          panel.classList.toggle('projects__panel--active', isActive);
+    function bindTabGroup(tabSelector, panelSelector) {
+      document.querySelectorAll(tabSelector).forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var targetId = tab.getAttribute('data-tab-target');
+          document.querySelectorAll(tabSelector).forEach(function (item) {
+            var isActive = item === tab;
+            item.classList.toggle('projects__tab--active', isActive);
+            item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+          document.querySelectorAll(panelSelector).forEach(function (panel) {
+            var isActive = panel.id === targetId;
+            panel.hidden = !isActive;
+            panel.classList.toggle('projects__panel--active', isActive);
+          });
         });
       });
-    });
+    }
+
+    bindTabGroup('.projects__tabs--year .projects__tab', '#projects > .projects__panels > .projects__panel');
+    bindTabGroup('.projects__tabs--nested-c508 .projects__tab', '#fourth-year-panel > .projects__panels > .projects__panel');
+    bindTabGroup('.projects__tabs--nested .projects__tab', '#third-year-panel > .projects__panels > .projects__panel');
+
+    var scrollIndicator = document.querySelector('.hero__scroll-indicator');
+    if (scrollIndicator) {
+      scrollIndicator.addEventListener('click', function () {
+        scrollIndicator.classList.remove('is-clicked');
+        void scrollIndicator.offsetWidth;
+        scrollIndicator.classList.add('is-clicked');
+      });
+      scrollIndicator.addEventListener('animationend', function (event) {
+        if (event.animationName === 'arrowClick') {
+          scrollIndicator.classList.remove('is-clicked');
+        }
+      });
+    }
 
     // ── SCROLL REVEAL ──────────────────────────────────────────────
     (function () {
-      var selectors = '.about__top-row, .about__course-alignment, .quote blockquote, .skills__block, .projects__tabs, .project-entry, .footer';
+      var selectors = 'section:not(#home), .hero__photo, .hero__scroll-indicator, .about__top-row, .about__course-alignment, .quote blockquote, .skills__block, .projects__tabs, .project-entry, .footer';
       var els = document.querySelectorAll(selectors);
       els.forEach(function (el) { el.classList.add('reveal'); });
       var observer = new IntersectionObserver(function (entries) {
