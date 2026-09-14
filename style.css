@@ -85,6 +85,11 @@ section { padding: 96px 40px; }
   to   { opacity: 1; }
 }
 
+@keyframes panelReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .hero__greeting {
   animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
 }
@@ -356,7 +361,9 @@ section { padding: 96px 40px; }
 
 @media (prefers-reduced-motion: reduce) {
   .about__course-carousel,
-  .about__course-alignment { transition: none; }
+  .about__course-alignment,
+  .projects__panel--active,
+  .project-entry__document-cover { animation: none; transition: none; }
 }
 .about__who-label { font-size: 32px; font-weight: 700; color: #fff; }
 .about__bio { font-size: 16px; color: #ddd; line-height: 1.8; max-width: 680px; }
@@ -556,6 +563,10 @@ section { padding: 96px 40px; }
   display: none;
 }
 
+.projects__panel--active {
+  animation: panelReveal .32s cubic-bezier(.22, 1, .36, 1) both;
+}
+
 .projects__list {
   display: flex;
   flex-direction: column;
@@ -713,6 +724,16 @@ section { padding: 96px 40px; }
 .project-entry__document-cover strong {
   font-size: 24px;
   line-height: 1.2;
+}
+
+.project-entry__document-cover {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.project-entry__document-cover:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 30px rgba(0,0,0,.22);
 }
 
 .course-topic-row {
