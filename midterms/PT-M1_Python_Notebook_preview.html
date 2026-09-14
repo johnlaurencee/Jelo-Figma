@@ -1,0 +1,242 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PT-M1 Python Notebook</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#172033;font:15px/1.6 Arial,sans-serif}header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:20px;padding:14px 22px;background:rgba(255,255,255,.96);border-bottom:1px solid #d8dee8;backdrop-filter:blur(8px)}header strong{display:block}header span{font-size:12px;color:#68768a}main{max-width:1120px;margin:0 auto;padding:26px 22px 70px}.cell{margin:0 0 14px;background:#fff;border:1px solid #dbe1ea;border-radius:10px;box-shadow:0 3px 14px rgba(20,30,50,.04)}.markdown-cell{padding:18px 24px}h1,h2,h3,h4{line-height:1.25;margin:.2em 0 .6em;color:#111827}h1{font-size:29px}h2{font-size:23px}h3{font-size:19px}p{margin:.55em 0}ul{margin:.4em 0;padding-left:24px}code{font-family:Consolas,'Courier New',monospace}.input-row,.output-row{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;padding:14px 16px}.output-row{border-top:1px solid #e3e7ee;background:#fbfcfe;border-radius:0 0 10px 10px}.prompt{color:#1769aa;font:12px/1.5 Consolas,monospace;text-align:right;padding-top:2px}pre{margin:0;overflow:auto;white-space:pre-wrap;word-break:break-word}.output-body{min-width:0;overflow:auto}.output-text{font:13px/1.5 Consolas,monospace}.error{color:#a61b1b}.output-image{display:block;max-width:100%;height:auto;margin:4px auto}.output-html{max-width:100%;overflow:auto}.output-html table{border-collapse:collapse;font-size:13px}.output-html th,.output-html td{padding:6px 10px;border:1px solid #d5dbe5}@media(max-width:640px){header{padding:12px 14px}main{padding:14px 8px 50px}.input-row,.output-row{grid-template-columns:1fr}.prompt{text-align:left}.markdown-cell{padding:15px}}
+</style></head><body><header><div><strong>PT-M1 · Python Notebook</strong><span>Building and Evaluating a RAG Chatbot</span></div><span>21 cells · Complete saved notebook</span></header><main><section class="cell markdown-cell" data-cell="1"><h2>ENVIRONMENT SETUP AND PACKAGE INSTALLATION</h2></section><section class="cell markdown-cell" data-cell="2"><p>This cell is used to install all the required libraries for the activity. I uninstall first using the</p><p><code>!pip uninstall -y</code> command to remove the existying versions of LangChain, LangChain Core, LangChain Community, LangChain Text Splitters, and LangGraph-related packages. This is necessary to prevent the versions conflicts. Newer versions may not support the <code>langchain.chains</code> functions that is used later by the model. I used this because I was able to install the newer versions so I have to uninstall which is more compatible with my RAG implementation in order to avoid the error regarding to module not found.</p><p><code>!pip install -q</code> command is used to install the specific versions in order for the model to be compatible with RAG implementation.</p><p>Specifically <code>langchain==0.3.27</code> This version is older and later the pipeline also uses <code>create_retrieval_chain</code> and <code>create_stuff_documents_chain</code> which is not compatible with the newer version.<code>langchain</code> provides the main framework for connecting the different components of the RAG pipeline.</p><p><code>langchain-core&gt;=0.3.72,&lt;1.0.0&quot;</code> provides its fundamental components that is required by the installed LangChain packages.</p><p><code>langchain-community==0.3.27</code> provides the DirectoryLoader used to load the PDF files that is stored in my folder which is my_data/ folder.</p><p><code>langchain-text-splitters</code> provides the RecursiveCharacterTextSplitter which is used to divide the loaded documents into smaller text chunks, before they are converted into embeddings, making the information easier to retrieve.</p><p><code>langchain-huggingface</code> connects the system to a Hugging Face embedding model, specifically all-MiniLM-L6-v2, which converts the document chunks into numerical vector representations.</p><p><code>chromaDB</code> serves as the vector database that stores these embeddings and is used by the retriever to compare the user&#x27;s query with the stored document chunks and return the top 3 most relevant chunks (k=3).</p><p><code>langchain-groq</code> connects LangChain to the Groq-hosted LLM, which generates the final response using the retrieved information. The retrieved top three chunks are inserted into the {context} of the system prompt, while the user&#x27;s question is passed through {input}, allowing the LLM to generate an answer based on the retrieved document information.</p><p><code>pypdf</code> and <code>unstructured[pdf]</code> provide the necessary PDF-processing functionality for extracting content from the uploaded PDF documents.</p></section><section class="cell code-cell" data-cell="3"><div class="input-row"><span class="prompt">In&nbsp;[ ]:</span><pre><code># Cell 1: Environment Setup &amp; Package Installation
+
+# Remove conflicting newer LangChain/LangGraph packages
+!pip uninstall -y \
+    langchain \
+    langchain-core \
+    langchain-community \
+    langchain-text-splitters \
+    langchain-classic \
+    langgraph \
+    langgraph-sdk \
+    langgraph-prebuilt \
+    langgraph-checkpoint
+
+# Install versions compatible with the notebook
+!pip install -q \
+    &quot;langchain==0.3.27&quot; \
+    &quot;langchain-core&gt;=0.3.72,&lt;1.0.0&quot; \
+    &quot;langchain-community==0.3.27&quot; \
+    &quot;langchain-text-splitters==0.3.9&quot; \
+    &quot;langchain-groq==0.3.7&quot; \
+    &quot;langchain-huggingface==0.3.1&quot; \
+    chromadb \
+    pypdf \
+    &quot;unstructured[pdf]&quot;</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">Found existing installation: langchain 1.3.17
+Uninstalling langchain-1.3.17:
+  Successfully uninstalled langchain-1.3.17
+Found existing installation: langchain-core 1.6.0
+Uninstalling langchain-core-1.6.0:
+  Successfully uninstalled langchain-core-1.6.0
+[33mWARNING: Skipping langchain-community as it is not installed.[0m[33m
+[0m[33mWARNING: Skipping langchain-text-splitters as it is not installed.[0m[33m
+[0m[33mWARNING: Skipping langchain-classic as it is not installed.[0m[33m
+[0mFound existing installation: langgraph 1.2.11
+Uninstalling langgraph-1.2.11:
+  Successfully uninstalled langgraph-1.2.11
+Found existing installation: langgraph-sdk 0.4.3
+Uninstalling langgraph-sdk-0.4.3:
+  Successfully uninstalled langgraph-sdk-0.4.3
+Found existing installation: langgraph-prebuilt 1.1.0
+Uninstalling langgraph-prebuilt-1.1.0:
+  Successfully uninstalled langgraph-prebuilt-1.1.0
+Found existing installation: langgraph-checkpoint 4.2.0
+Uninstalling langgraph-checkpoint-4.2.0:
+  Successfully uninstalled langgraph-checkpoint-4.2.0
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m52.0/52.0 kB[0m [31m3.7 MB/s[0m eta [36m0:00:00[0m
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m981.5/981.5 kB[0m [31m42.1 MB/s[0m eta [36m0:00:00[0m
+[?25h  Preparing metadata (setup.py) ... [?25l[?25hdone
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m66.5/66.5 kB[0m [31m4.6 MB/s[0m eta [36m0:00:00[0m
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m80.3/80.3 kB[0m [31m4.4 MB/s[0m eta [36m0:00:00[0m
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m62.4/62.4 kB[0m [31m4.2 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m1.0/1.0 MB[0m [31m45.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m2.5/2.5 MB[0m [31m83.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m461.3/461.3 kB[0m [31m26.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m23.3/23.3 MB[0m [31m64.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m393.8/393.8 kB[0m [31m24.0 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m278.2/278.2 kB[0m [31m19.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m109.9/109.9 kB[0m [31m8.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m608.4/608.4 kB[0m [31m33.6 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m542.2/542.2 kB[0m [31m31.9 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m137.5/137.5 kB[0m [31m10.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m453.8/453.8 kB[0m [31m29.0 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m4.6/4.6 MB[0m [31m92.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m23.1/23.1 MB[0m [31m31.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m72.5/72.5 kB[0m [31m4.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m137.2/137.2 kB[0m [31m8.6 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m60.0/60.0 kB[0m [31m3.6 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m204.6/204.6 kB[0m [31m13.9 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m66.5/66.5 kB[0m [31m4.8 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m6.6/6.6 MB[0m [31m87.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m1.5/1.5 MB[0m [31m54.9 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m2.3/2.3 MB[0m [31m79.0 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m155.6/155.6 kB[0m [31m12.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m95.7/95.7 kB[0m [31m7.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m69.4/69.4 kB[0m [31m5.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m60.6/60.6 kB[0m [31m4.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m167.9/167.9 kB[0m [31m13.1 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m3.2/3.2 MB[0m [31m81.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m73.1/73.1 kB[0m [31m5.0 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m169.6/169.6 kB[0m [31m12.9 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m57.5/57.5 kB[0m [31m4.3 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m1.6/1.6 MB[0m [31m68.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m51.0/51.0 kB[0m [31m3.4 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m10.0/10.0 MB[0m [31m106.2 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m19.1/19.1 MB[0m [31m26.6 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m3.7/3.7 MB[0m [31m96.0 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m35.3/35.3 MB[0m [31m21.5 MB/s[0m eta [36m0:00:00[0m
+[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m114.6/114.6 kB[0m [31m9.3 MB/s[0m eta [36m0:00:00[0m
+[?25h  Building wheel for langdetect (setup.py) ... [?25l[?25hdone
+[31mERROR: Operation cancelled by user[0m[31m
+[0m^C
+</pre></div></div></section><section class="cell markdown-cell" data-cell="4"><h2>API KEY CONFIGURATION</h2></section><section class="cell markdown-cell" data-cell="5"><p>This cell is used to securely configure the Groq API key that will be used later by the model to access the Groq-hosted LLM.</p><p><code>import os</code> is used to import the Python os module. In this implementation, the os module is specifically used to access and store the GROQ_API_KEY inside the Google Colab runtime&#x27;s environment variables. This allows the API key to be accessed later by ChatGroq without directly writing the actual API key in the notebook.</p><p><code>import getpass</code> is used to import the getpass module, which provides a secure way to enter the Groq API key. Unlike a normal input() function, getpass.getpass() does not display the API key as plain text while I am typing it, which prevents the key from being exposed in the notebook.</p><p><code>if &quot;GROQ_API_KEY&quot; not in os.environ:</code> is used to check whether the GROQ_API_KEY already exists in the current Google Colab environment. If the API key is already stored in the environment, the code inside the if statement will not run, so I do not have to enter the key again during the same runtime session.</p><p><code>getpass.getpass(&quot;Enter your Groq API Key: &quot;)</code> prompts me to enter my Groq API key securely. The characters of the API key are hidden while being entered, preventing the key from appearing directly in the notebook.</p><p><code>os.environ[&quot;GROQ_API_KEY&quot;] = getpass.getpass(&quot;Enter your Groq API Key: &quot;)</code> stores the API key that I entered as an environment variable named GROQ_API_KEY. Later in the RAG implementation, ChatGroq uses this API key to authenticate the request to Groq and access the selected LLM. The LLM is then used in the generation part of the RAG pipeline to generate the final answer based on the retrieved document chunks.</p><p>This approach is used directly to hide my Groq API key in the code because it prevents the actual API key from being exposed when the Google Colab notebook is viewed or shared.</p></section><section class="cell code-cell" data-cell="6"><div class="input-row"><span class="prompt">In&nbsp;[1]:</span><pre><code># Cell 2: Secure API Key Configuration
+
+import os
+
+import getpass
+
+# Prompts for API key securely without saving or echoing plain text in notebook cells
+
+if &quot;GROQ_API_KEY&quot; not in os.environ:
+    os.environ[&quot;GROQ_API_KEY&quot;] = getpass.getpass(&quot;Enter your Groq API Key: &quot;)</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">Enter your Groq API Key: ··········
+</pre></div></div></section><section class="cell markdown-cell" data-cell="7"><h2>LOADING DATA AND CHUNKING</h2></section><section class="cell markdown-cell" data-cell="8"><p>This cell is used to load the PDF documents from the my_data/ folder and divide their extracted content into smaller chunks. These chunks will later be converted into embeddings and stored in ChromaDB for retrieval.</p><p><code>from langchain_community.document_loaders import DirectoryLoader</code> imports the DirectoryLoader from LangChain Community. I used DirectoryLoader to automatically locate and load the documents that I placed inside the my_data/ folder instead of loading each PDF file individually.</p><p><code>from langchain_text_splitters import RecursiveCharacterTextSplitter</code> I used this because the content extracted from the PDF documents is too large to efficiently retrieve as a whole. The text splitter divides the loaded documents into smaller chunks that can later be converted into embeddings and searched by the retriever.</p><p><code>os.makedirs(&quot;my_data&quot;, exist_ok=True)</code> creates the my_data directory where I place the PDF files that will serve as the knowledge base of my RAG system.</p><p><code>loader = DirectoryLoader(&quot;my_data/&quot;, glob=&quot;**/*.*&quot;, show_progress=True)</code> creates the document loader and tells it to look inside the my_data/ folder. The glob=&quot;**/*.*&quot; pattern allows the loader to find files inside the directory and its subdirectories, while show_progress=True displays the loading progress while the documents are being processed.</p><p><code>raw_documents = loader.load()</code> executes the loader and extracts the content from the files found in the my_data/ folder. The loaded content is stored in the raw_documents variable as LangChain document objects. This are the pdf files that I&#x27;ve uploaded in my folder.</p><p><code>text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)</code> configures how the loaded document content will be divided. I set chunk_size=500, which means the splitter aims to create chunks containing up to approximately 500 characters. I also set chunk_overlap=50, which allows approximately 50 characters from the previous chunk to overlap with the next chunk. I used this overlap to help preserve context when related information is located near the boundary between two chunks.</p><p><code>documents = text_splitter.split_documents(raw_documents)</code> applies the configured text splitter to the loaded documents. The resulting smaller chunks are stored in the documents variable. These are the chunks that will be passed to the Hugging Face embedding model in the next stage of my RAG implementation and then stored as vector embeddings in ChromaDB.</p><p><code>print(f&quot;Loaded {len(raw_documents)} raw document(s) and split into {len(documents)} chunks.&quot;)</code> displays the number of raw documents successfully loaded and the total number of chunks created after text splitting.</p></section><section class="cell code-cell" data-cell="9"><div class="input-row"><span class="prompt">In&nbsp;[13]:</span><pre><code># Cell 3: Loading Custom Data &amp; Chunking
+
+from langchain_community.document_loaders import DirectoryLoader
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+# Create target data directory
+
+os.makedirs(&quot;my_data&quot;, exist_ok=True)
+
+
+# Load all documents from the directory
+
+loader = DirectoryLoader(&quot;my_data/&quot;, glob=&quot;**/*.*&quot;, show_progress=True)
+
+raw_documents = loader.load()
+
+
+# Split documents into smaller semantic chunks
+
+text_splitter = RecursiveCharacterTextSplitter(
+
+chunk_size=500,
+
+chunk_overlap=50
+
+)
+
+documents = text_splitter.split_documents(raw_documents)
+
+
+print(f&quot;Loaded {len(raw_documents)} raw document(s) and split into {len(documents)} chunks.&quot;)</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">
+  0%|          | 0/1 [00:00&lt;?, ?it/s][AWARNING:unstructured:No languages specified, defaulting to English.
+
+100%|██████████| 1/1 [00:07&lt;00:00,  7.99s/it]</pre><pre class="output-text">Loaded 1 raw document(s) and split into 374 chunks.
+</pre><pre class="output-text">
+</pre></div></div></section><section class="cell markdown-cell" data-cell="10"><h2>EMBEDDING MODEL AND VECTOR DB INDEXING</h2></section><section class="cell markdown-cell" data-cell="11"><p>This cell is used to convert the document chunks created in Cell 3 into numerical vector embeddings, store them in ChromaDB, and configure the vector database as a retriever. This allows the RAG system to search for the document chunks that are most semantically relevant to the user&#x27;s question.</p><p><code>from langchain_huggingface import HuggingFaceEmbeddings imports the HuggingFaceEmbeddings</code> This is used to connect my RAG system to the Hugging Face embedding model that converts the text chunks into numerical vector representations.</p><p><code>from langchain_community.vectorstores import Chroma imports the Chroma</code> This is used to store and search the vector embeddings generated from the document chunks. This serves as the vector database of my RAG implementation.</p><p><code>embeddings = HuggingFaceEmbeddings(model_name=&quot;all-MiniLM-L6-v2&quot;)</code> This model converts each text chunk from the documents variable into a numerical vector that represents the semantic meaning of the text. I used embeddings because the retriever needs to compare the meaning of the user&#x27;s query with the meaning of the document chunks rather than relying only on exact keyword matching.</p><p><code>vectorstore = Chroma.from_documents(documents=documents, embedding=embeddings)</code> creates the Chroma vector database using the chunks produced in Cell 3. The <code>documents=documents</code> parameter provides the document chunks that need to be indexed, while <code>embedding=embeddings</code> specifies that all-MiniLM-L6-v2 should be used to convert those chunks into vectors. Chroma stores the generated embeddings together with their corresponding document content and metadata so that the relevant original text can be returned during retrieval.</p><p><code>retriever = vectorstore.as_retriever(search_kwargs={&quot;k&quot;: 3})</code> converts the Chroma vector store into a retriever that can be used by the RAG pipeline. The search_kwargs={&quot;k&quot;: 3} setting tells the retriever to return the top 3 most relevant document chunks for each user&#x27;s query. When a question is submitted, the same embedding model converts the question into a vector, and the retriever searches Chroma for the three document chunks whose embeddings are most semantically similar to the query.</p><p>This process is used in order for the LLM to not search or process all the document chunks for every question. Instead, it will seached and provide only the top 3 relevant chunks that will be use for generating the final answer.</p></section><section class="cell code-cell" data-cell="12"><div class="input-row"><span class="prompt">In&nbsp;[14]:</span><pre><code># Cell 4: Embedding Model &amp; Vector DB Indexing
+
+from langchain_huggingface import HuggingFaceEmbeddings
+
+from langchain_community.vectorstores import Chroma
+
+
+# Initialize open-source embedding model
+
+embeddings = HuggingFaceEmbeddings(model_name=&quot;all-MiniLM-L6-v2&quot;)
+
+
+# Store embeddings into Chroma vector database
+
+vectorstore = Chroma.from_documents(
+
+documents=documents,
+
+embedding=embeddings
+
+)
+
+
+# Set vectorstore as a retriever
+
+retriever = vectorstore.as_retriever(search_kwargs={&quot;k&quot;: 3})</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">Loading weights:   0%|          | 0/103 [00:00&lt;?, ?it/s]</pre></div></div></section><section class="cell markdown-cell" data-cell="13"><h2>MODEL INITIALIZATION AND DOMAIN SYSTEM PROMPT</h2></section><section class="cell markdown-cell" data-cell="14"><p>This cell is used to initialize the language model that generates the final response and define the system prompt that controls how the model should answer using the retrieved document chunks. This is the generation component of my RAG implementation.</p><p><code>from langchain_groq import ChatGroq</code> This is used to connect my RAG pipeline to a language model hosted through the Groq API using the GROQ_API_KEY that I configured in Cell 2.</p><p><code>from langchain_core.prompts import ChatPromptTemplate imports ChatPromptTemplate</code> This is used to structure the instructions, retrieved context, and user&#x27;s question before they are sent to the language model.</p><p><code>llm = ChatGroq(model_name=&quot;openai/gpt-oss-20b&quot;, temperature=2)</code> initializes the LLM used for response generation. The model_name=&quot;openai/gpt-oss-20b&quot; specifies the model that my RAG system will access through Groq. The model that presented on the given code is not compatible with my architecture. So, I used different model to run my activity. The <code>temperature=0</code> controls the randomness of the model&#x27;s generated responses. The lower the temperature the lessen it hallucinates.</p><p><code>system_prompt</code> It defines the instructions that the LLM must follow when generating an answer. &quot;You are a specialized AI assistant for the user&#x27;s uploaded domain.&quot; tells the model that its role is to answer questions related to the domain represented by my uploaded documents.</p><p><code>&quot;Answer questions strictly using ONLY the provided context below.&quot;</code> This restricts the model to the information retrieved from my documents instead of intentionally relying on information outside the provided context. This is important in my RAG implementation because the generated response should be grounded in the retrieved document chunks.</p><p><code>&quot;If the answer cannot be found in the context, reply: &#x27;I cannot answer based on the provided domain data.&#x27;&quot;</code> It provides a specific fallback response. If the retrieved chunks do not contain enough information to answer the user&#x27;s question, the model is instructed to state that it cannot answer based on the provided domain data instead of generating an unsupported answer.</p><p><code>&quot;Context:\n{context}&quot;</code> It provides the placeholder where the retrieved document chunks will be inserted. In my implementation, the retriever configured in Cell 4 retrieves the top 3 relevant chunks, and these chunks are supplied through {context} before the prompt is sent to the LLM.</p><p><code>prompt = ChatPromptTemplate.from_messages([...])</code> It creates the final chat prompt using two message roles. (&quot;system&quot;, system_prompt) provides the instructions and retrieved {context} to the model, while (&quot;human&quot;, &quot;{input}&quot;) represents the user&#x27;s actual question. The {input} placeholder will be replaced with the query entered by the user when the RAG chain is executed.</p></section><section class="cell code-cell" data-cell="15"><div class="input-row"><span class="prompt">In&nbsp;[112]:</span><pre><code># Cell 5: Model Initialization and Domain System Prompt
+
+from langchain_groq import ChatGroq
+
+from langchain_core.prompts import ChatPromptTemplate
+
+
+# Initialize the SLM
+
+llm = ChatGroq(
+
+model_name=&quot;openai/gpt-oss-20b&quot;,
+
+temperature= 1
+
+)
+
+
+# Custom domain system prompt
+
+system_prompt = (
+
+&quot;You are a specialized AI assistant for the user&#x27;s uploaded domain.\n&quot;
+
+&quot;Answer questions strictly using ONLY the provided context below.\n&quot;
+
+&quot;Context:\n{context}&quot;
+
+)
+
+
+prompt = ChatPromptTemplate.from_messages([
+
+(&quot;system&quot;, system_prompt),
+
+(&quot;human&quot;, &quot;{input}&quot;),
+
+])</code></pre></div></section><section class="cell markdown-cell" data-cell="16"><h2>PIPELINE ASSEMBLY</h2></section><section class="cell markdown-cell" data-cell="17"><p>This cell is used to assemble the retrieval and generation components into one complete RAG pipeline. It connects the retriever created in Cell 4 with the LLM and prompt configured in Cell 5, allowing the system to retrieve relevant document chunks first and then use those chunks to generate the final answer.</p><p><code>from langchain.chains import create_retrieval_chain imports the create_retrieval_chain</code> This is used to connect my retriever with the document-processing chain so that retrieval and response generation can happen as one complete process whenever I submit a query.</p><p><code>from langchain.chains.combine_documents import create_stuff_documents_chain</code> This is used to combined the retrieved document chunks with the prompt and send them to the LLM for response generation.</p><p><code>combine_docs_chain = create_stuff_documents_chain(llm, prompt)</code> It creates the document-processing chain by connecting the llm and prompt that I initialized in Cell 5. The term &quot;stuff&quot; means that the retrieved document chunks are placed together into the {context} placeholder of my system prompt. The prompt containing this context and the user&#x27;s {input} is then passed to the LLM so it can generate an answer based on the retrieved information.</p><p><code>rag_chain = create_retrieval_chain(retriever, combine_docs_chain)</code> It creates the complete RAG chain by connecting the retriever from Cell 4 with the combine_docs_chain. When I provide a question to this chain, the retriever first searches ChromaDB and returns the top 3 most relevant document chunks (k=3). These retrieved chunks are then passed to combine_docs_chain, inserted into the {context} of the system prompt, and processed together with the user&#x27;s question by the LLM.</p></section><section class="cell code-cell" data-cell="18"><div class="input-row"><span class="prompt">In&nbsp;[113]:</span><pre><code># Cell 6: Pipeline Assembly
+
+from langchain.chains import create_retrieval_chain
+
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
+
+# Combine prompt and LLM to process context
+
+combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+
+
+# Assemble full retrieval-augmented generation chain
+
+rag_chain = create_retrieval_chain(retriever, combine_docs_chain)</code></pre></div></section><section class="cell markdown-cell" data-cell="19"><h2>TESTING CHATBOT</h2></section><section class="cell markdown-cell" data-cell="20"><p>This cell is used to test the complete RAG pipeline using an in-domain question. It sends a user query to the rag_chain, retrieves the most relevant document chunks, generates an answer from those chunks, and then displays both the answer and the sources of the retrieved chunks.</p><p><code>user_query = </code> This stores the test question that I want to ask the RAG chatbot. It can be anything you like to ask to the Chatbot.</p><p><code>response = rag_chain.invoke({&quot;input&quot;: user_query})</code> This sends the question to the complete RAG pipeline created in Cell 6. The value of user_query is passed into the {input} placeholder of the prompt. Before the LLM generates the response, the retriever searches the Chroma vector database and retrieves the top 3 document chunks that are most semantically related to the question.</p><p><code>print(&quot;--- DOMAIN QUERY ANSWER ---&quot;)</code> It prints a heading before the generated answer. I</p><p><code>print(response[&quot;answer&quot;])</code> It accesses the value stored under the &quot;answer&quot; key in the response returned by the RAG chain. This contains the final answer generated by the LLM using the retrieved document chunks and the instructions defined in the system prompt.</p><p><code>print(&quot;\n--- RETRIEVED SOURCE CHUNKS ---&quot;)</code> prints another heading for the retrieved sources.</p><p><code> for i, doc in enumerate(response[&quot;context&quot;]):</code> loops through the document chunks that were retrieved from ChromaDB. The &quot;context&quot; key contains the chunks selected by the retriever and passed to the LLM. Since the retriever was configured with k=3, this loop normally processes the three most relevant chunks.</p><p><code>enumerate(response[&quot;context&quot;])</code> provides both the position of each retrieved chunk and the actual document object. The variable i starts from 0, while doc represents the retrieved document chunk.</p><p><code>print(f&quot;Chunk {i+1} Source:&quot;, doc.metadata.get(&quot;source&quot;, &quot;Unknown&quot;))</code> displays the source file associated with each retrieved chunk.</p></section><section class="cell code-cell" data-cell="21"><div class="input-row"><span class="prompt">In&nbsp;[114]:</span><pre><code># Cell 7: Testing Your Custom Domain Chatbot
+
+
+# Test Case 1: In-Domain Query
+
+user_query = &quot; What causes volcanic eruptions? &quot;
+response = rag_chain.invoke({&quot;input&quot;: user_query})
+
+
+print(&quot;--- DOMAIN QUERY ANSWER ---&quot;)
+
+print(response[&quot;answer&quot;])
+
+
+print(&quot;\n--- RETRIEVED SOURCE CHUNKS ---&quot;)
+
+for i, doc in enumerate(response[&quot;context&quot;]):
+
+  print(f&quot;Chunk {i+1} Source:&quot;, doc.metadata.get(&quot;source&quot;, &quot;Unknown&quot;))</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">--- DOMAIN QUERY ANSWER ---
+I’m sorry, but I don’t have enough information from the provided context to answer that question.
+
+--- RETRIEVED SOURCE CHUNKS ---
+Chunk 1 Source: my_data/Chapter-5-Study-Skills_p001-p022.pdf
+Chunk 2 Source: my_data/Chapter-5-Study-Skills.pdf
+Chunk 3 Source: my_data/Chapter-5-Study-Skills_p045-p066.pdf
+</pre></div></div></section></main></body></html>
