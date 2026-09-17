@@ -2686,7 +2686,10 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
 
     // ── SCROLL REVEAL ──────────────────────────────────────────────
     (function () {
-      var selectors = 'section:not(#home), .hero__photo, .hero__scroll-indicator, .about__top-row, .about__course-carousel, .quote blockquote, .skills__block, .projects__tabs, .project-entry, .footer';
+      // Output content must stay visible immediately. Applying a scroll-reveal
+      // class to its tabs and activity entries can leave them transparent when
+      // a browser does not deliver an intersection update after hash navigation.
+      var selectors = 'section:not(#home):not(#projects), .hero__photo, .hero__scroll-indicator, .about__top-row, .about__course-carousel, .quote blockquote, .skills__block, .footer';
       var els = document.querySelectorAll(selectors);
 
       // Keep all content visible when IntersectionObserver is not available.
