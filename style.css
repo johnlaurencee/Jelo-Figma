@@ -567,6 +567,15 @@ section { padding: 96px 40px; }
   animation: panelReveal .32s cubic-bezier(.22, 1, .36, 1) both;
 }
 
+/* Outputs are core page content, not optional animation. Keep every activity
+   visible even if a browser retains an interrupted scroll-reveal state. */
+#projects,
+#projects * {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
 .projects__list {
   display: flex;
   flex-direction: column;
