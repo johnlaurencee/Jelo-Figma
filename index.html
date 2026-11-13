@@ -358,7 +358,7 @@
                   </div>
                   <div class="project-entry__file-btns">
                     <button class="project-entry__file-btn" onclick="openPdf('midterms/IEEE_Proposal_OMG.pdf')">View IEEE proposal</button>
-                    <a class="project-entry__file-btn" href="midterms/Lab%20Exercise%20WW-M2%20-%20OngMagnoGrijaldo.pptx" download>Download presentation</a>
+                    <button class="project-entry__file-btn" onclick="openPresentation('midterms/Lab%20Exercise%20WW-M2%20-%20OngMagnoGrijaldo.pptx')">View presentation</button>
                   </div>
                 </div>
                 <div class="project-entry__right">
@@ -368,7 +368,12 @@
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This proposal presents LalimSalita, a Retrieval-Augmented Generation (RAG) vocabulary tool that helps Grade 8 students understand unfamiliar, deep, figurative, and context-dependent Filipino words in <em>Florante at Laura</em>.</p>
                     <p class="project-entry__label">Project Focus:</p>
-                    <p class="project-entry__desc">The project supports clearer vocabulary explanations based on the context of a line or stanza while contributing to accessible Filipino language and literature learning resources.</p>
+                    <p class="project-entry__desc">The chatbot retrieves validated Filipino word definitions from the KWF Diksiyonaryo ng Wikang Filipino together with relevant passages from <em>Florante at Laura</em>. It uses these sources as context before generating a simplified explanation, helping learners understand both the word and its intended meaning in the text.</p>
+                    <p class="project-entry__label">Evaluation:</p>
+                    <p class="project-entry__desc">The proposed system will be evaluated through researcher-developed questions on direct word meanings, context-based questions, simplified explanations, and unavailable or out-of-domain information. The responses will be assessed for accuracy, contextual relevance, and groundedness.</p>
+                    <p class="project-entry__label">Reflection:</p>
+                    <p class="project-entry__desc">Working on LalimSalita showed us that, as students, we can turn NLP and RAG chatbot concepts into a practical solution for a real learning problem. Instead of relying only on a language model to generate an answer, we can retrieve reliable sources and give the model relevant context before it responds. This approach can help students understand difficult Filipino vocabulary while keeping the explanation connected to the original literary text.</p>
+                    <p class="project-entry__desc">The project also helped us see how NLP and RAG can support different SDG domains. In this proposal, the focus is SDG 4: Quality Education, where the chatbot can make learning resources more accessible and easier to understand. The same process of identifying a problem, selecting trustworthy information, retrieving relevant context, and generating grounded responses can be adapted to other domains such as health, environmental awareness, public services, and community support.</p>
                   </div>
                 </div>
               </div>
@@ -2402,6 +2407,12 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('pdf-modal').classList.remove('pdf-modal--open');
       document.getElementById('pdf-frame').src = '';
       document.body.style.overflow = '';
+    }
+    function openPresentation(src) {
+      var presentationUrl = new URL(src, window.location.href).href;
+      document.getElementById('pdf-frame').src = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(presentationUrl);
+      document.getElementById('pdf-modal').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
     }
     function openExcelModal() {
       document.getElementById('excel-frame').src = 'prelim/Ong_ExcelFile_preview.html';
