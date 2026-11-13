@@ -358,7 +358,7 @@
                   </div>
                   <div class="project-entry__file-btns">
                     <button class="project-entry__file-btn" onclick="openPdf('midterms/IEEE_Proposal_OMG.pdf')">View IEEE proposal</button>
-                    <button class="project-entry__file-btn" onclick="openPresentation()">View presentation</button>
+                    <button class="project-entry__file-btn" onclick="openPdf('midterms/Lab Exercise WW-M2 - OngMagnoGrijaldo.pdf')">View presentation</button>
                   </div>
                 </div>
                 <div class="project-entry__right">
@@ -2407,11 +2407,6 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('pdf-modal').classList.remove('pdf-modal--open');
       document.getElementById('pdf-frame').src = '';
       document.body.style.overflow = '';
-    }
-    function openPresentation() {
-      document.getElementById('pdf-frame').src = 'midterms/WW-M2_Presentation_preview.html';
-      document.getElementById('pdf-modal').classList.add('pdf-modal--open');
-      document.body.style.overflow = 'hidden';
     }
     function openExcelModal() {
       document.getElementById('excel-frame').src = 'prelim/Ong_ExcelFile_preview.html';
