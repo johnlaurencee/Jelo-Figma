@@ -397,6 +397,8 @@
                     <p class="project-entry__desc">After presenting the proposal to Dr. Raga, our group documented the feedback and identified the revisions needed for the project. The main change was the language model selected for the chatbot.</p>
                     <p class="project-entry__label">Updated LLM Model:</p>
                     <p class="project-entry__desc">The original proposal used Llama-SEA-LION, but we found that it was not trained specifically for the Filipino context required by the project. We researched more applicable models through Hugging Face and selected Qwen3-8B for the revised proposal.</p>
+                    <p class="project-entry__label">Model Selection Criteria:</p>
+                    <p class="project-entry__desc">Dr. Raga also advised us to compare both parameter size and token capacity when selecting an LLM. Qwen3-8B has 8.2 billion parameters and supports a native context length of 32,768 tokens. With YaRN context scaling, it can support up to 131,072 tokens for longer documents and conversations. These specifications help us assess whether the model can handle retrieved definitions, literary passages, user questions, and generated explanations within the same RAG workflow.</p>
                     <p class="project-entry__label">Reflection:</p>
                     <p class="project-entry__desc">This revision showed us that selecting an LLM requires more than choosing a model that can generate text. For an NLP and RAG chatbot, the model must match the language needs of its users and work well with the retrieved context. Reviewing the feedback helped us improve the technical direction of LalimSalita and make the proposed solution more appropriate for Filipino learners.</p>
                   </div>
