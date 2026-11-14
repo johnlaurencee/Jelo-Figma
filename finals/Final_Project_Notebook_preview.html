@@ -1,0 +1,5257 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#f5f7fa;color:#172033;font:15px Arial}header{position:sticky;top:0;background:#fff;padding:14px 22px;border-bottom:1px solid #d8dee8}main{max-width:1120px;margin:auto;padding:22px}.cell{margin:0 0 14px;background:#fff;border:1px solid #dbe1ea;border-radius:10px;overflow:hidden}.cell>b{display:block;padding:8px 16px;background:#fbfcfe;color:#68768a;font-size:12px}.cell>pre{padding:16px 22px;font:15px/1.6 Arial}.r{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:14px 16px}.r i{font:12px Consolas;color:#1769aa;text-align:right}.out{border-top:1px solid #e3e7ee;background:#fbfcfe}pre{margin:0;white-space:pre-wrap;word-break:break-word;overflow:auto;font:13px/1.5 Consolas}@media(max-width:640px){.r{grid-template-columns:1fr}.r i{text-align:left}}</style><header><b>LalimSalita Final Project · Python Notebook</b><br><small>40 cells · Complete saved notebook · View only</small></header><main><section data-cell="1" class="cell"><b>Markdown cell 1</b><pre># OMG_Project — LalimSalita RAG Chatbot Development and Evaluation
+**ITC 508 | Final Project**  
+**Source:** *Talasalitaan Aralin 1–10.pdf*  
+**Stack:** PDF extraction · Recursive chunking · multilingual-e5-small · ChromaDB · Groq API
+
+Run cells in order in **Google Colab** or a local Jupyter environment. This notebook is a reproducible experiment *template*: results are produced only when you execute it. Do not report unexecuted or example results as findings.
+
+**Deliverables supported:** three chunking experiments, processing/indexing logs, retrieval evaluation, chatbot responses, CSV/XLSX exports, and source code. IEEE report, responsibility matrix, and signed declaration must be prepared separately.</pre></section><section data-cell="2" class="cell"><b>Markdown cell 2</b><pre>## 1 · Install dependencies</pre></section><section data-cell="3" class="cell"><div class="r"><i>In [27]:</i><pre>%pip -q install pypdf chromadb sentence-transformers langchain-text-splitters groq pandas openpyxl</pre></div></section><section data-cell="4" class="cell"><b>Markdown cell 4</b><pre>### Purpose
+This section installs the Python libraries required to develop and execute the **LalimSalita Retrieval-Augmented Generation (RAG) system**.
+
+These libraries support document processing, text chunking, embedding generation, vector storage, information retrieval, language model integration, and experimental data export.
+
+### Code Explanation
+
+**1. `%pip` — Package Installation Command**
+- Executes Python package installation within the current Google Colab notebook environment.
+- Ensures that the required libraries are available for import and use in subsequent cells.
+
+**2. `-q` — Quiet Installation Mode**
+- Reduces the amount of installation output displayed.
+- Keeps the notebook cleaner and easier to read.
+
+**3. `pypdf` — PDF Document Processing**
+- Reads and extracts textual content from the uploaded PDF.
+- Provides the vocabulary definitions and reference information used as the knowledge source of the RAG system.
+
+**4. `chromadb` — Vector Database**
+- Stores document chunks and their numerical embeddings.
+- Supports similarity-based retrieval of relevant information.
+- Allows the system to retrieve vocabulary content related to the user&#39;s question.
+
+**5. `sentence-transformers` — Embedding Model**
+- Converts text into numerical vector representations.
+- Supports semantic similarity between questions and document chunks.
+- Enables the retrieval system to identify related content based on meaning rather than exact keyword matches.
+
+**6. `langchain-text-splitters` — Text Chunking**
+- Divides extracted PDF text into smaller document chunks.
+- Supports configurable chunk sizes and overlaps.
+- Enables experimentation with different chunking settings to assess their effect on retrieval performance.
+
+**7. `groq` — Large Language Model Integration**
+- Provides the Python client for communicating with Groq.
+- Sends retrieved document context and user questions to the configured language model.
+- Receives the generated Filipino vocabulary explanation.
+
+**8. `pandas` — Data Processing and Organization**
+- Organizes question-answer records and retrieval results.
+- Creates structured tables for experimental analysis.
+- Supports exporting results into CSV and Excel formats.
+
+**9. `openpyxl` — Excel File Support**
+- Enables reading and writing Excel (.xlsx) files.
+- Supports exporting experimental records for manual
+  evaluation and documentation.
+
+
+</pre></section><section data-cell="5" class="cell"><b>Markdown cell 5</b><pre>## 2A · Import libraries and set reproducibility</pre></section><section data-cell="6" class="cell"><div class="r"><i>In [28]:</i><pre># ============================================================
+# 2A. IMPORT LIBRARIES AND SET REPRODUCIBILITY
+# ============================================================
+
+import os, sys, json, time, hashlib, platform, getpass
+from pathlib import Path
+from datetime import datetime, timezone
+import numpy as np
+import pandas as pd
+from pypdf import PdfReader
+from sentence_transformers import SentenceTransformer
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+import chromadb
+from groq import Groq
+
+SEED = 42
+np.random.seed(SEED)
+ROOT = Path(&#39;OMG_Project_outputs&#39;)
+ROOT.mkdir(exist_ok=True)
+print(&#39;Libraries imported successfully.&#39;)
+print(&#39;Python:&#39;, sys.version.split()[0], &#39;| Platform:&#39;, platform.platform())</pre></div><div class="r out"><i>Out:</i><pre>Libraries imported successfully.
+Python: 3.13.18 | Platform: Linux-6.6.159+-x86_64-with-glibc2.39
+</pre></div></section><section data-cell="7" class="cell"><b>Markdown cell 7</b><pre>### Purpose
+
+This section imports the Python libraries required to execute the **LalimSalita Retrieval-Augmented Generation (RAG) system**.
+
+It initializes the dependencies for document processing, text chunking, embedding generation, vector storage, language model integration, and experimental data management.
+
+Additionally, it establishes a fixed random seed for reproducibility and creates a dedicated directory for storing the system&#39;s experimental outputs.
+
+---
+
+### Code Explanation
+
+**1. `import os, sys, json, time, hashlib, platform, getpass`**
+
+Imports Python&#39;s built-in utility modules for system operations, data handling, performance measurement, and environment management.
+
+- `os` — Provides operating system functionality, including access to environment variables used for API credentials.
+- `sys` — Provides information about the Python interpreter, including its version.
+- `json` — Supports reading and writing structured JSON data for configurations and experiment records.
+- `time` — Measures execution time, such as retrieval latency and answer generation time.
+- `hashlib` — Generates cryptographic hashes that can be used to verify document or configuration consistency.
+- `platform` — Retrieves operating system and platform details for environment documentation.
+- `getpass` — Allows sensitive inputs, such as API keys, to be entered without displaying them.
+
+**Purpose in the RAG System:**
+These modules support experiment tracking, runtime monitoring, configuration management, and secure API initialization.
+
+---
+
+**2. `from pathlib import Path`**
+
+Imports the `Path` class for managing filesystem paths.
+
+**Purpose in the RAG System:**
+- Defines the directory for saving experimental outputs.
+- Simplifies file and folder management.
+- Provides platform-independent path handling.
+
+---
+
+**3. `from datetime import datetime, timezone`**
+
+Imports utilities for working with dates and times.
+
+- `datetime` — Generates timestamps for recorded events.
+- `timezone` — Supports timezone-aware timestamps, including Coordinated Universal Time (UTC).
+
+**Purpose in the RAG System:**
+Records when questions are processed and experimental results are generated.
+
+---
+
+**4. `import numpy as np`**
+
+Imports NumPy, a library for numerical computing.
+
+**Purpose in the RAG System:**
+- Supports numerical operations and array processing.
+- Provides random seed initialization.
+- Helps establish reproducible numerical behavior
+  for operations using NumPy&#39;s global random generator.
+
+---
+
+**5. `import pandas as pd`**
+
+Imports Pandas for structured data processing.
+
+**Purpose in the RAG System:**
+- Organizes question-answer records.
+- Stores retrieval results in tabular form.
+- Supports CSV and Excel export.
+- Facilitates manual evaluation of chunking configurations.
+
+---
+
+**6. `from pypdf import PdfReader`**
+
+Imports the PDF reading utility from the pypdf library.
+
+**Purpose in the RAG System:**
+- Opens the uploaded vocabulary reference PDF.
+- Extracts text from document pages.
+- Provides the textual knowledge source used for chunking,
+  embedding, and retrieval.
+
+---
+
+**7. `from sentence_transformers import SentenceTransformer`**
+
+Imports the SentenceTransformer class.
+
+**Purpose in the RAG System:**
+- Loads the selected multilingual embedding model.
+- Converts document chunks into numerical embeddings.
+- Converts user questions into embeddings.
+- Supports semantic similarity retrieval.
+
+**Model Used:**
+`intfloat/multilingual-e5-small`
+
+---
+
+**8. `from langchain_text_splitters import
+RecursiveCharacterTextSplitter`**
+
+Imports the RecursiveCharacterTextSplitter class.
+
+**Purpose in the RAG System:**
+- Divides extracted document text into smaller chunks.
+- Supports configurable chunk sizes and overlaps.
+- Attempts to preserve text boundaries using a hierarchy of separators.
+- Enables comparison of different chunking configurations.
+
+---
+
+**9. `import chromadb`**
+
+Imports the ChromaDB vector database library.
+
+**Purpose in the RAG System:**
+- Creates and manages vector collections.
+- Stores document embeddings and associated metadata.
+- Performs similarity-based retrieval.
+- Returns relevant document chunks for user questions.
+
+---
+
+**10. `from groq import Groq`**
+
+Imports the Groq API client.
+
+**Purpose in the RAG System:**
+- Initializes communication with the Groq API.
+- Sends user questions and retrieved document context to the configured large language model.
+- Receives generated responses grounded in the retrieved vocabulary information.
+
+**Language Model Used:**
+`openai/gpt-oss-20b`
+
+---
+
+### Reproducibility and Output Initialization
+
+**11. `SEED = 42`**
+
+Defines a fixed random seed value.
+
+**Purpose:**
+Provides a consistent seed that can be reused across experimental runs.
+
+The value `42` is an arbitrary constant and does not represent a model parameter or retrieval score.
+
+---
+
+**12. `np.random.seed(SEED)`**
+
+Sets NumPy&#39;s global random seed to the value 42.
+
+**Purpose:**
+- Makes random operations using NumPy&#39;s legacy global random generator reproducible.
+- Helps reduce variability caused by random number generation.
+
+**Important:**
+This does not guarantee complete reproducibility of the embedding model, vector database, or LLM outputs.
+
+---
+
+**13. `ROOT = Path(&#39;OMG_Project_outputs&#39;)`**
+
+Defines the output directory for the project.
+
+**Purpose:**
+Provides a central location for storing experimental files, retrieval records, and exported results.
+
+The directory is relative to the notebook&#39;s current working directory.
+
+---
+
+**14. `ROOT.mkdir(exist_ok=True)`**
+
+Creates the output directory if it does not already exist.
+
+**Purpose:**
+- Ensures that the output folder is available.
+- Prevents an error if the folder already exists.
+- Allows subsequent cells to save results to the directory.
+
+---
+
+### Execution Confirmation
+
+**15. `print(&#39;Libraries imported successfully.&#39;)`**
+
+Displays a confirmation message after the imports and initialization statements execute successfully.
+
+**Purpose:**
+Indicates that this cell completed without raising an exception.
+
+---
+
+**16. `print(&#39;Python:&#39;, sys.version.split()[0],
+&#39;| Platform:&#39;, platform.platform())`**
+
+Displays information about the runtime environment.
+
+- `sys.version.split()[0]` — Retrieves the Python version.
+- `platform.platform()` — Retrieves platform information.
+
+**Purpose in the RAG System:**
+Documents the execution environment for experimental reproducibility and technical reporting.</pre></section><section data-cell="8" class="cell"><b>Markdown cell 8</b><pre>## 2B · Upload PDF document</pre></section><section data-cell="9" class="cell"><div class="r"><i>In [29]:</i><pre># ============================================================
+# 2B. UPLOAD PDF DOCUMENT
+# ============================================================
+from google.colab import files
+
+print(&quot;\n&quot;)
+print(&quot;=&quot; * 70)
+print(&quot;UPLOAD DOCUMENT&quot;)
+print(&quot;=&quot; * 70)
+
+uploaded = files.upload()
+
+if len(uploaded) == 0:
+    raise RuntimeError(&quot;No file was uploaded.&quot;)
+
+# Use the first uploaded PDF
+pdf_file = next(iter(uploaded.keys()))
+
+if not pdf_file.lower().endswith(&quot;.pdf&quot;):
+    raise ValueError(&quot;The uploaded file is not a PDF. Please upload a PDF.&quot;)
+
+PDF_PATH = Path(pdf_file)
+print(&quot;\nSelected file:&quot;)
+print(pdf_file)
+print(&#39;SHA256:&#39;, hashlib.sha256(PDF_PATH.read_bytes()).hexdigest())</pre></div><div class="r out"><i>Out:</i><pre>
+
+======================================================================
+UPLOAD DOCUMENT
+======================================================================
+</pre></div><div class="r out"><i>Out:</i><pre>&lt;IPython.core.display.HTML object&gt;</pre></div><div class="r out"><i>Out:</i><pre>Saving Talasalitaan Dataset (1).pdf to Talasalitaan Dataset (1) (2).pdf
+
+Selected file:
+Talasalitaan Dataset (1) (2).pdf
+SHA256: 0a4dce6233ad8ee972fd0c43b726e673b96cdd13587d26924e55533ebfb9ae40
+</pre></div></section><section data-cell="10" class="cell"><b>Markdown cell 10</b><pre>### Purpose
+
+This section allows the user to upload the PDF document that will serve as the primary knowledge source of the **LalimSalita Retrieval-Augmented Generation (RAG) system**.
+
+It uses Google Colab&#39;s file upload functionality to receive the document, verifies that a file was uploaded, checks its PDF filename extension, and generates a SHA-256 hash to identify the uploaded file.
+
+The selected document will be used in the succeeding stages of PDF text extraction, document chunking, embedding generation, and vector database construction.
+
+---
+
+### Code Explanation
+
+**1. `from google.colab import files`**
+
+Imports the `files` utility from the Google Colab library.
+
+**Purpose in the RAG System:**
+- Enables uploading files from the user&#39;s local device.
+- Provides an interactive upload interface in Google Colab.
+- Allows the system to access the uploaded vocabulary PDF within the current Colab runtime.
+
+---
+
+**2. `print(&quot;\n&quot;)`**
+
+Displays a blank line in the notebook output.
+
+**Purpose:**
+Improves the visual spacing before the document upload section is displayed.
+
+---
+
+**3. `print(&quot;=&quot; * 70)`**
+
+Prints 70 equal signs to create a horizontal separator.
+
+**Purpose:**
+Organizes the notebook output and visually distinguishes the document upload section from other system processes.
+
+---
+
+**4. `print(&quot;UPLOAD DOCUMENT&quot;)`**
+
+Displays the heading &quot;UPLOAD DOCUMENT&quot;.
+
+**Purpose:**
+Identifies the current operation being performed by the notebook.
+
+---
+
+**5. `uploaded = files.upload()`**
+
+Opens Google Colab&#39;s interactive file upload interface.
+
+The uploaded files are returned as a dictionary containing filenames as keys and file contents as byte values.
+
+**Purpose in the RAG System:**
+- Allows the user to select the vocabulary reference PDF.
+- Transfers the selected document into the Colab runtime.
+- Makes the uploaded document accessible for processing.
+
+---
+
+**6. `if len(uploaded) == 0:`**
+
+Checks whether the upload dictionary is empty.
+
+**Purpose:**
+Determines whether the user successfully uploaded at least one file.
+
+If no file was uploaded, the system proceeds to the error-handling statement.
+
+---
+
+**7. `raise RuntimeError(&quot;No file was uploaded.&quot;)`**
+
+Raises a runtime error when no file is provided.
+
+**Purpose in the RAG System:**
+- Prevents subsequent processing without a document.
+- Stops execution of the current cell.
+- Informs the user that a PDF must be uploaded.
+
+---
+
+**8. `pdf_file = next(iter(uploaded.keys()))`**
+
+Retrieves the filename of the first uploaded file.
+- `uploaded.keys()` — Retrieves the uploaded filenames.
+- `iter()` — Creates an iterator over those filenames.
+- `next()` — Returns the first filename.
+- `pdf_file` — Stores the selected filename.
+
+**Purpose in the RAG System:**
+Selects one document to serve as the knowledge source for the current experiment.
+
+---
+
+**9. `if not pdf_file.lower().endswith(&quot;.pdf&quot;):`**
+
+Checks whether the selected filename ends with `.pdf`.
+
+- `pdf_file.lower()` — Converts the filename to lowercase.
+- `.endswith(&quot;.pdf&quot;)` — Checks its PDF extension.
+- `not` — Identifies filenames without that extension.
+
+**Purpose in the RAG System:**
+Prevents files with non-PDF filename extensions from proceeding to the PDF processing stage.
+
+---
+
+**10. `raise ValueError(&quot;The uploaded file is not a PDF. Please upload a PDF.&quot;)`**
+
+Raises a value error when the selected filename does not have a PDF extension.
+
+**Purpose:**
+- Stops execution when an unsupported filename is selected.
+- Informs the user about the expected file type.
+- Reduces the possibility of passing an incompatible file to the PDF extraction stage.
+
+---
+
+**11. `PDF_PATH = Path(pdf_file)`**
+
+Converts the selected filename into a `Path` object.
+
+**Purpose in the RAG System:**
+- Provides a reusable reference to the uploaded PDF.
+- Allows subsequent cells to locate and open the document.
+- Supports filesystem operations through Python&#39;s `pathlib` library.
+
+**Dependency:**
+The `Path` class was imported in Section 2A.
+
+---
+
+**12. `print(&quot;\nSelected file:&quot;)`**
+
+Displays a label identifying the selected document.
+
+**Purpose:**
+Makes the notebook output easier to interpret.
+
+---
+
+**13. `print(pdf_file)`**
+
+Displays the filename of the selected PDF.
+
+**Purpose in the RAG System:**
+- Confirms which document was selected.
+- Helps the researcher identify the current data source.
+- Supports experimental documentation.
+
+---
+
+**14. `print(&#39;SHA256:&#39;,
+hashlib.sha256(PDF_PATH.read_bytes()).hexdigest())`**
+
+Generates and displays a SHA-256 cryptographic hash
+of the selected PDF document.
+
+**Code Breakdown:**
+- `PDF_PATH.read_bytes()` — Reads the file as bytes.
+- `hashlib.sha256()` — Computes the SHA-256 hash.
+- `.hexdigest()` — Converts the hash into a hexadecimal string.
+- `print()` — Displays the resulting hash.
+
+**Purpose in the RAG System:**
+- Creates a digital fingerprint of the uploaded PDF.
+- Helps verify that the same document is used across different experimental runs.
+- Supports dataset consistency and reproducibility.</pre></section><section data-cell="11" class="cell"><b>Markdown cell 11</b><pre>## 3 · PDF extraction, vocabulary formatting, and provenance
+</pre></section><section data-cell="12" class="cell"><div class="r"><i>In [30]:</i><pre># ============================================================
+# 3. EXTRACT AND FORMAT VOCABULARY TEXT FROM PDF
+# ============================================================
+
+import re
+
+def format_vocabulary_text(raw_text):
+    &quot;&quot;&quot;Normalize PDF whitespace and restore vocabulary-entry/field line breaks.
+
+    Operates independently per PDF page to preserve source-page metadata.
+    Does not rewrite the vocabulary words or their definitions.
+    &quot;&quot;&quot;
+    text = re.sub(r&quot;\s+&quot;, &quot; &quot;, raw_text or &quot;&quot;).strip()
+    text = re.sub(r&quot;\bARALIN\s+(\d+)\b&quot;, r&quot;\n\nARALIN \1\n&quot;, text, flags=re.IGNORECASE)
+    text = re.sub(r&quot;\bVOCABULARY\s+ENTRY\s+(\d+)\b&quot;, r&quot;\n\nVOCABULARY ENTRY \1\n&quot;, text, flags=re.IGNORECASE)
+    fields = (&quot;WORD&quot;, &quot;PART_OF_SPEECH&quot;, &quot;DEFINITION&quot;, &quot;CONTEXTUAL_MEANING&quot;, &quot;STANZA&quot;, &quot;SOURCE&quot;)
+    for field in fields:
+        text = re.sub(rf&quot;\s*\b({field})\s*:\s*&quot;, r&quot;\n\1: &quot;, text, flags=re.IGNORECASE)
+    text = &quot;\n&quot;.join(line.strip() for line in text.splitlines())
+    return re.sub(r&quot;\n{3,}&quot;, &quot;\n\n&quot;, text).strip()
+
+t0 = time.perf_counter()
+reader = PdfReader(str(PDF_PATH))
+pages = []
+for page_number, pdf_page in enumerate(reader.pages, start=1):
+    raw = pdf_page.extract_text() or &quot;&quot;
+    cleaned = format_vocabulary_text(raw)
+    if cleaned:
+        pages.append({&#39;page&#39;: page_number, &#39;text&#39;: cleaned})
+if not pages:
+    raise ValueError(&#39;No extractable text found. Check whether the PDF is scanned.&#39;)
+extract_seconds = time.perf_counter() - t0
+
+print(&quot;\n&quot; + &quot;=&quot; * 70)
+print(&quot;PDF EXTRACTION AND VOCABULARY FORMATTING&quot;)
+print(&quot;=&quot; * 70)
+print(f&quot;Total PDF pages       : {len(reader.pages)}&quot;)
+print(f&quot;Pages containing text : {len(pages)}&quot;)
+print(f&quot;Cleaned characters    : {sum(len(p[&#39;text&#39;]) for p in pages):,}&quot;)
+print(f&quot;Extraction seconds    : {extract_seconds:.2f}&quot;)
+print(&quot;\n&quot; + &quot;-&quot; * 70)
+print(&quot;FORMATTED VOCABULARY PREVIEW (PAGE 1)&quot;)
+print(&quot;-&quot; * 70)
+print(pages[0][&#39;text&#39;][:1800])
+print(&quot;\nNote: The preview may end mid-entry; full text is preserved in pages[].&quot;)</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+PDF EXTRACTION AND VOCABULARY FORMATTING
+======================================================================
+Total PDF pages       : 99
+Pages containing text : 99
+Cleaned characters    : 90,347
+Extraction seconds    : 7.06
+
+----------------------------------------------------------------------
+FORMATTED VOCABULARY PREVIEW (PAGE 1)
+----------------------------------------------------------------------
+ARALIN 1
+
+VOCABULARY ENTRY 001
+WORD: namamanglaw
+PART_OF_SPEECH: pang-uri
+DEFINITION: damdamin ng isang nangungulila; kalagayang malungkot, lalo na kung gabing madilim at sa ilang na pook
+CONTEXTUAL_MEANING: malungkot at mapanglaw ang kapaligiran
+STANZA: FL-001; KS-05, KS-20
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+VOCABULARY ENTRY 002
+WORD: dawag
+PART_OF_SPEECH: pangngalan
+DEFINITION: alinman sa maraming species ng halamang-baging na matinik at malakahoy
+CONTEXTUAL_MEANING: mga matitinik at magkakasalabid na halamang-baging sa kagubatan
+STANZA: FL-001, FL-127
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+VOCABULARY ENTRY 003
+WORD: masukal
+PART_OF_SPEECH: pang-uri
+DEFINITION: maraming duming nakakalat; magubat
+CONTEXTUAL_MEANING: makapal ang mga halaman at mahirap daanan ang kagubatan
+STANZA: FL-001
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+VOCABULARY ENTRY 004
+
+Note: The preview may end mid-entry; full text is preserved in pages[].
+</pre></div></section><section data-cell="13" class="cell"><b>Markdown cell 13</b><pre>### Purpose
+
+This section extracts and formats the vocabulary content
+from the uploaded PDF document to prepare it for the
+Retrieval-Augmented Generation (RAG) pipeline.
+
+It uses `PdfReader` to extract text from each PDF page
+and regular expressions to normalize whitespace and
+restore the line structure of vocabulary entries.
+
+The formatting process identifies lesson headings,
+vocabulary entry headings, and predefined vocabulary
+fields while preserving their associated PDF page numbers.
+
+The resulting structured text serves as the input for
+document chunking, embedding generation, and vector
+database storage.
+
+---
+
+### Code Explanation
+
+**1. `import re`**
+
+Imports Python&#39;s built-in regular expression module.
+
+**Purpose in the RAG System:**
+- Identifies text patterns within extracted PDF content.
+- Normalizes inconsistent whitespace.
+- Restores line breaks around vocabulary headings
+  and predefined vocabulary fields.
+
+---
+
+**2. `def format_vocabulary_text(raw_text):`**
+
+Defines a reusable function named
+`format_vocabulary_text`.
+
+The function receives raw text extracted from a PDF
+page and returns a formatted text string.
+
+**Purpose in the RAG System:**
+Prepares vocabulary text for the subsequent chunking
+process by improving its structural organization.
+
+---
+
+**3. Function Docstring**
+
+`&quot;&quot;&quot;Normalize PDF whitespace and restore
+vocabulary-entry/field line breaks.&quot;&quot;&quot;`
+
+Documents the purpose and intended behavior
+of the formatting function.
+
+**Purpose:**
+- Explains that the function processes each PDF page
+  independently.
+- Identifies the preservation of source-page metadata
+  as a design objective.
+- Clarifies that the function is intended to reformat
+  text rather than rewrite vocabulary definitions.
+
+---
+
+**4. `text = re.sub(r&quot;\s+&quot;, &quot; &quot;, raw_text or &quot;&quot;).strip()`**
+
+Normalizes whitespace in the extracted text.
+
+- `raw_text or &quot;&quot;` — Uses an empty string when
+  the input is missing or empty.
+- `r&quot;\s+&quot;` — Matches one or more whitespace characters,
+  including spaces, tabs, and line breaks.
+- `&quot; &quot;` — Replaces each whitespace sequence with
+  a single space.
+- `.strip()` — Removes leading and trailing whitespace.
+
+**Purpose in the RAG System:**
+Creates consistent text spacing before reconstructing
+the vocabulary structure.
+
+---
+
+**5. Lesson Heading Formatting**
+
+`re.sub(r&quot;\bARALIN\s+(\d+)\b&quot;,
+r&quot;\n\nARALIN \1\n&quot;, text, flags=re.IGNORECASE)`
+
+Identifies lesson headings such as `ARALIN 1`
+and `ARALIN 2`.
+
+- `\bARALIN` — Matches the word ARALIN.
+- `\s+` — Matches whitespace after ARALIN.
+- `(\d+)` — Captures the lesson number.
+- `\1` — Reuses the captured lesson number.
+- `\n\n` — Inserts two line breaks before the heading.
+- `\n` — Inserts a line break after the heading.
+- `re.IGNORECASE` — Allows case-insensitive matching.
+
+**Purpose in the RAG System:**
+Separates lessons into recognizable sections
+within the extracted text.
+
+---
+
+**6. Vocabulary Entry Heading Formatting**
+
+`re.sub(r&quot;\bVOCABULARY\s+ENTRY\s+(\d+)\b&quot;,
+r&quot;\n\nVOCABULARY ENTRY \1\n&quot;, text,
+flags=re.IGNORECASE)`
+
+Identifies vocabulary entry headings and places
+them on separate lines.
+
+**Purpose in the RAG System:**
+- Distinguishes individual vocabulary entries.
+- Improves the readability of extracted content.
+- Provides potential text boundaries for
+  recursive document chunking.
+
+**Example:**
+`VOCABULARY ENTRY 1`
+
+---
+
+**7. `fields = (...)`**
+
+Defines the vocabulary field labels recognized
+by the formatting function.
+
+The fields are:
+
+- `WORD` — Vocabulary word.
+- `PART_OF_SPEECH` — Grammatical classification.
+- `DEFINITION` — Meaning or definition.
+- `CONTEXTUAL_MEANING` — Meaning within a specific context.
+- `STANZA` — Associated stanza information.
+- `SOURCE` — Reference or source information.
+
+**Purpose in the RAG System:**
+Identifies the labels used to organize vocabulary
+information in the uploaded PDF.
+
+---
+
+**8. `for field in fields:`**
+
+Creates a loop that processes each predefined
+vocabulary field.
+
+**Purpose:**
+Applies the same formatting rule to all six
+recognized field labels.
+
+---
+
+**9. Vocabulary Field Formatting**
+
+`text = re.sub(rf&quot;\s*\b({field})\s*:\s*&quot;,
+r&quot;\n\1: &quot;, text, flags=re.IGNORECASE)`
+
+Finds each recognized field label followed by a colon
+and places it on a new line.
+
+**Code Breakdown:**
+- `rf&quot;...&quot;` — Creates a raw formatted string
+  containing the current field name.
+- `\s*` — Matches optional whitespace.
+- `\b` — Identifies a word boundary.
+- `({field})` — Captures the matched field label.
+- `:` — Matches the colon after the label.
+- `\1` — Restores the matched field label.
+- `\n` — Inserts a line break before the field.
+- `re.IGNORECASE` — Matches labels regardless of case.
+
+**Purpose in the RAG System:**
+Organizes vocabulary information into clearly
+separated fields.
+
+---
+
+**10. `text = &quot;\n&quot;.join(line.strip()
+for line in text.splitlines())`**
+
+Removes unnecessary spaces around individual lines
+while preserving their line separation.
+
+**Code Breakdown:**
+- `.splitlines()` — Divides the text into lines.
+- `line.strip()` — Removes surrounding whitespace
+  from each line.
+- `&quot;\n&quot;.join()` — Reassembles the lines using
+  newline characters.
+
+**Purpose:**
+Produces cleaner and more consistent formatting
+for vocabulary entries.
+
+---
+
+**11. `return re.sub(r&quot;\n{3,}&quot;, &quot;\n\n&quot;, text).strip()`**
+
+Finalizes the formatted text.
+
+**Code Breakdown:**
+- `\n{3,}` — Matches three or more consecutive line breaks.
+- `\n\n` — Replaces them with two line breaks.
+- `.strip()` — Removes surrounding whitespace.
+- `return` — Sends the formatted text back
+  to the calling process.
+
+**Purpose in the RAG System:**
+Prevents excessive blank lines while retaining
+the reconstructed vocabulary structure.
+
+---
+
+### PDF Extraction and Processing
+
+**12. `t0 = time.perf_counter()`**
+
+Records a high-resolution starting time.
+
+**Purpose:**
+Measures how long the PDF extraction and
+formatting process takes.
+
+---
+
+**13. `reader = PdfReader(str(PDF_PATH))`**
+
+Initializes the PDF reader using the uploaded document.
+
+**Code Breakdown:**
+- `PDF_PATH` — Path established in Section 2B.
+- `str(PDF_PATH)` — Converts the path into a string.
+- `PdfReader()` — Opens the PDF for processing.
+
+**Purpose in the RAG System:**
+Provides access to the document pages and their
+extractable text content.
+
+---
+
+**14. `pages = []`**
+
+Creates an empty list for storing processed pages.
+
+**Purpose:**
+Maintains a structured collection of page numbers
+and their corresponding formatted text.
+
+---
+
+**15. `for page_number, pdf_page in
+enumerate(reader.pages, start=1):`**
+
+Iterates through every page in the PDF document.
+
+**Code Breakdown:**
+- `reader.pages` — Accesses the PDF pages.
+- `enumerate()` — Provides a page number and page object.
+- `start=1` — Begins numbering at page 1.
+
+**Purpose in the RAG System:**
+Processes the document page by page while maintaining
+the physical PDF page position.
+
+---
+
+**16. `raw = pdf_page.extract_text() or &quot;&quot;`**
+
+Extracts text from the current PDF page.
+
+**Purpose:**
+Retrieves the textual content needed for vocabulary
+formatting and later RAG processing.
+
+If no text is returned, an empty string is used.
+
+---
+
+**17. `cleaned = format_vocabulary_text(raw)`**
+
+Passes the extracted text to the formatting function.
+
+**Purpose in the RAG System:**
+Normalizes whitespace and reconstructs recognized
+vocabulary headings and field boundaries.
+
+---
+
+**18. `if cleaned:`**
+
+Checks whether the formatted page contains text.
+
+**Purpose:**
+Prevents empty pages from being added to the
+processed document collection.
+
+---
+
+**19. `pages.append({&#39;page&#39;: page_number,
+&#39;text&#39;: cleaned})`**
+
+Stores the page number and formatted text
+as a dictionary inside the `pages` list.
+
+**Stored Structure:**
+
+`{&#39;page&#39;: 1, &#39;text&#39;: &#39;Formatted vocabulary content&#39;}`
+
+**Purpose in the RAG System:**
+- Preserves page-level source information.
+- Provides structured input for document chunking.
+- Supports source-page identification during retrieval.
+- Enables page references in generated answers.
+
+---
+
+**20. `if not pages:`**
+
+Checks whether any pages containing extractable
+text were successfully processed.
+
+**Purpose:**
+Identifies documents where no usable text
+was extracted.
+
+---
+
+**21. `raise ValueError(...)`**
+
+Raises an error if the processed page list is empty.
+
+**Purpose in the RAG System:**
+Prevents the chunking and embedding stages
+from processing an empty document collection.
+
+The error suggests checking whether the PDF
+contains scanned pages.
+
+---
+
+**22. `extract_seconds = time.perf_counter() - t0`**
+
+Calculates the elapsed extraction and formatting time.
+
+**Purpose:**
+Records preprocessing execution time for
+performance documentation.
+
+---
+
+### Extraction Summary and Output Preview
+
+**23. `print(&quot;\n&quot; + &quot;=&quot; * 70)`**
+
+Displays spacing and a horizontal separator.
+
+**Purpose:**
+Improves the presentation of notebook results.
+
+---
+
+**24. `print(&quot;PDF EXTRACTION AND VOCABULARY FORMATTING&quot;)`**
+
+Displays the processing section title.
+
+**Purpose:**
+Identifies the completed operation.
+
+---
+
+**25. `print(f&quot;Total PDF pages : {len(reader.pages)}&quot;)`**
+
+Displays the total number of pages in the PDF.
+
+**Purpose:**
+Documents the size of the source document
+in terms of physical PDF pages.
+
+---
+
+**26. `print(f&quot;Pages containing text : {len(pages)}&quot;)`**
+
+Displays the number of pages containing
+nonempty formatted text.
+
+**Purpose:**
+Indicates how many pages were retained
+for subsequent processing.
+
+---
+
+**27. `print(f&quot;Cleaned characters :
+{sum(len(p[&#39;text&#39;]) for p in pages):,}&quot;)`**
+
+Calculates the total number of characters
+across all formatted pages.
+
+- `p[&#39;text&#39;]` — Retrieves the text of each page.
+- `len()` — Counts its characters.
+- `sum()` — Adds the character counts.
+- `:,` — Formats the result with thousands separators.
+
+**Purpose in the RAG System:**
+Measures the amount of formatted text available
+for document chunking.
+
+---
+
+**28. `print(f&quot;Extraction seconds :
+{extract_seconds:.2f}&quot;)`**
+
+Displays the elapsed preprocessing time
+with two decimal places.
+
+**Purpose:**
+Provides a basic performance measurement
+for the extraction and formatting stage.
+
+---
+
+**29. `print(&quot;FORMATTED VOCABULARY PREVIEW (PAGE 1)&quot;)`**
+
+Displays the heading for the text preview.
+
+**Purpose:**
+Allows the researcher to inspect the formatting
+of the first retained text-containing page.
+
+---
+
+**30. `print(pages[0][&#39;text&#39;][:1800])`**
+
+Displays the first 1,800 characters from
+the first retained page.
+
+**Code Breakdown:**
+- `pages[0]` — Accesses the first stored page.
+- `[&#39;text&#39;]` — Retrieves its formatted text.
+- `[:1800]` — Selects the first 1,800 characters.
+
+**Purpose in the RAG System:**
+Allows visual inspection of vocabulary headings,
+field labels, definitions, and text formatting.
+
+**Important:**
+The preview may stop in the middle of an entry.
+The complete formatted text remains in `pages`.
+
+---
+
+**31. Final Preview Note**
+
+`print(&quot;\nNote: The preview may end mid-entry;
+full text is preserved in pages[].&quot;)`
+
+Displays a clarification about the preview.
+
+**Purpose:**
+Confirms that the 1,800-character limit applies
+only to the displayed preview, not the stored text.
+
+</pre></section><section data-cell="14" class="cell"><b>Markdown cell 14</b><pre>## 4 · Chunking Configuration
+</pre></section><section data-cell="15" class="cell"><div class="r"><i>In [31]:</i><pre># ============================================================
+# 4. ONE CHUNKING CONFIGURATION PER RUN
+# ============================================================
+
+# Change only this dictionary for your next experiment.
+ACTIVE_CONFIG = {&#39;id&#39;: &#39;CFG3&#39;, &#39;chunk_size&#39;: 500, &#39;chunk_overlap&#39;: 50}
+TOP_K = 3
+EMBED_MODEL = &#39;intfloat/multilingual-e5-small&#39;
+GROQ_MODEL = &#39;openai/gpt-oss-20b&#39;
+TEMPERATURE = 0.2
+DEFAULT_CONFIG = ACTIVE_CONFIG[&#39;id&#39;]
+if not (ACTIVE_CONFIG[&#39;chunk_size&#39;] &gt; ACTIVE_CONFIG[&#39;chunk_overlap&#39;] &gt;= 0):
+    raise ValueError(f&quot;Invalid chunking configuration: {ACTIVE_CONFIG}&quot;)
+if not re.fullmatch(r&#39;[A-Za-z0-9][A-Za-z0-9._-]{1,510}[A-Za-z0-9]&#39;, DEFAULT_CONFIG):
+    raise ValueError(f&quot;Invalid ChromaDB collection name: {DEFAULT_CONFIG}&quot;)
+print(&quot;\n&quot; + &quot;=&quot; * 70)
+print(&quot;ACTIVE CHUNKING CONFIGURATION&quot;)
+print(&quot;=&quot; * 70)
+print(pd.DataFrame([ACTIVE_CONFIG]).to_string(index=False))
+print(&#39;Embedding model :&#39;, EMBED_MODEL)
+print(&#39;Top-K retrieval :&#39;, TOP_K)</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+ACTIVE CHUNKING CONFIGURATION
+======================================================================
+  id  chunk_size  chunk_overlap
+CFG3         500             50
+Embedding model : intfloat/multilingual-e5-small
+Top-K retrieval : 3
+</pre></div></section><section data-cell="16" class="cell"><b>Markdown cell 16</b><pre>### Purpose
+
+This section defines the active experimental configuration for the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+It allows the researcher to select one chunking configuration per experimental run by modifying the `ACTIVE_CONFIG` dictionary.
+
+The configuration specifies the chunk size, chunk overlap, retrieval limit, embedding model, language model, and generation temperature.
+
+It also validates the selected chunking parameters and ChromaDB collection name before proceeding to the document chunking and retrieval stages.
+
+---
+
+### Code Explanation
+
+**1. `ACTIVE_CONFIG = {&#39;id&#39;: &#39;CFG1&#39;, &#39;chunk_size&#39;: 300, &#39;chunk_overlap&#39;: 50}`**
+
+Defines the active chunking configuration using a Python dictionary.
+
+- `ACTIVE_CONFIG` — Stores the configuration selected for the current experiment.
+- `&#39;id&#39;: &#39;CFG1&#39;` — Assigns a unique identifier to the configuration.
+- `&#39;chunk_size&#39;: 300` — Specifies the maximum target chunk length in characters.
+- `&#39;chunk_overlap&#39;: 50` — Specifies the target number of overlapping characters between adjacent chunks.
+
+**Purpose in the RAG System:**
+- Controls how the extracted vocabulary text will be divided into smaller chunks.
+- Enables systematic experimentation with different chunk sizes and overlaps.
+- Identifies the configuration used in each experiment.
+
+---
+
+**2. `TOP_K = 3`**
+
+Defines the maximum number of document chunks requested during each retrieval operation.
+
+**Purpose in the RAG System:**
+- Limits retrieval to the top three matching chunks.
+- Controls how much retrieved context is supplied to the language model.
+- Establishes a consistent retrieval cutoff across chunking experiments.
+
+---
+
+**3. `EMBED_MODEL = &#39;intfloat/multilingual-e5-small&#39;`**
+
+Specifies the multilingual embedding model used by the RAG system.
+
+**Purpose in the RAG System:**
+- Converts vocabulary chunks into numerical vectors.
+- Converts user questions into numerical vectors.
+- Supports semantic similarity retrieval.
+- Enables matching based on semantic relationships.
+
+---
+
+**4. `GROQ_MODEL = &#39;openai/gpt-oss-20b&#39;`**
+
+Specifies the language model identifier used for answer generation through Groq.
+
+**Purpose in the RAG System:**
+- Identifies the model that will generate answers.
+- Supports Filipino vocabulary question answering.
+- Uses retrieved document context as the basis for generating responses.
+
+---
+
+**5. `TEMPERATURE = 0.2`**
+
+Defines the temperature parameter intended for language model generation.
+
+**Purpose in the RAG System:**
+- Controls the sampling behavior of the language model when the parameter is supported and passed to the API.
+- Uses a relatively low temperature to encourage more consistent responses.
+- Reduces, but does not eliminate, generation variability.
+
+---
+
+**6. `DEFAULT_CONFIG = ACTIVE_CONFIG[&#39;id&#39;]`**
+
+Retrieves the identifier of the active configuration.
+
+**Code Breakdown:**
+- `ACTIVE_CONFIG[&#39;id&#39;]` — Accesses the selected configuration identifier.
+- `DEFAULT_CONFIG` — Stores that identifier for use in later processing stages.
+
+**Purpose in the RAG System:**
+- Provides a reusable configuration identifier.
+- Allows downstream functions to reference the active experiment.
+- Supports consistent configuration labeling in retrieval and evaluation records.
+
+---
+
+### Chunking Configuration Validation
+
+**7. `if not (ACTIVE_CONFIG[&#39;chunk_size&#39;] &gt; ACTIVE_CONFIG[&#39;chunk_overlap&#39;] &gt;= 0):`**
+
+Checks whether the chunking parameters satisfy the required numerical relationship.
+
+The validation requires:
+
+`chunk_size &gt; chunk_overlap &gt;= 0`
+
+**Purpose in the RAG System:**
+- Ensures the overlap is not negative.
+- Ensures the overlap is smaller than the chunk size.
+- Prevents invalid chunking parameter combinations.
+
+---
+
+**8. `raise ValueError(f&quot;Invalid chunking configuration: {ACTIVE_CONFIG}&quot;)`**
+
+Raises an error if the chunking validation fails.
+
+**Purpose:**
+- Stops the current cell when parameters are invalid.
+- Displays the configuration responsible for the error.
+- Prevents downstream processing with invalid settings.
+
+---
+
+**9. `if not re.fullmatch( r&#39;[A-Za-z0-9][A-Za-z0-9._-]{1,510}[A-Za-z0-9]&#39;, DEFAULT_CONFIG):`**
+
+Validates the configuration identifier against a regular expression used for ChromaDB naming.
+
+**Code Breakdown:**
+- `re.fullmatch()` — Checks whether the entire identifier matches the pattern.
+- `[A-Za-z0-9]` — Requires an alphanumeric first character.
+- `[A-Za-z0-9._-]{1,510}` — Allows letters, numbers, periods, underscores, and hyphens in the middle.
+- `[A-Za-z0-9]` — Requires an alphanumeric final character.
+
+**Purpose in the RAG System:**
+- Checks the collection identifier&#39;s allowed format.
+- Reduces the possibility of invalid collection names.
+- Supports consistent naming of experimental collections.
+
+---
+
+**10. `raise ValueError(f&quot;Invalid ChromaDB collection name: {DEFAULT_CONFIG}&quot;)`**
+
+Raises an error if the configuration identifier does not match the required pattern.
+
+**Purpose:**
+Prevents the notebook from proceeding with a rejected collection identifier.
+
+---
+
+### Display Active Configuration
+
+**11. `print(&quot;\n&quot; + &quot;=&quot; * 70)`**
+
+Displays a blank line and a horizontal separator.
+
+**Purpose:**
+Improves the organization and readability of the Google Colab output.
+
+---
+
+**12. `print(&quot;ACTIVE CHUNKING CONFIGURATION&quot;)`**
+
+Displays the configuration section heading.
+
+**Purpose:**
+Identifies the experiment settings currently selected by the researcher.
+
+---
+
+**13. `print(&quot;=&quot; * 70)`**
+
+Displays another horizontal separator.
+
+**Purpose:**
+Creates a consistent section header.
+
+---
+
+**14. `print(pd.DataFrame([ACTIVE_CONFIG]).to_string(index=False))`**
+
+Converts the active configuration dictionary into a Pandas DataFrame and displays it as a table.
+
+**Code Breakdown:**
+- `[ACTIVE_CONFIG]` — Wraps the dictionary in a list.
+- `pd.DataFrame()` — Creates a tabular representation.
+- `.to_string()` — Converts the table into printable text.
+- `index=False` — Hides the row index.
+
+**Purpose in the RAG System:**
+Provides a readable summary of the selected chunking configuration.
+
+---
+
+**15. `print(&#39;Embedding model :&#39;, EMBED_MODEL)`**
+
+Displays the selected embedding model identifier.
+
+**Purpose:**
+Documents the embedding model assigned to the current experimental run.
+
+---
+
+**16. `print(&#39;Top-K retrieval :&#39;, TOP_K)`**
+
+Displays the retrieval cutoff.
+
+**Purpose:**
+Confirms the number of document chunks requested during retrieval.
+</pre></section><section data-cell="17" class="cell"><b>Markdown cell 17</b><pre>## 5 · Load embedding model (shared across experiments)</pre></section><section data-cell="18" class="cell"><div class="r"><i>In [32]:</i><pre>t0 = time.perf_counter()
+encoder = SentenceTransformer(EMBED_MODEL)
+embed_load_seconds = time.perf_counter()-t0
+print(&#39;Loaded:&#39;, EMBED_MODEL, &#39;| dimension:&#39;, encoder.get_sentence_embedding_dimension(), &#39;| seconds:&#39;, round(embed_load_seconds,2))</pre></div><div class="r out"><i>Out:</i><pre>Loading weights:   0%|          | 0/199 [00:00&lt;?, ?it/s]</pre></div><div class="r out"><i>Out:</i><pre>Loaded: intfloat/multilingual-e5-small | dimension: 384 | seconds: 5.24
+</pre></div><div class="r out"><i>Out:</i><pre>/tmp/ipykernel_15670/818795618.py:4: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  print(&#39;Loaded:&#39;, EMBED_MODEL, &#39;| dimension:&#39;, encoder.get_sentence_embedding_dimension(), &#39;| seconds:&#39;, round(embed_load_seconds,2))
+</pre></div></section><section data-cell="19" class="cell"><b>Markdown cell 19</b><pre>### Purpose
+
+This section initializes the multilingual embedding model used in the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+The embedding model converts text into numerical vector representations that capture semantic relationships between vocabulary definitions and user questions.
+
+The selected model is:
+
+`intfloat/multilingual-e5-small`
+
+This section also measures the time required to load the model and identifies the dimensionality of its generated embeddings.
+
+These operations prepare the embedding component for the subsequent vector generation and similarity retrieval stages.
+
+---
+
+### Code Explanation
+
+**1. `t0 = time.perf_counter()`**
+
+Records the starting time before loading the embedding model.
+
+- `time` — Python&#39;s built-in time module.
+- `perf_counter()` — Returns a high-resolution performance counter.
+- `t0` — Stores the starting counter value.
+
+**Purpose in the RAG System:**
+- Establishes the beginning of model initialization.
+- Enables measurement of model loading time.
+- Supports runtime performance documentation.
+
+---
+
+**2. `encoder = SentenceTransformer(EMBED_MODEL)`**
+
+Loads the selected SentenceTransformer embedding model.
+
+**Code Breakdown:**
+- `SentenceTransformer()` — Initializes the embedding model using the Sentence Transformers library.
+- `EMBED_MODEL` — Contains the selected model identifier defined in Section 4.
+- `encoder` — Stores the initialized model object.
+
+**Selected Model:**
+`intfloat/multilingual-e5-small`
+
+**Purpose in the RAG System:**
+- Prepares the model for generating text embeddings.
+- Enables conversion of Filipino vocabulary content into numerical vector representations.
+- Supports semantic similarity between user questions and document chunks.
+
+---
+
+**3. `embed_load_seconds = time.perf_counter() - t0`**
+
+Calculates the elapsed time required to initialize the embedding model.
+
+- `time.perf_counter()` — Retrieves the current
+  performance counter value.
+- `t0` — Contains the previously recorded start time.
+- Subtraction — Calculates the elapsed duration.
+- `embed_load_seconds` — Stores the result in seconds.
+
+**Purpose in the RAG System:**
+- Measures embedding model initialization time.
+- Supports monitoring of system setup performance.
+- Helps document the computational requirements
+  of the embedding component.
+
+---
+
+**4. `print(&#39;Loaded:&#39;, EMBED_MODEL, ...)`**
+
+Displays the identifier of the successfully initialized embedding model.
+
+**Purpose:**
+Confirms which embedding model is being used for the current experiment.
+
+---
+
+**5. `encoder.get_sentence_embedding_dimension()`**
+
+Retrieves the dimensionality of the vectors produced by the embedding model.
+
+**Code Breakdown:**
+- `encoder` — The initialized embedding model.
+- `.get_sentence_embedding_dimension()` — Returns the model&#39;s output embedding dimension.
+
+**Expected Model Dimension:**
+384 dimensions for `intfloat/multilingual-e5-small`.
+
+**Purpose in the RAG System:**
+- Identifies the size of each generated vector.
+- Helps verify embedding compatibility.
+- Supports correct vector storage and retrieval within ChromaDB.
+
+---
+
+**6. `round(embed_load_seconds, 2)`**
+
+Rounds the measured model loading time to two decimal places.
+
+**Purpose:**
+Improves the readability of the performance measurement displayed in Google Colab.
+
+The original measurement remains available
+in the `embed_load_seconds` variable.
+
+---
+
+**7. Complete Print Statement**
+
+`print(&#39;Loaded:&#39;, EMBED_MODEL,
+&#39;| dimension:&#39;,
+encoder.get_sentence_embedding_dimension(),
+&#39;| seconds:&#39;, round(embed_load_seconds, 2))`
+
+Displays the embedding model&#39;s initialization summary.
+
+**Output Information:**
+- Loaded model identifier.
+- Embedding vector dimensionality.
+- Model initialization time in seconds.
+
+**Purpose in the RAG System:**
+Provides confirmation that the embedding model
+has been initialized and reports its basic
+technical characteristics.</pre></section><section data-cell="20" class="cell"><b>Markdown cell 20</b><pre>## 6 · Build and inspect the selected ChromaDB collection</pre></section><section data-cell="21" class="cell"><div class="r"><i>In [33]:</i><pre># ============================================================
+# 6. BUILD AND DISPLAY CHUNKING EXPERIMENTS (CHROMADB)
+# ============================================================
+client = chromadb.PersistentClient(path=str(ROOT / &#39;chroma_db&#39;))
+collections = {}
+chunk_rows, experiment_logs = [], []
+
+for cfg in [ACTIVE_CONFIG]:
+    config_id = cfg[&#39;id&#39;]
+    print(&quot;\n&quot; + &quot;=&quot; * 70)
+    print(f&quot;CONFIGURATION {config_id} | SIZE {cfg[&#39;chunk_size&#39;]} | OVERLAP {cfg[&#39;chunk_overlap&#39;]}&quot;)
+    print(&quot;=&quot; * 70)
+
+    t0 = time.perf_counter()
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=cfg[&#39;chunk_size&#39;],
+        chunk_overlap=cfg[&#39;chunk_overlap&#39;],
+        separators=[&#39;\n\n&#39;, &#39;\n&#39;, &#39; &#39;, &#39;&#39;],
+    )
+    chunks = []
+    for p in pages:
+        for j, part in enumerate(splitter.split_text(p[&#39;text&#39;])):
+            chunks.append({&#39;id&#39;: f&quot;{config_id}_p{p[&#39;page&#39;]}_c{j}&quot;,
+                           &#39;page&#39;: p[&#39;page&#39;], &#39;text&#39;: part})
+    if not chunks:
+        raise RuntimeError(f&quot;No chunks generated for {config_id}.&quot;)
+    split_seconds = time.perf_counter() - t0
+    lengths = [len(x[&#39;text&#39;]) for x in chunks]
+
+    print(&quot;\n&quot; + &quot;-&quot; * 70)
+    print(&quot;CHUNKING RESULTS&quot;)
+    print(&quot;-&quot; * 70)
+    print(f&quot;Chunk size             : {cfg[&#39;chunk_size&#39;]} characters&quot;)
+    print(f&quot;Chunk overlap          : {cfg[&#39;chunk_overlap&#39;]} characters&quot;)
+    print(f&quot;Source pages           : {len(pages)}&quot;)
+    print(f&quot;Number of chunks       : {len(chunks)}&quot;)
+    print(f&quot;Average characters     : {np.mean(lengths):.2f}&quot;)
+    print(f&quot;Shortest chunk         : {min(lengths)} characters&quot;)
+    print(f&quot;Longest chunk          : {max(lengths)} characters&quot;)
+    print(f&quot;Chunking seconds       : {split_seconds:.4f}&quot;)
+
+    print(&quot;\n&quot; + &quot;-&quot; * 70)
+    print(f&quot;SAMPLE CHUNKS — {config_id} (FIRST 3)&quot;)
+    print(&quot;-&quot; * 70)
+    for chunk in chunks[:3]:
+        print(f&quot;\nChunk ID   : {chunk[&#39;id&#39;]}&quot;)
+        print(f&quot;Page       : {chunk[&#39;page&#39;]}&quot;)
+        print(f&quot;Characters : {len(chunk[&#39;text&#39;])}&quot;)
+        print(&quot;-&quot; * 70)
+        print(chunk[&#39;text&#39;])
+
+    t1 = time.perf_counter()
+    vectors = encoder.encode(
+        [&#39;passage: &#39; + x[&#39;text&#39;] for x in chunks],
+        normalize_embeddings=True, batch_size=32, show_progress_bar=False,
+    )
+    embedding_seconds = time.perf_counter() - t1
+
+    t2 = time.perf_counter()
+    try:
+        client.delete_collection(config_id)
+    except (ValueError, chromadb.errors.NotFoundError):
+        pass
+    col = client.create_collection(name=config_id, metadata={&#39;hnsw:space&#39;: &#39;cosine&#39;})
+    for start in range(0, len(chunks), 100):
+        batch = chunks[start:start + 100]
+        col.add(
+            ids=[x[&#39;id&#39;] for x in batch],
+            documents=[x[&#39;text&#39;] for x in batch],
+            metadatas=[{&#39;page&#39;: x[&#39;page&#39;], &#39;config&#39;: config_id} for x in batch],
+            embeddings=vectors[start:start + 100].tolist(),
+        )
+    index_seconds = time.perf_counter() - t2
+    collections[config_id] = col
+    experiment_logs.append({
+        **cfg, &#39;pages&#39;: len(pages), &#39;chunks&#39;: len(chunks),
+        &#39;mean_chunk_chars&#39;: round(float(np.mean(lengths)), 1),
+        &#39;min_chunk_chars&#39;: min(lengths), &#39;max_chunk_chars&#39;: max(lengths),
+        &#39;split_seconds&#39;: round(split_seconds, 4),
+        &#39;embedding_seconds&#39;: round(embedding_seconds, 4),
+        &#39;index_seconds&#39;: round(index_seconds, 4),
+        &#39;vector_dimension&#39;: int(vectors.shape[1]),
+    })
+    chunk_rows.extend({&#39;config&#39;: config_id, **x, &#39;characters&#39;: len(x[&#39;text&#39;])} for x in chunks)
+
+    print(&quot;\n&quot; + &quot;-&quot; * 70)
+    print(&quot;EMBEDDING AND VECTOR DATABASE RESULTS&quot;)
+    print(&quot;-&quot; * 70)
+    print(f&quot;Embedding model        : {EMBED_MODEL}&quot;)
+    print(f&quot;Vector dimensions      : {vectors.shape[1]}&quot;)
+    print(f&quot;Indexed Chroma records : {col.count()}&quot;)
+    print(f&quot;Embedding seconds      : {embedding_seconds:.4f}&quot;)
+    print(f&quot;Indexing seconds       : {index_seconds:.4f}&quot;)
+
+print(&quot;\n&quot; + &quot;=&quot; * 70)
+print(&quot;CURRENT CONFIGURATION SUMMARY&quot;)
+print(&quot;=&quot; * 70)
+print(pd.DataFrame(experiment_logs).to_string(index=False))</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+CONFIGURATION CFG3 | SIZE 500 | OVERLAP 50
+======================================================================
+
+----------------------------------------------------------------------
+CHUNKING RESULTS
+----------------------------------------------------------------------
+Chunk size             : 500 characters
+Chunk overlap          : 50 characters
+Source pages           : 99
+Number of chunks       : 274
+Average characters     : 329.08
+Shortest chunk         : 154 characters
+Longest chunk          : 498 characters
+Chunking seconds       : 0.0019
+
+----------------------------------------------------------------------
+SAMPLE CHUNKS — CFG3 (FIRST 3)
+----------------------------------------------------------------------
+
+Chunk ID   : CFG3_p1_c0
+Page       : 1
+Characters : 319
+----------------------------------------------------------------------
+ARALIN 1
+
+VOCABULARY ENTRY 001
+WORD: namamanglaw
+PART_OF_SPEECH: pang-uri
+DEFINITION: damdamin ng isang nangungulila; kalagayang malungkot, lalo na kung gabing madilim at sa ilang na pook
+CONTEXTUAL_MEANING: malungkot at mapanglaw ang kapaligiran
+STANZA: FL-001; KS-05, KS-20
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+Chunk ID   : CFG3_p1_c1
+Page       : 1
+Characters : 293
+----------------------------------------------------------------------
+VOCABULARY ENTRY 002
+WORD: dawag
+PART_OF_SPEECH: pangngalan
+DEFINITION: alinman sa maraming species ng halamang-baging na matinik at malakahoy
+CONTEXTUAL_MEANING: mga matitinik at magkakasalabid na halamang-baging sa kagubatan
+STANZA: FL-001, FL-127
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+Chunk ID   : CFG3_p1_c2
+Page       : 1
+Characters : 263
+----------------------------------------------------------------------
+VOCABULARY ENTRY 003
+WORD: masukal
+PART_OF_SPEECH: pang-uri
+DEFINITION: maraming duming nakakalat; magubat
+CONTEXTUAL_MEANING: makapal ang mga halaman at mahirap daanan ang kagubatan
+STANZA: FL-001
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+VOCABULARY ENTRY 004
+
+----------------------------------------------------------------------
+EMBEDDING AND VECTOR DATABASE RESULTS
+----------------------------------------------------------------------
+Embedding model        : intfloat/multilingual-e5-small
+Vector dimensions      : 384
+Indexed Chroma records : 274
+Embedding seconds      : 32.9854
+Indexing seconds       : 0.4726
+
+======================================================================
+CURRENT CONFIGURATION SUMMARY
+======================================================================
+  id  chunk_size  chunk_overlap  pages  chunks  mean_chunk_chars  min_chunk_chars  max_chunk_chars  split_seconds  embedding_seconds  index_seconds  vector_dimension
+CFG3         500             50     99     274             329.1              154              498         0.0019            32.9854         0.4726               384
+</pre></div></section><section data-cell="22" class="cell"><b>Markdown cell 22</b><pre>### Purpose
+
+This section implements the document chunking, embedding
+generation, and vector database construction stages of
+the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+It processes the formatted vocabulary text extracted
+from the PDF using the active chunking configuration
+defined in Section 4.
+
+The section performs the following operations:
+
+1. Initializes a persistent ChromaDB vector database.
+2. Divides the vocabulary text into document chunks.
+3. Preserves the source PDF page number of each chunk.
+4. Calculates chunking statistics and execution time.
+5. Displays sample chunks for manual inspection.
+6. Converts chunks into numerical vector embeddings.
+7. Creates a ChromaDB collection using cosine distance.
+8. Stores embeddings, chunk text, and metadata.
+9. Records experimental performance measurements.
+10. Displays the active configuration summary.
+
+Only one configuration is processed per run.
+
+---
+
+### Code Explanation
+
+#### A. ChromaDB Initialization
+
+**1. `client = chromadb.PersistentClient(
+path=str(ROOT / &#39;chroma_db&#39;))`**
+
+Initializes a persistent ChromaDB database client.
+
+**Code Breakdown:**
+- `chromadb.PersistentClient()` — Creates a ChromaDB client that stores data on the filesystem.
+- `ROOT` — Output directory defined in Section 2A.
+- `ROOT / &#39;chroma_db&#39;` — Specifies the database folder.
+- `str()` — Converts the path into a string.
+
+**Purpose in the RAG System:**
+- Establishes the vector database environment.
+- Allows storage of vocabulary embeddings.
+- Supports later similarity-based retrieval.
+- Maintains the database within the configured output directory.
+
+---
+
+**2. `collections = {}`**
+
+Creates an empty Python dictionary.
+
+**Purpose:**
+Stores references to the ChromaDB collections created during the current notebook execution.
+
+**Example:**
+`collections[&#39;CFG1&#39;]`
+
+This allows the retrieval function to access the collection associated with the active chunking configuration.
+
+---
+
+**3. `chunk_rows, experiment_logs = [], []`**
+
+Initializes two empty lists.
+
+**Code Breakdown:**
+- `chunk_rows` — Stores individual chunk records.
+- `experiment_logs` — Stores experiment-level
+  statistics and performance measurements.
+
+**Purpose in the RAG System:**
+Organizes the generated data for later analysis and CSV or Excel export.
+
+---
+
+#### B. Active Configuration Processing
+
+**4. `for cfg in [ACTIVE_CONFIG]:`**
+
+Starts a loop using the active configuration defined in Section 4.
+
+**Purpose:**
+Processes exactly one selected configuration during the current execution.
+
+---
+
+**5. `config_id = cfg[&#39;id&#39;]`**
+
+Retrieves the active configuration identifier.
+
+**Purpose:**
+Provides a consistent identifier for:
+- Generated chunks.
+- ChromaDB collection names.
+- Experimental records.
+- Exported results.
+
+---
+
+**6. Configuration Display Statements**
+
+`print(&quot;=&quot; * 70)`
+
+`print(f&quot;CONFIGURATION {config_id} ...&quot;)`
+
+Displays the active configuration identifier, chunk size, and overlap.
+
+**Purpose:**
+Makes the experiment settings visible before the chunking process begins.
+
+---
+
+#### C. Recursive Text Chunking
+
+**7. `t0 = time.perf_counter()`**
+
+Records the starting time for chunk generation.
+
+**Purpose:**
+Enables measurement of the chunking operation&#39;s execution time.
+
+---
+
+**8. `splitter = RecursiveCharacterTextSplitter(...)`**
+
+Initializes the recursive character-based text splitting algorithm.
+
+**Parameters:**
+
+`chunk_size=cfg[&#39;chunk_size&#39;]`
+
+- Defines the maximum target chunk length.
+- Uses the value selected in Section 4.
+- Measured in characters by default.
+
+`chunk_overlap=cfg[&#39;chunk_overlap&#39;]`
+
+- Defines the target overlap between neighboring chunks.
+- Helps retain context across chunk boundaries.
+
+`separators=[&#39;\n\n&#39;, &#39;\n&#39;, &#39; &#39;, &#39;&#39;]`
+
+Defines the order of preferred text separators:
+
+1. `\n\n` — Paragraph or section boundaries.
+2. `\n` — Individual line boundaries.
+3. `&#39; &#39;` — Word boundaries.
+4. `&#39;&#39;` — Character-level splitting.
+
+**Purpose in the RAG System:**
+- Divides long vocabulary content into smaller retrievable text units.
+- Attempts to preserve natural text boundaries.
+- Applies the experimental chunk size and overlap settings.
+
+---
+
+**9. `chunks = []`**
+
+Creates an empty list for generated chunks.
+
+**Purpose:**
+Collects all chunks produced from the formatted PDF pages.
+
+---
+
+**10. `for p in pages:`**
+
+Iterates through the formatted page records created in Section 3.
+
+**Purpose:**
+Processes each PDF page independently, preserving its original page reference.
+
+---
+
+**11. `for j, part in enumerate( splitter.split_text(p[&#39;text&#39;])):`**
+
+Splits the current page into chunks and assigns an index to each generated chunk.
+
+- `p[&#39;text&#39;]` — Formatted text from the current page.
+- `splitter.split_text()` — Performs text chunking.
+- `enumerate()` — Assigns an index to each chunk.
+- `j` — Chunk index within the page.
+- `part` — Text content of the generated chunk.
+
+**Purpose:**
+Creates retrievable text segments while tracking their order within each page.
+
+---
+
+**12. `chunks.append({...})`**
+
+Adds a chunk record to the `chunks` list.
+
+Each record contains:
+
+- `id` — Unique chunk identifier.
+- `page` — Source PDF page number.
+- `text` — Chunk content.
+
+**Example Structure:**
+
+`{&#39;id&#39;: &#39;CFG1_p13_c0&#39;,
+&#39;page&#39;: 13,
+&#39;text&#39;: &#39;Vocabulary content...&#39;}`
+
+**Purpose in the RAG System:**
+- Preserves the relationship between chunks and their source pages.
+- Supports retrieval traceability.
+- Allows retrieved chunks to be identified during manual evaluation.
+
+---
+
+**13. `if not chunks:`**
+
+Checks whether the chunking process produced at least one chunk.
+
+**Purpose:**
+Prevents empty chunk collections from proceeding to embedding generation.
+
+---
+
+**14. `raise RuntimeError(...)`**
+
+Stops execution when no chunks were generated.
+
+**Purpose:**
+Ensures that the embedding and indexing stages receive valid text inputs.
+
+---
+
+**15. `split_seconds = time.perf_counter() - t0`**
+
+Calculates the elapsed chunking time.
+
+**Purpose:**
+Measures the time required to divide the formatted PDF text into chunks.
+
+---
+
+**16. `lengths = [len(x[&#39;text&#39;]) for x in chunks]`**
+
+Creates a list containing the character length of every generated chunk.
+
+**Purpose:**
+Provides the data needed to calculate chunk size statistics.
+
+---
+
+#### D. Chunking Statistics
+
+**17. `print(&quot;CHUNKING RESULTS&quot;)`**
+
+Displays the chunking results heading.
+
+**Purpose:**
+Separates the chunking statistics from other notebook outputs.
+
+---
+
+**18. `print(f&quot;Chunk size ...&quot;)`**
+
+Displays the configured chunk size.
+
+**Purpose:**
+Documents the maximum target chunk length used in the experiment.
+
+---
+
+**19. `print(f&quot;Chunk overlap ...&quot;)`**
+
+Displays the configured overlap.
+
+**Purpose:**
+Documents the intended context overlap between neighboring chunks.
+
+---
+
+**20. `print(f&quot;Source pages ...&quot;)`**
+
+Displays the number of formatted source pages.
+
+**Purpose:**
+Identifies how many PDF pages were included in the chunking operation.
+
+---
+
+**21. `print(f&quot;Number of chunks ...&quot;)`**
+
+Displays the total number of generated chunks.
+
+**Purpose in the RAG System:**
+Measures the number of text segments created under the active configuration.
+
+---
+
+**22. `np.mean(lengths)`**
+
+Calculates the average character length of the generated chunks.
+
+**Purpose:**
+Provides a descriptive measure of actual chunk lengths.
+
+---
+
+**23. `min(lengths)`**
+
+Identifies the shortest generated chunk.
+
+**Purpose:**
+Helps identify unusually small text segments that may contain limited context.
+
+---
+
+**24. `max(lengths)`**
+
+Identifies the longest generated chunk.
+
+**Purpose:**
+Confirms the largest chunk produced by the selected splitting configuration.
+
+---
+
+**25. `split_seconds:.4f`**
+
+Formats the chunking time to four decimal places.
+
+**Purpose:**
+Provides a readable performance measurement.
+
+---
+
+#### E. Sample Chunk Inspection
+
+**26. `for chunk in chunks[:3]:`**
+
+Iterates through the first three generated chunks.
+
+**Code Breakdown:**
+- `chunks[:3]` — Selects the first three chunks.
+- `chunk` — Represents the current chunk record.
+
+**Purpose in the RAG System:**
+Allows the researcher to inspect sample chunk boundaries and text completeness.
+
+---
+
+**27. `print(f&quot;Chunk ID : {chunk[&#39;id&#39;]}&quot;)`**
+
+Displays the unique chunk identifier.
+
+**Purpose:**
+Supports chunk identification and traceability.
+
+---
+
+**28. `print(f&quot;Page : {chunk[&#39;page&#39;]}&quot;)`**
+
+Displays the source PDF page number.
+
+**Purpose:**
+Identifies where the chunk originated.
+
+---
+
+**29. `print(f&quot;Characters : {len(chunk[&#39;text&#39;])}&quot;)`**
+
+Displays the actual chunk length.
+
+**Purpose:**
+Allows comparison between configured and generated chunk lengths.
+
+---
+
+**30. `print(chunk[&#39;text&#39;])`**
+
+Displays the full text of the sample chunk.
+
+**Purpose in the RAG System:**
+Allows manual inspection of whether vocabulary definitions and contextual information remain intact.
+
+**Research Relevance:**
+This helps identify incomplete definitions or unnecessary text within chunks.
+
+---
+
+#### F. Embedding Generation
+
+**31. `t1 = time.perf_counter()`**
+
+Records the starting time for embedding generation.
+
+**Purpose:**
+Enables measurement of embedding computation time.
+
+---
+
+**32. `vectors = encoder.encode(...)`**
+
+Converts the generated document chunks into numerical vector embeddings.
+
+`[&#39;passage: &#39; + x[&#39;text&#39;] for x in chunks]`
+
+- Retrieves the text of each chunk.
+- Adds the `passage: ` prefix.
+- Prepares the text for the E5 embedding model.
+
+**Why `passage:` is used:**
+The multilingual E5 model is designed to use different input prefixes for retrieval tasks.
+
+- `passage:` — Document text being indexed.
+- `query:` — User question being searched.
+
+`normalize_embeddings=True`
+
+- Normalizes the generated vectors to unit length.
+- Supports consistent similarity calculations.
+
+`batch_size=32`
+
+- Processes up to 32 texts per encoding batch.
+- Controls embedding computation batching.
+
+`show_progress_bar=False`
+
+- Disables the encoding progress bar.
+- Keeps the notebook output concise.
+
+**Purpose in the RAG System:**
+Transforms vocabulary chunks into vectors that can be stored and compared in ChromaDB.
+
+---
+
+**33. `embedding_seconds = time.perf_counter() - t1`**
+
+Calculates embedding generation time.
+
+**Purpose:**
+Measures the duration required to encode the generated document chunks.
+
+---
+
+#### G. ChromaDB Collection Construction
+
+**34. `t2 = time.perf_counter()`**
+
+Records the start of the database indexing stage.
+
+**Purpose:**
+Measures the time required to recreate and populate the vector collection.
+
+---
+
+**35. `try: client.delete_collection(config_id)`**
+
+Attempts to delete an existing ChromaDB collection with the same configuration identifier.
+
+**Purpose:**
+- Prevents old records from being reused.
+- Allows the collection to be rebuilt.
+- Ensures that the active collection reflects the current chunking output.
+
+---
+
+**36. `except (ValueError, chromadb.errors.NotFoundError): pass`**
+
+Handles the specified exceptions raised when attempting collection deletion.
+
+**Purpose:**
+Allows execution to continue when the collection does not exist or the specified
+exception is encountered.
+
+---
+
+**37. `col = client.create_collection(...)`**
+
+Creates a new ChromaDB collection.
+
+**Parameters:**
+- `name=config_id` — Uses the active configuration ID.
+- `metadata={&#39;hnsw:space&#39;: &#39;cosine&#39;}` — Requests cosine
+  distance as the vector similarity space.
+
+**Purpose in the RAG System:**
+Creates the storage structure for document embeddings and their associated information.
+
+---
+
+**38. `for start in range(0, len(chunks), 100):`**
+
+Iterates through the generated chunks in groups of up to 100.
+
+**Purpose:**
+Divides database insertion into manageable batches.
+
+---
+
+**39. `batch = chunks[start:start + 100]`**
+
+Selects the current batch of chunks.
+
+**Purpose:**
+Prepares a subset of chunk records for insertion into ChromaDB.
+
+---
+
+**40. `col.add(...)`**
+
+Inserts the current batch into the ChromaDB collection.
+
+The insertion includes:
+
+`ids`
+
+- Unique identifiers of the chunks.
+
+`documents`
+
+- Original text content of the chunks.
+
+`metadatas`
+
+- Source page number.
+- Active configuration identifier.
+
+`embeddings`
+
+- Numerical vectors produced by the SentenceTransformer model.
+
+**Purpose in the RAG System:**
+Stores the information needed for semantic similarity retrieval.
+
+---
+
+**41. `vectors[start:start + 100].tolist()`**
+
+Selects the corresponding embedding vectors and converts them into Python lists.
+
+**Purpose:**
+Provides the numerical embedding data for the current insertion batch.
+
+---
+
+**42. `index_seconds = time.perf_counter() - t2`**
+
+Calculates the elapsed database indexing time.
+
+**Purpose:**
+Measures collection deletion, creation, and vector insertion time.
+
+---
+
+**43. `collections[config_id] = col`**
+
+Stores the ChromaDB collection reference in the `collections` dictionary.
+
+**Purpose in the RAG System:**
+Allows later retrieval operations to access the indexed vocabulary chunks.
+
+---
+
+#### H. Experimental Record Management
+
+**44. `experiment_logs.append({...})`**
+
+Adds a summary record for the active experiment.
+
+The record contains:
+
+- Configuration identifier.
+- Chunk size and overlap.
+- Number of source pages.
+- Number of generated chunks.
+- Average chunk length.
+- Minimum and maximum chunk lengths.
+- Chunking time.
+- Embedding generation time.
+- Indexing time.
+- Embedding vector dimension.
+
+**Purpose in the RAG System:**
+Creates a structured record of the experimental configuration and its processing performance.
+
+
+---
+
+**45. `chunk_rows.extend(...)`**
+
+Adds individual chunk records to the `chunk_rows` list.
+
+**Stored Information:**
+- Configuration identifier.
+- Chunk identifier.
+- Source page number.
+- Chunk text.
+- Character count.
+
+**Purpose:**
+Supports chunk-level analysis and later CSV or Excel export.
+
+---
+
+#### I. Embedding and Database Results
+
+**46. `print(&quot;EMBEDDING AND VECTOR DATABASE RESULTS&quot;)`**
+
+Displays the embedding and indexing results section heading.
+
+---
+
+**47. `print(f&quot;Embedding model : {EMBED_MODEL}&quot;)`**
+
+Displays the embedding model identifier.
+
+**Purpose:**
+Confirms the model used to generate vectors.
+
+---
+
+**48. `print(f&quot;Vector dimensions :
+{vectors.shape[1]}&quot;)`**
+
+Displays the dimensionality of the generated embeddings.
+
+**Purpose:**
+Verifies the vector size stored in ChromaDB.
+
+For the selected multilingual E5-small model, the expected dimension is 384.
+
+---
+
+**49. `print(f&quot;Indexed Chroma records : {col.count()}&quot;)`**
+
+Retrieves the number of records stored
+in the active ChromaDB collection.
+
+**Purpose:**
+Confirms the number of indexed document chunks.
+
+---
+
+**50. Embedding and Indexing Time Displays**
+
+`print(f&quot;Embedding seconds ...&quot;)`
+
+`print(f&quot;Indexing seconds ...&quot;)`
+
+Displays the elapsed processing times.
+
+**Purpose:**
+Provides performance measurements for the embedding and indexing stages.
+
+---
+
+#### J. Configuration Summary
+
+**51. `print(&quot;CURRENT CONFIGURATION SUMMARY&quot;)`**
+
+Displays the final experiment summary heading.
+
+---
+
+**52. `pd.DataFrame(experiment_logs)
+.to_string(index=False)`**
+
+Converts the experiment log records
+into a readable table.
+
+**Purpose in the RAG System:**
+- Summarizes the active experiment.
+- Displays chunking and indexing statistics.
+- Supports experiment documentation.
+
+</pre></section><section data-cell="23" class="cell"><b>Markdown cell 23</b><pre>## 7 · Retrieval with source pages and timing
+</pre></section><section data-cell="24" class="cell"><div class="r"><i>In [34]:</i><pre># ============================================================
+# 7. RETRIEVAL TEST AND DETAILED RESULTS
+# ============================================================
+def retrieve(question, config_id=None, k=TOP_K):
+    if config_id is None:
+        config_id = DEFAULT_CONFIG
+    if config_id not in collections:
+        raise KeyError(f&quot;Unknown configuration {config_id!r}; available: {list(collections)}&quot;)
+    t0 = time.perf_counter()
+    qvec = encoder.encode([&#39;query: &#39; + question], normalize_embeddings=True)[0].tolist()
+    result = collections[config_id].query(
+        query_embeddings=[qvec], n_results=min(k, collections[config_id].count()),
+        include=[&#39;documents&#39;, &#39;metadatas&#39;, &#39;distances&#39;],
+    )
+    docs = [
+        {&#39;rank&#39;: i + 1, &#39;id&#39;: rid, &#39;text&#39;: txt, &#39;page&#39;: meta[&#39;page&#39;],
+         &#39;distance&#39;: float(dist)}
+        for i, (rid, txt, meta, dist) in enumerate(zip(
+            result[&#39;ids&#39;][0], result[&#39;documents&#39;][0],
+            result[&#39;metadatas&#39;][0], result[&#39;distances&#39;][0],
+        ))
+    ]
+    return docs, time.perf_counter() - t0
+
+q = &#39;Ano ang ibig sabihin ng hilahil?&#39;
+results, elapsed = retrieve(q)
+print(&quot;\n&quot; + &quot;=&quot; * 70)
+print(&quot;TESTING CHROMA VECTOR STORE&quot;)
+print(&quot;=&quot; * 70)
+print(f&quot;Query               : {q}&quot;)
+print(f&quot;Configuration       : {DEFAULT_CONFIG}&quot;)
+print(f&quot;Retrieval seconds   : {elapsed:.4f}&quot;)
+print(f&quot;Results retrieved   : {len(results)}&quot;)
+for x in results:
+    print(&quot;\n&quot; + &quot;-&quot; * 70)
+    print(f&quot;RESULT {x[&#39;rank&#39;]}&quot;)
+    print(&quot;-&quot; * 70)
+    print(f&quot;Chunk ID        : {x[&#39;id&#39;]}&quot;)
+    print(f&quot;Page            : {x[&#39;page&#39;]}&quot;)
+    print(f&quot;Cosine distance : {x[&#39;distance&#39;]:.4f} (lower is better)&quot;)
+    print(&quot;-&quot; * 70)
+    print(x[&#39;text&#39;])</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+TESTING CHROMA VECTOR STORE
+======================================================================
+Query               : Ano ang ibig sabihin ng hilahil?
+Configuration       : CFG3
+Retrieval seconds   : 0.0675
+Results retrieved   : 3
+
+----------------------------------------------------------------------
+RESULT 1
+----------------------------------------------------------------------
+Chunk ID        : CFG3_p5_c2
+Page            : 5
+Cosine distance : 0.1132 (lower is better)
+----------------------------------------------------------------------
+VOCABULARY ENTRY 015
+WORD: hilahil
+PART_OF_SPEECH: pangngalan
+DEFINITION: dusa, bagabag, o malalim na pagdurusa at ligalig
+CONTEXTUAL_MEANING: mga paghihirap at alalahaning dinanas dahil sa pag-ibig
+STANZA: FL-042, FL-097; KS-03 (Kay Selya)
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+----------------------------------------------------------------------
+RESULT 2
+----------------------------------------------------------------------
+Chunk ID        : CFG3_p41_c0
+Page            : 41
+Cosine distance : 0.1426 (lower is better)
+----------------------------------------------------------------------
+VOCABULARY ENTRY 117
+WORD: dilidili
+PART_OF_SPEECH: pangngalan
+DEFINITION: Mula sa dili, na tumutukoy sa malay, kamalayan, o unawang nililikha ng kapangyarihan ng isip.
+CONTEXTUAL_MEANING: Malalim na pag-iisip o pagninilay ng makata, na iniuugnay niya sa kaniyang pagmamahal kay Selya.
+STANZA: KS-22
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino (díli)
+
+ARALIN 11
+
+----------------------------------------------------------------------
+RESULT 3
+----------------------------------------------------------------------
+Chunk ID        : CFG3_p57_c2
+Page            : 57
+Cosine distance : 0.1544 (lower is better)
+----------------------------------------------------------------------
+VOCABULARY ENTRY 157
+WORD: maulila
+PART_OF_SPEECH: Pandiwa
+DEFINITION: Maiwang walang magulang; sa matalinghagang gamit, maiwang wala ang minamahal.
+CONTEXTUAL_MEANING: Mahiwalay kay Laura dahil sa paglalakbay patungo sa digmaan.
+STANZA: 298
+</pre></div></section><section data-cell="25" class="cell"><b>Markdown cell 25</b><pre>### Purpose
+
+This section implements and tests the semantic retrieval component of the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+It defines a reusable retrieval function that converts a Filipino vocabulary question into a numerical embedding, searches the active ChromaDB collection, and returns the most semantically similar document chunks.
+
+The section also measures retrieval execution time and displays the retrieved results with their rankings, chunk identifiers, source page numbers, cosine distances, and original text.
+
+The retrieved information will serve as the supporting
+document context for the language model in the subsequent
+answer generation stage.
+
+---
+
+### Code Explanation
+
+#### A. Define the Retrieval Function
+
+**1. `def retrieve(question, config_id=None, k=TOP_K):`**
+
+Defines a reusable Python function named `retrieve`.
+
+**Parameters:**
+- `question` — The user&#39;s vocabulary question.
+- `config_id` — Identifier of the ChromaDB collection to search.
+- `k` — Maximum number of chunks requested.
+
+**Purpose in the RAG System:**
+Provides a standardized method for retrieving relevant vocabulary chunks from the selected vector collection.
+
+The default retrieval cutoff is defined by `TOP_K` in Section 4.
+
+---
+
+**2. `if config_id is None:`**
+
+Checks whether a configuration identifier was provided.
+
+**Purpose:**
+Determines whether the function should use the default experimental configuration.
+
+---
+
+**3. `config_id = DEFAULT_CONFIG`**
+
+Assigns the active configuration identifier when no specific configuration is provided.
+
+**Purpose in the RAG System:**
+Ensures retrieval uses the collection corresponding to the active chunking experiment.
+
+---
+
+**4. `if config_id not in collections:`**
+
+Checks whether the requested configuration exists in the `collections` dictionary.
+
+**Purpose:**
+Prevents retrieval from an unavailable or uninitialized ChromaDB collection.
+
+---
+
+**5. `raise KeyError(...)`**
+
+Raises an error when the requested configuration cannot be found.
+
+**Purpose:**
+- Stops the invalid retrieval request.
+- Identifies the unavailable configuration.
+- Displays the collection identifiers currently available in memory.
+
+---
+
+#### B. Query Embedding Generation
+
+**6. `t0 = time.perf_counter()`**
+
+Records the starting time of the retrieval operation.
+
+**Purpose:**
+Enables measurement of the combined query embedding and ChromaDB search execution time.
+
+---
+
+**7. `qvec = encoder.encode([&#39;query: &#39; + question], normalize_embeddings=True)[0].tolist()`**
+
+Converts the user&#39;s question into a numerical vector.
+
+**Code Breakdown:**
+
+`&#39;query: &#39; + question`
+
+- Adds the `query:` prefix to the question.
+- Follows the input formatting convention of the multilingual E5 embedding model.
+
+`encoder.encode(...)`
+
+- Uses the SentenceTransformer model loaded in Section 5.
+- Generates a numerical representation of the question.
+
+`normalize_embeddings=True`
+
+- Normalizes the query embedding to unit length.
+- Supports consistent vector similarity comparison.
+
+`[0]`
+
+- Selects the first embedding from the returned collection of embeddings.
+- Only one question is encoded in this operation.
+
+`.tolist()`
+
+- Converts the embedding into a Python list.
+- Prepares the vector for the ChromaDB query.
+
+**Purpose in the RAG System:**
+Transforms the user&#39;s Filipino vocabulary question into a vector that can be compared with the stored document embeddings.
+
+---
+
+#### C. ChromaDB Similarity Search
+
+**8. `result = collections[config_id].query(...)`**
+
+Performs a vector similarity search against the selected ChromaDB collection.
+
+**Purpose in the RAG System:**
+Identifies stored vocabulary chunks whose embeddings are closest to the question embedding.
+
+---
+
+**9. `query_embeddings=[qvec]`**
+
+Passes the generated question embedding to ChromaDB.
+
+**Purpose:**
+Uses the numerical representation of the question as the basis for similarity retrieval.
+
+---
+
+**10. `n_results=min(k, collections[config_id].count())`**
+
+Determines how many results to request.
+
+**Code Breakdown:**
+- `k` — Requested retrieval cutoff.
+- `.count()` — Number of records in the collection.
+- `min()` — Selects the smaller value.
+
+**Purpose:**
+Prevents requesting more results than the
+number of stored document chunks.
+
+If the collection contains only two chunks, the function requests two results.
+
+---
+
+**11. `include=[&#39;documents&#39;, &#39;metadatas&#39;, &#39;distances&#39;]`**
+
+Specifies the information ChromaDB should return.
+
+**Returned Information:**
+- `documents` — Retrieved vocabulary chunk text.
+- `metadatas` — Associated metadata, including
+  the source PDF page number.
+- `distances` — Vector distances between the
+  query and retrieved document embeddings.
+
+**Purpose in the RAG System:**
+Provides the content and source information needed for answer generation and manual evaluation.
+
+---
+
+#### D. Organize Retrieved Results
+
+**12. `docs = [...]`**
+
+Creates a list of structured retrieval records.
+
+**Purpose:**
+Converts ChromaDB&#39;s returned results into a consistent format for later processing.
+
+Each record contains:
+
+- `rank`
+- `id`
+- `text`
+- `page`
+- `distance`
+
+---
+
+**13. `&#39;rank&#39;: i + 1`**
+
+Assigns a ranking position to each retrieved chunk.
+
+**Purpose:**
+Identifies the order of retrieval results.
+
+---
+
+**14. `&#39;id&#39;: rid`**
+
+Stores the retrieved chunk identifier.
+
+**Purpose:**
+Allows the researcher to identify the exact document chunk returned by ChromaDB.
+
+---
+
+**15. `&#39;text&#39;: txt`**
+
+Stores the retrieved chunk&#39;s original text.
+
+**Purpose in the RAG System:**
+Provides the vocabulary information that may be supplied to the language model as context.
+
+---
+
+**16. `&#39;page&#39;: meta[&#39;page&#39;]`**
+
+Retrieves the source PDF page number from the stored chunk metadata.
+
+**Purpose:**
+Supports source identification and page-based references.
+
+**Important:**
+The page number represents the PDF page index assigned during extraction in Section 3.
+
+---
+
+**17. `&#39;distance&#39;: float(dist)`**
+
+Stores the returned vector distance as a floating-point number.
+
+**Purpose:**
+Provides a numerical measure of vector similarity.
+
+Because the collection uses cosine distance, smaller values generally indicate greater semantic similarity.
+
+
+
+---
+
+**18. `for i, (rid, txt, meta, dist) in enumerate(zip(...))`**
+
+Iterates through the retrieved result fields.
+
+- `zip()` — Groups corresponding chunk IDs, texts, metadata, and distances.
+- `enumerate()` — Assigns a position to each result.
+- `i` — Zero-based result index.
+- `rid` — Retrieved chunk identifier.
+- `txt` — Retrieved chunk text.
+- `meta` — Associated chunk metadata.
+- `dist` — Returned vector distance.
+
+**Purpose:**
+Combines the separate ChromaDB output fields into individual structured retrieval records.
+
+---
+
+**19. `return docs, time.perf_counter() - t0`**
+
+Returns the retrieval results and elapsed time.
+
+**Returned Values:**
+- `docs` — List of retrieved chunk records.
+- Elapsed seconds — Time spent generating
+  the query embedding and searching ChromaDB.
+
+**Purpose in the RAG System:**
+Makes the retrieval results available to other notebook sections, including RAG answer generation.
+
+---
+
+#### E. Execute a Test Retrieval
+
+**20. `q = &#39;Ano ang ibig sabihin ng hilahil?&#39;`**
+
+Defines a sample Filipino vocabulary question.
+
+**Purpose:**
+Provides a test input for checking whether the retrieval pipeline is functioning.
+
+---
+
+**21. `results, elapsed = retrieve(q)`**
+
+Executes the retrieval function using the test question.
+
+- `retrieve(q)` — Searches the active collection.
+- `results` — Stores the retrieved chunk records.
+- `elapsed` — Stores retrieval execution time.
+
+**Purpose:**
+Tests the complete query embedding and vector retrieval process.
+
+---
+
+#### F. Display Retrieval Summary
+
+**22. `print(&quot;TESTING CHROMA VECTOR STORE&quot;)`**
+
+Displays the retrieval test heading.
+
+**Purpose:**
+Identifies the current notebook operation.
+
+---
+
+**23. `print(f&quot;Query : {q}&quot;)`**
+
+Displays the submitted vocabulary question.
+
+**Purpose:**
+Documents the input used for the retrieval test.
+
+---
+
+**24. `print(f&quot;Configuration : {DEFAULT_CONFIG}&quot;)`**
+
+Displays the active chunking configuration.
+
+**Purpose:**
+Identifies which ChromaDB collection was searched.
+
+---
+
+**25. `print(f&quot;Retrieval seconds : {elapsed:.4f}&quot;)`**
+
+Displays retrieval execution time to four decimal places.
+
+**Purpose:**
+Measures the response time of the retrieval stage.
+
+---
+
+**26. `print(f&quot;Results retrieved :
+{len(results)}&quot;)`**
+
+Displays the number of returned chunks.
+
+**Purpose:**
+Confirms how many retrieval results were produced by ChromaDB.
+
+---
+
+#### G. Display Detailed Retrieved Chunks
+
+**27. `for x in results:`**
+
+Iterates through every retrieved chunk.
+
+**Purpose:**
+Displays the results individually for manual inspection.
+
+---
+
+**28. `print(f&quot;RESULT {x[&#39;rank&#39;]}&quot;)`**
+
+Displays the retrieval rank.
+
+**Purpose:**
+Makes the ordering of retrieved chunks visible.
+
+---
+
+**29. `print(f&quot;Chunk ID : {x[&#39;id&#39;]}&quot;)`**
+
+Displays the unique chunk identifier.
+
+**Purpose:**
+Supports traceability between retrieved results and stored document chunks.
+
+---
+
+**30. `print(f&quot;Page : {x[&#39;page&#39;]}&quot;)`**
+
+Displays the source PDF page number.
+
+**Purpose:**
+Allows the researcher to locate the retrieved information in the original document.
+
+---
+
+**31. `print(f&quot;Cosine distance : {x[&#39;distance&#39;]:.4f} (lower is better)&quot;)`**
+
+Displays the cosine distance between the query embedding and document embedding.
+
+**Purpose:**
+Provides a numerical indication ofsemantic similarity.
+
+---
+
+**32. `print(x[&#39;text&#39;])`**
+
+Displays the complete text of the retrieved chunk.
+
+**Purpose in the RAG System:**
+- Allows inspection of retrieved vocabulary content.
+- Helps identify whether the correct definition was retrieved.
+- Supports manual relevance assessment.
+- Provides the source context that can later be passed to the language model.
+</pre></section><section data-cell="26" class="cell"><b>Markdown cell 26</b><pre>## 8 · Secure Groq API setup</pre></section><section data-cell="27" class="cell"><div class="r"><i>In [35]:</i><pre>if not os.environ.get(&#39;GROQ_API_KEY&#39;):
+    try:
+        from google.colab import userdata
+        secret = userdata.get(&#39;GROQ_API_KEY&#39;)
+        if secret: os.environ[&#39;GROQ_API_KEY&#39;] = secret
+    except Exception: pass
+if not os.environ.get(&#39;GROQ_API_KEY&#39;):
+    os.environ[&#39;GROQ_API_KEY&#39;] = getpass.getpass(&#39;Enter GROQ_API_KEY (hidden): &#39;)
+groq_client = Groq(api_key=os.environ[&#39;GROQ_API_KEY&#39;])
+print(&#39;Groq client initialized. API key not displayed or saved in notebook.&#39;)</pre></div><div class="r out"><i>Out:</i><pre>Groq client initialized. API key not displayed or saved in notebook.
+</pre></div></section><section data-cell="28" class="cell"><b>Markdown cell 28</b><pre>### Purpose
+
+This section initializes the Groq API client used for language model answer generation in the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+It securely retrieves the Groq API key from the runtime environment or Google Colab Secrets.
+
+If the API key is unavailable from both sources, the system prompts the user to enter it manually using a hidden input field.
+
+Once the API key is available, the Groq client is initialized and becomes ready to send requests to the selected language model.
+
+The API key is not intentionally printed in the notebook output.
+
+---
+
+### Code Explanation
+
+#### A. Check Existing Environment Variable
+
+**1. `if not os.environ.get(&#39;GROQ_API_KEY&#39;):`**
+
+Checks whether the Groq API key is already available in the environment variables.
+
+**Code Breakdown:**
+- `os.environ` — Provides access to environment variables in the current Python process.
+- `.get(&#39;GROQ_API_KEY&#39;)` — Retrieves the stored API key if it exists.
+- `not` — Checks whether the value is missing or empty.
+
+**Purpose in the RAG System:**
+Prevents unnecessary API key requests when a key is already available.
+
+**Important:**
+If the key already exists, the code skips Google Colab Secrets and manual input.
+
+---
+
+#### B. Retrieve API Key from Google Colab Secrets
+
+**2. `try:`**
+
+Begins an exception-handling block.
+
+**Purpose:**
+Allows the system to attempt retrieving the API key from Google Colab without immediately stopping execution if retrieval fails.
+
+---
+
+**3. `from google.colab import userdata`**
+
+Imports Google Colab&#39;s userdata module.
+
+**Purpose:**
+Provides access to secrets configured through Google Colab&#39;s Secrets interface.
+
+---
+
+**4. `secret = userdata.get(&#39;GROQ_API_KEY&#39;)`**
+
+Attempts to retrieve the Groq API key from Google Colab Secrets.
+
+- `userdata.get()` — Requests a stored secret.
+- `&#39;GROQ_API_KEY&#39;` — Name of the secret.
+- `secret` — Stores the retrieved value.
+
+**Purpose in the RAG System:**
+Obtains the credential needed to authenticate requests to the Groq API.
+
+---
+
+**5. `if secret:`**
+
+Checks whether a nonempty secret was retrieved.
+
+**Purpose:**
+Prevents an empty secret from being assigned as the API key.
+
+---
+
+**6. `os.environ[&#39;GROQ_API_KEY&#39;] = secret`**
+
+Stores the retrieved secret in the current Python process&#39;s environment variables.
+
+**Purpose in the RAG System:**
+Makes the API key available for initializing the Groq client.
+
+---
+
+**7. `except Exception: pass`**
+
+Catches exceptions raised while attempting to access Google Colab Secrets.
+
+**Code Breakdown:**
+- `except Exception` — Handles ordinary exceptions raised inside the try block.
+- `pass` — Continues execution without displaying an error message.
+
+**Purpose:**
+Allows the program to use manual API key entry if Google Colab Secrets cannot
+provide the credential.
+
+---
+
+#### C. Manual API Key Input
+
+**8. `if not os.environ.get(&#39;GROQ_API_KEY&#39;):`**
+
+Checks again whether an API key is available.
+
+**Purpose:**
+Determines whether manual input is required after the environment and Colab Secrets checks.
+
+---
+
+**9. `getpass.getpass(
+&#39;Enter GROQ_API_KEY (hidden): &#39;)`**
+
+Prompts the user to enter the Groq API key without displaying the typed characters.
+
+**Code Breakdown:**
+- `getpass` — Python module for hidden input.
+- `.getpass()` — Requests sensitive input without echoing the characters.
+- Prompt string — Instructs the user to enter the API key.
+
+**Purpose in the RAG System:**
+Provides an alternative authentication method when no stored API key is available.
+
+---
+
+**10. `os.environ[&#39;GROQ_API_KEY&#39;] = getpass.getpass(...)`**
+
+Stores the manually entered API key in the current process environment.
+
+**Purpose:**
+Makes the credential available to the Groq client initialization process.
+
+---
+
+#### D. Initialize Groq Client
+
+**11. `groq_client = Groq(api_key=os.environ[&#39;GROQ_API_KEY&#39;])`**
+
+Creates a Groq API client using the available API key.
+
+**Code Breakdown:**
+- `Groq()` — Initializes the Groq Python SDK client.
+- `api_key=` — Supplies the authentication credential.
+- `os.environ[&#39;GROQ_API_KEY&#39;]` — Retrieves the key from the current process environment.
+- `groq_client` — Stores the initialized client.
+
+**Purpose in the RAG System:**
+Prepares the system to send language model generation requests through the Groq API.
+
+---
+
+#### E. Display Initialization Confirmation
+
+**12. `print(&#39;Groq client initialized. API key not displayed or saved in notebook.&#39;)`**
+
+Displays a confirmation message after the Groq client object has been created.
+
+**Purpose:**
+- Confirms that initialization completed.
+- Avoids printing the API key.
+- Indicates that the key was not intentionally written into the notebook source.</pre></section><section data-cell="29" class="cell"><b>Markdown cell 29</b><pre>## 9 · Grounded answer generation and RAG chatbot</pre></section><section data-cell="30" class="cell"><div class="r"><i>In [36]:</i><pre>SYSTEM_PROMPT = (
+    &quot;You are LalimSalita, a Filipino vocabulary assistant. &quot;
+    &quot;Answer only from the supplied PDF excerpts. &quot;
+    &quot;Explain the requested vocabulary word using its definition and contextual meaning when available. &quot;
+    &quot;Do not invent definitions, interpretations, examples, sources, or page numbers. &quot;
+    &quot;Cite the supporting PDF page numbers in the format (Pahina X). &quot;
+    &quot;If the evidence does not support the answer, respond: &quot;
+    &quot;&#39;Walang sapat na impormasyon sa ibinigay na dokumento.&#39; &quot;
+    &quot;Answer in Filipino using clear, concise, and natural language.&quot;
+)
+
+
+def rag_query(question, config_id=None, k=TOP_K):
+    if config_id is None:
+        config_id = DEFAULT_CONFIG
+    docs, retrieval_seconds = retrieve(question, config_id, k)
+    context=&#39;\n\n&#39;.join(f&quot;[Source: page {d[&#39;page&#39;]}, rank {d[&#39;rank&#39;]}]\n{d[&#39;text&#39;]}&quot; for d in docs)
+    t0=time.perf_counter()
+    completion=groq_client.chat.completions.create(
+        model=GROQ_MODEL, temperature=TEMPERATURE, max_completion_tokens=500,
+        messages=[{&#39;role&#39;:&#39;system&#39;,&#39;content&#39;:SYSTEM_PROMPT},
+                  {&#39;role&#39;:&#39;user&#39;,&#39;content&#39;:f&#39;DOCUMENT CONTEXT:\n{context}\n\nQUESTION: {question}&#39;}])
+    generation_seconds=time.perf_counter()-t0
+    return {&#39;question&#39;:question,&#39;config&#39;:config_id,&#39;answer&#39;:completion.choices[0].message.content,
+            &#39;retrieved&#39;:docs,&#39;retrieval_seconds&#39;:retrieval_seconds,
+            &#39;generation_seconds&#39;:generation_seconds,
+            &#39;prompt_tokens&#39;:getattr(completion.usage,&#39;prompt_tokens&#39;,None),
+            &#39;completion_tokens&#39;:getattr(completion.usage,&#39;completion_tokens&#39;,None)}
+
+sample = rag_query(&#39;Ano ang ibig sabihin ng hilahil?&#39;)
+print(&#39;\n&#39; + &#39;=&#39; * 70)
+print(&#39;GROQ RAG CHATBOT TEST&#39;)
+print(&#39;=&#39; * 70)
+print(&#39;Question      :&#39;, sample[&#39;question&#39;])
+print(&#39;Configuration :&#39;, sample[&#39;config&#39;])
+print(&#39;Answer        :&#39;, sample[&#39;answer&#39;])
+print(&#39;Source pages  :&#39;, [d[&#39;page&#39;] for d in sample[&#39;retrieved&#39;]])
+print(&#39;Retrieval sec :&#39;, round(sample[&#39;retrieval_seconds&#39;], 4))
+print(&#39;Generation sec:&#39;, round(sample[&#39;generation_seconds&#39;], 4))</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+GROQ RAG CHATBOT TEST
+======================================================================
+Question      : Ano ang ibig sabihin ng hilahil?
+Configuration : CFG3
+Answer        : Ang **hilahil** ay pangngalang tumutukoy sa **dusa, bagabag, o malalim na pagdurusa at ligalig**—karaniwang mga paghihirap at alalahanin na dinanas dahil sa pag-ibig. (Pahina 5)
+Source pages  : [5, 41, 57]
+Retrieval sec : 0.0529
+Generation sec: 0.4908
+</pre></div></section><section data-cell="31" class="cell"><b>Markdown cell 31</b><pre>### Purpose
+
+This section implements the complete Retrieval-Augmented
+Generation (RAG) question-answering pipeline of the
+LalimSalita Filipino vocabulary assistant.
+
+It integrates the semantic retrieval function from
+Section 7 with the Groq language model client
+initialized in Section 8.
+
+When a user submits a vocabulary question, the system
+retrieves the most semantically similar document chunks
+from ChromaDB and constructs a context containing the
+retrieved text and its source-page information.
+
+The context and question are then submitted to the
+language model, which is instructed to answer in Filipino
+using only the provided PDF excerpts.
+
+This section also records retrieval time, answer
+generation time, and API token usage.
+
+---
+
+### Code Explanation
+
+#### A. Define the System Prompt
+
+**1. `SYSTEM_PROMPT = &quot;&quot;&quot;...&quot;&quot;&quot;`**
+
+Defines the system-level instructions used to guide the language model&#39;s behavior.
+
+**Purpose in the RAG System:**
+- Establishes the chatbot&#39;s identity as LalimSalita.
+- Specifies Filipino as the response language.
+- Restricts answers to retrieved PDF excerpts.
+- Requires source-page citations.
+- Instructs the model not to invent definitions.
+- Establishes a fallback response when evidence is insufficient.
+
+**System Instructions:**
+
+`You are LalimSalita, a Filipino vocabulary assistant.`
+
+Defines the chatbot&#39;s role as an assistant specializing in Filipino vocabulary.
+
+`Answer in Filipino using ONLY the provided PDF excerpts.`
+
+Instructs the model to generate answers based only on the retrieved document context.
+
+`Explain the vocabulary term and cite page numbers.`
+
+Requires the model to explain vocabulary terms and reference their source PDF pages.
+
+`If the excerpts do not support an answer, explicitly say: &#39;Walang sapat na impormasyon sa ibinigay na dokumento.&#39;`
+
+Defines the response to use when the retrieved context does not provide sufficient evidence.
+
+`Do not invent vocabulary definitions or references.`
+
+Instructs the model to avoid unsupported definitions and fabricated citations.
+
+---
+
+#### B. Define the RAG Query Function
+
+**2. `def rag_query(question, config_id=None, k=TOP_K):`**
+
+Defines a reusable function named `rag_query`.
+
+**Parameters:**
+- `question` — User&#39;s Filipino vocabulary question.
+- `config_id` — ChromaDB configuration to use.
+- `k` — Maximum number of chunks to retrieve.
+
+**Purpose in the RAG System:**
+Combines semantic retrieval and language model answer generation into one function.
+
+---
+
+**3. `if config_id is None:`**
+
+Checks whether a specific chunking configuration was provided.
+
+**Purpose:**
+Determines whether the active default configuration should be used.
+
+---
+
+**4. `config_id = DEFAULT_CONFIG`**
+
+Assigns the active configuration identifier.
+
+**Purpose:**
+Ensures the RAG function searches the collection associated with the selected experiment.
+
+---
+
+#### C. Retrieve Relevant Document Chunks
+
+**5. `docs, retrieval_seconds = retrieve( question, config_id, k)`**
+
+Calls the retrieval function defined in Section 7.
+
+**Returned Values:**
+- `docs` — Ranked document chunks retrieved
+  from ChromaDB.
+- `retrieval_seconds` — Time spent generating
+  the query embedding and searching ChromaDB.
+
+**Purpose in the RAG System:**
+Retrieves the vocabulary information that will serve as supporting context for the language model.
+
+---
+
+#### D. Construct the Retrieved Context
+
+**6. `context = &#39;\n\n&#39;.join(...)`**
+
+Combines the retrieved chunks into one formatted context string.
+
+`&#39;\n\n&#39;.join(...)`
+
+Joins the retrieved chunks using two newline characters to separate the source excerpts.
+
+`f&quot;[Source: page {d[&#39;page&#39;]}, rank {d[&#39;rank&#39;]}]&quot;`
+
+Adds the source page and retrieval rank
+before each chunk.
+
+`d[&#39;text&#39;]`
+
+Contains the original text of the retrieved chunk.
+
+`for d in docs`
+
+Iterates through every retrieved document chunk.
+
+**Purpose in the RAG System:**
+- Organizes retrieved information for the LLM.
+- Preserves source-page information.
+- Separates individual document excerpts.
+- Provides the language model with evidence for generating its response.
+
+**Important:**
+The page numbers shown above are illustrative. Actual source pages depend on the retrieved results.
+
+---
+
+#### E. Measure Generation Time
+
+**7. `t0 = time.perf_counter()`**
+
+Records the starting time before the
+Groq language model request.
+
+**Purpose:**
+Enables measurement of answer generation latency.
+
+---
+
+#### F. Generate an Answer Through Groq
+
+**8. `completion = groq_client.chat.completions.create(...)`**
+
+Sends the retrieved context and user question to the Groq API for answer generation.
+
+**Purpose in the RAG System:**
+Uses the selected language model to construct a Filipino answer based on the retrieved evidence.
+
+---
+
+**9. `model=GROQ_MODEL`**
+
+Specifies the language model identifier defined in Section 4.
+
+**Purpose:**
+Ensures the same model is used across the chunking experiments.
+
+---
+
+**10. `temperature=TEMPERATURE`**
+
+Passes the configured generation temperature.
+
+**Purpose:**
+Controls the model&#39;s sampling behavior, subject to the API and model&#39;s support.
+
+A relatively low temperature is intended to encourage more consistent responses.
+
+---
+
+**11. `max_completion_tokens=500`**
+
+Sets the maximum number of completion tokensallowed for the model response.
+
+**Purpose:**
+Limits the length of the generated completion.
+
+
+---
+
+**12. `messages=[...]`**
+
+Defines the messages sent to the language model.
+
+The request contains two messages:
+
+**System Message**
+
+`{&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: SYSTEM_PROMPT}`
+
+Provides the chatbot&#39;s behavior and answer-grounding instructions.
+
+**User Message**
+
+`{&#39;role&#39;: &#39;user&#39;,&#39;content&#39;: f&#39;DOCUMENT CONTEXT:\n{context} \n\nQUESTION: {question}&#39;}`
+
+Supplies the retrieved document excerpts and the vocabulary question.
+
+**Purpose in the RAG System:**
+Allows the model to distinguish the answer-generation instructions from
+the question and supporting context.
+
+---
+
+#### G. Calculate Generation Time
+
+**13. `generation_seconds = time.perf_counter() - t0`**
+
+Calculates the elapsed time for the Groq API completion request.
+
+**Purpose:**
+Measures the duration of the answer-generation request, including API communication latency.
+
+---
+
+#### H. Return Structured RAG Results
+
+**14. `return {...}`**
+
+Returns a dictionary containing the question, generated answer, retrieved chunks, timing information, and token usage.
+
+**Returned Fields:**
+
+`&#39;question&#39;: question`
+
+Stores the original vocabulary question.
+
+`&#39;config&#39;: config_id`
+
+Stores the active chunking configuration.
+
+`&#39;answer&#39;: completion.choices[0].message.content`
+
+Extracts the generated response text from the first completion choice.
+
+`&#39;retrieved&#39;: docs`
+
+Stores the ranked document chunks used as supporting context.
+
+`&#39;retrieval_seconds&#39;: retrieval_seconds`
+
+Stores the elapsed retrieval time.
+
+`&#39;generation_seconds&#39;: generation_seconds`
+
+Stores the elapsed generation request time.
+
+`&#39;prompt_tokens&#39;:
+getattr(completion.usage, &#39;prompt_tokens&#39;, None)`
+
+Retrieves the reported number of input tokens when that information is available.
+
+`&#39;completion_tokens&#39;:
+getattr(completion.usage, &#39;completion_tokens&#39;, None)`
+
+Retrieves the reported number of output tokens when that information is available.
+
+**Purpose in the RAG System:**
+Provides a structured response that can be
+displayed, logged, or exported for analysis.
+
+---
+
+#### I. Execute a Sample RAG Question
+
+**15. `sample = rag_query(
+&#39;Ano ang ibig sabihin ng hilahil?&#39;)`**
+
+Executes the complete RAG pipeline
+using a sample Filipino vocabulary question.
+
+**Purpose:**
+Tests the integration of:
+- Query embedding.
+- ChromaDB retrieval.
+- Context construction.
+- Groq answer generation.
+
+---
+
+#### J. Display the RAG Test Results
+
+**16. `print(&#39;GROQ RAG CHATBOT TEST&#39;)`**
+
+Displays the test section heading.
+
+---
+
+**17. `print(&#39;Question :&#39;, sample[&#39;question&#39;])`**
+
+Displays the original vocabulary question.
+
+**Purpose:**
+Identifies the question submitted to the system.
+
+---
+
+**18. `print(&#39;Configuration :&#39;, sample[&#39;config&#39;])`**
+
+Displays the active chunking configuration.
+
+**Purpose:**
+Identifies which vector collection was used to retrieve the evidence.
+
+---
+
+**19. `print(&#39;Answer :&#39;, sample[&#39;answer&#39;])`**
+
+Displays the language model&#39;s generated answer.
+
+**Purpose:**
+Allows the researcher to inspect whether the answer explains the vocabulary term
+and follows the grounding instructions.
+
+---
+
+**20. `print(&#39;Source pages :&#39;, [d[&#39;page&#39;] for d in sample[&#39;retrieved&#39;]])`**
+
+Displays the source page numbers of all retrieved document chunks.
+
+**Purpose:**
+Supports source tracing and manual verification.
+
+---
+
+**21. `print(&#39;Retrieval sec :&#39;, round(sample[&#39;retrieval_seconds&#39;], 4))`**
+
+Displays the retrieval time rounded to four decimal places.
+
+**Purpose:**
+Measures the latency of the semantic retrieval stage.
+
+---
+
+**22. `print(&#39;Generation sec:&#39;,
+round(sample[&#39;generation_seconds&#39;], 4))`**
+
+Displays the generation request time rounded to four decimal places.
+
+**Purpose:**
+Measures the latency of the language model answer-generation stage.</pre></section><section data-cell="32" class="cell"><b>Markdown cell 32</b><pre>## 9A · Continuous question-and-answer session (interactive)</pre></section><section data-cell="33" class="cell"><div class="r"><i>In [37]:</i><pre>&#39;&#39;
+
+# ============================================================
+# 9A. CONTINUOUS RAG QUESTION-ANSWER LOOP (CHROMADB + GROQ)
+# ============================================================
+# Run this cell on its own after the Groq client and collections
+# have been initialized. Type &#39;exit&#39; to end the input loop.
+
+active_config = DEFAULT_CONFIG
+qa_history = []
+retrieval_history = []
+
+print(&quot;\n&quot; + &quot;=&quot; * 70)
+print(&quot;CONTINUOUS RAG QUESTION ANSWERING — LALIMSALITA&quot;)
+print(&quot;=&quot; * 70)
+print(&quot;Ask Filipino vocabulary questions about the uploaded PDF.&quot;)
+print(&quot;Command: exit&quot;)
+print(f&quot;Active chunking configuration: {active_config}&quot;)
+
+while True:
+    try:
+        question = input(&quot;\nQuestion: &quot;).strip()
+
+    except (EOFError, KeyboardInterrupt):
+        print(&quot;\nRAG session terminated.&quot;)
+        break
+
+    if not question:
+        print(&quot;Please enter a question.&quot;)
+        continue
+
+    # --------------------------------------------------------
+    # EXIT COMMAND
+    # --------------------------------------------------------
+    if question.lower() == &quot;exit&quot;:
+        print(&quot;\nRAG session terminated.&quot;)
+        print(f&quot;Total questions answered: {len(qa_history)}&quot;)
+        break
+
+    # --------------------------------------------------------
+    # PROCESS RAG QUESTION
+    # --------------------------------------------------------
+    try:
+        response = rag_query(
+            question,
+            config_id=active_config,
+            k=TOP_K
+        )
+
+        # ----------------------------------------------------
+        # SAVE QUESTION-ANSWER HISTORY
+        # ----------------------------------------------------
+        qa_history.append({
+            &#39;timestamp_utc&#39;: datetime.now(timezone.utc).isoformat(),
+            &#39;config&#39;: active_config,
+            &#39;question&#39;: question,
+            &#39;answer&#39;: response[&#39;answer&#39;],
+            &#39;retrieval_seconds&#39;: response[&#39;retrieval_seconds&#39;],
+            &#39;generation_seconds&#39;: response[&#39;generation_seconds&#39;],
+            &#39;prompt_tokens&#39;: response[&#39;prompt_tokens&#39;],
+            &#39;completion_tokens&#39;: response[&#39;completion_tokens&#39;],
+        })
+
+        # ----------------------------------------------------
+        # SAVE RETRIEVAL HISTORY
+        # ----------------------------------------------------
+        for doc in response[&#39;retrieved&#39;]:
+            retrieval_history.append({
+                &#39;config&#39;: active_config,
+                &#39;question&#39;: question,
+                &#39;rank&#39;: doc[&#39;rank&#39;],
+                &#39;page&#39;: doc[&#39;page&#39;],
+                &#39;chunk_id&#39;: doc[&#39;id&#39;],
+                &#39;cosine_distance&#39;: doc[&#39;distance&#39;],
+                &#39;retrieved_text&#39;: doc[&#39;text&#39;],
+            })
+
+        # ----------------------------------------------------
+        # DISPLAY RAG ANSWER
+        # ----------------------------------------------------
+        print(&quot;\n&quot; + &quot;=&quot; * 70)
+        print(&quot;RAG ANSWER&quot;)
+        print(&quot;=&quot; * 70)
+
+        print(response[&#39;answer&#39;])
+
+        print(
+            f&quot;\nConfiguration: {response[&#39;config&#39;]} | &quot;
+            f&quot;Retrieval: {response[&#39;retrieval_seconds&#39;]:.4f}s | &quot;
+            f&quot;Generation: {response[&#39;generation_seconds&#39;]:.4f}s&quot;
+        )
+
+        # ----------------------------------------------------
+        # DISPLAY RETRIEVED SOURCES
+        # ----------------------------------------------------
+        print(&quot;\n&quot; + &quot;=&quot; * 70)
+        print(&quot;RETRIEVED SOURCES&quot;)
+        print(&quot;=&quot; * 70)
+
+        for doc in response[&#39;retrieved&#39;]:
+            print(
+                f&quot;\n[{doc[&#39;rank&#39;]}] &quot;
+                f&quot;Page {doc[&#39;page&#39;]} | &quot;
+                f&quot;Chunk {doc[&#39;id&#39;]} | &quot;
+                f&quot;Cosine distance {doc[&#39;distance&#39;]:.4f}&quot;
+            )
+
+            print(&quot;-&quot; * 70)
+            print(doc[&#39;text&#39;])
+
+        print(&quot;\nType &#39;exit&#39; to end the session.&quot;)
+
+    # --------------------------------------------------------
+    # ERROR HANDLING
+    # --------------------------------------------------------
+    except Exception as exc:
+        print(f&quot;\nERROR: {type(exc).__name__}: {exc}&quot;)
+        print(
+            &quot;The question could not be processed. &quot;
+            &quot;Check your API key, rate limits, and collections.&quot;
+        )
+</pre></div><div class="r out"><i>Out:</i><pre>
+======================================================================
+CONTINUOUS RAG QUESTION ANSWERING — LALIMSALITA
+======================================================================
+Ask Filipino vocabulary questions about the uploaded PDF.
+Command: exit
+Active chunking configuration: CFG3
+
+Question: Ano ang ibig sabihin ng salitang hilahil?
+
+======================================================================
+RAG ANSWER
+======================================================================
+Ang salitang **hilahil** ay tumutukoy sa “dusa, bagabag, o malalim na pagdurusa at ligalig” (Pahina 5). Sa kontekstong pangkasaysayan, ito ay naglalarawan ng mga paghihirap at alalahaning dinanas dahil sa pag-ibig (Pahina 5).
+
+Configuration: CFG3 | Retrieval: 0.0616s | Generation: 0.5549s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 5 | Chunk CFG3_p5_c2 | Cosine distance 0.1091
+----------------------------------------------------------------------
+VOCABULARY ENTRY 015
+WORD: hilahil
+PART_OF_SPEECH: pangngalan
+DEFINITION: dusa, bagabag, o malalim na pagdurusa at ligalig
+CONTEXTUAL_MEANING: mga paghihirap at alalahaning dinanas dahil sa pag-ibig
+STANZA: FL-042, FL-097; KS-03 (Kay Selya)
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 41 | Chunk CFG3_p41_c0 | Cosine distance 0.1419
+----------------------------------------------------------------------
+VOCABULARY ENTRY 117
+WORD: dilidili
+PART_OF_SPEECH: pangngalan
+DEFINITION: Mula sa dili, na tumutukoy sa malay, kamalayan, o unawang nililikha ng kapangyarihan ng isip.
+CONTEXTUAL_MEANING: Malalim na pag-iisip o pagninilay ng makata, na iniuugnay niya sa kaniyang pagmamahal kay Selya.
+STANZA: KS-22
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino (díli)
+
+ARALIN 11
+
+[3] Page 57 | Chunk CFG3_p57_c2 | Cosine distance 0.1498
+----------------------------------------------------------------------
+VOCABULARY ENTRY 157
+WORD: maulila
+PART_OF_SPEECH: Pandiwa
+DEFINITION: Maiwang walang magulang; sa matalinghagang gamit, maiwang wala ang minamahal.
+CONTEXTUAL_MEANING: Mahiwalay kay Laura dahil sa paglalakbay patungo sa digmaan.
+STANZA: 298
+
+Type &#39;exit&#39; to end the session.
+
+Question: Ano ang kahulugan ng salitang dalamhati?
+
+======================================================================
+RAG ANSWER
+======================================================================
+Ang salitang **dalamhati** ay tumutukoy sa **masidhing kalungkutan na karaniwang nauugnay sa kamatayan ng isang minamahal** (Pahina 2). Sa kontekstong pangkasaysayan, ito ay inilalarawan bilang matinding kalungkutan at pagdurusa na nararanasan sa kapaligiran ng kagubatan (Pahina 2).
+
+Configuration: CFG3 | Retrieval: 0.0389s | Generation: 0.5425s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 2 | Chunk CFG3_p2_c0 | Cosine distance 0.1201
+----------------------------------------------------------------------
+WORD: dalamhati
+PART_OF_SPEECH: pangngalan
+DEFINITION: masidhing kalungkutan na karaniwang nauugnay sa kamatayan ng isang minamahal
+CONTEXTUAL_MEANING: matinding kalungkutan at pagdurusang inilalarawan sa kapaligiran ng kagubatan
+STANZA: FL-002
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 41 | Chunk CFG3_p41_c0 | Cosine distance 0.1370
+----------------------------------------------------------------------
+VOCABULARY ENTRY 117
+WORD: dilidili
+PART_OF_SPEECH: pangngalan
+DEFINITION: Mula sa dili, na tumutukoy sa malay, kamalayan, o unawang nililikha ng kapangyarihan ng isip.
+CONTEXTUAL_MEANING: Malalim na pag-iisip o pagninilay ng makata, na iniuugnay niya sa kaniyang pagmamahal kay Selya.
+STANZA: KS-22
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino (díli)
+
+ARALIN 11
+
+[3] Page 64 | Chunk CFG3_p64_c0 | Cosine distance 0.1396
+----------------------------------------------------------------------
+PART_OF_SPEECH: Pandiwa
+DEFINITION: Nakaranas ng matinding kalungkutan.
+CONTEXTUAL_MEANING: Nalungkot si Adolfo sa karangalang natanggap ni Florante.
+STANZA: 326
+SOURCE: KWF Diksiyonaryo, “dalamhati”; inangkop sa anyong nagdalamhati.
+
+Type &#39;exit&#39; to end the session.
+
+Question: Ano ang ibig sabihin ng salitang pighati?
+
+======================================================================
+RAG ANSWER
+======================================================================
+Ang salitang **pighati** ay tumutukoy sa “kalagayan ng matinding kabiguan o kalungkutan.” (Pahina 96)
+
+Configuration: CFG3 | Retrieval: 0.0379s | Generation: 0.4926s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 96 | Chunk CFG3_p96_c2 | Cosine distance 0.1330
+----------------------------------------------------------------------
+VOCABULARY ENTRY 279
+WORD: Nagpipighati
+PART_OF_SPEECH: pangngalan
+DEFINITION: Kalagayan ng matinding kabiguan o kalungkutan.
+CONTEXTUAL_MEANING: Tumutukoy sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante.
+STANZA: 397
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[2] Page 74 | Chunk CFG3_p74_c2 | Cosine distance 0.1613
+----------------------------------------------------------------------
+VOCABULARY ENTRY 211
+WORD: piniit
+PART_OF_SPEECH: pangngalan
+DEFINITION: Pagiging bilanggo / Lumang tawag sa bilanggo.
+CONTEXTUAL_MEANING: Ikinulong si Florante sa isang nakatatakot na bilangguan matapos siyang gapusin.
+STANZA: 338
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 212
+WORD: mapagpalayaw
+
+[3] Page 4 | Chunk CFG3_p4_c1 | Cosine distance 0.1624
+----------------------------------------------------------------------
+ARALIN 2
+
+VOCABULARY ENTRY 011
+WORD: pita
+PART_OF_SPEECH: pangngalan
+DEFINITION: hangarin o sadya ng sinuman sa isang dinalaw o pinuntahan; ibig o pagnanais
+CONTEXTUAL_MEANING: matinding pagnanais sa yaman, kapangyarihan, at mataas na katayuan
+STANZA: FL-019
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino (pita at ibig)
+
+Type &#39;exit&#39; to end the session.
+
+Question: Ano ang kahulugan ng salitang hilahil at paano ito ginagamit sa konteksto ng akda?
+
+======================================================================
+RAG ANSWER
+======================================================================
+**Hilahil**  
+*(Pangngalan)* – “dusa, bagabag, o malalim na pagdurusa at ligalig” (Pahina 5).  
+
+Sa konteksto ng akda, ginagamit ang salitang *hilahil* upang ilarawan ang mga paghihirap at alalahanin na dinanas ng mga tauhan dahil sa pag-ibig.  Makikita ito sa mga taludtod ng *FL‑042* at *FL‑097*, pati na rin sa *KS‑03 (Kay Selya)*, kung saan ang mga karakter ay nakakaranas ng matinding pagdurusa at ligalig na dulot ng kanilang damdamin.
+
+Configuration: CFG3 | Retrieval: 0.0684s | Generation: 0.7286s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 5 | Chunk CFG3_p5_c2 | Cosine distance 0.1229
+----------------------------------------------------------------------
+VOCABULARY ENTRY 015
+WORD: hilahil
+PART_OF_SPEECH: pangngalan
+DEFINITION: dusa, bagabag, o malalim na pagdurusa at ligalig
+CONTEXTUAL_MEANING: mga paghihirap at alalahaning dinanas dahil sa pag-ibig
+STANZA: FL-042, FL-097; KS-03 (Kay Selya)
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 41 | Chunk CFG3_p41_c0 | Cosine distance 0.1464
+----------------------------------------------------------------------
+VOCABULARY ENTRY 117
+WORD: dilidili
+PART_OF_SPEECH: pangngalan
+DEFINITION: Mula sa dili, na tumutukoy sa malay, kamalayan, o unawang nililikha ng kapangyarihan ng isip.
+CONTEXTUAL_MEANING: Malalim na pag-iisip o pagninilay ng makata, na iniuugnay niya sa kaniyang pagmamahal kay Selya.
+STANZA: KS-22
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino (díli)
+
+ARALIN 11
+
+[3] Page 84 | Chunk CFG3_p84_c0 | Cosine distance 0.1554
+----------------------------------------------------------------------
+CONTEXTUAL_MEANING: Palihim na bumaba si Flerida mula sa bintana ng palasyo upang makatakas.
+STANZA: 370
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 240
+WORD: matunto
+PART_OF_SPEECH: pangngalan
+DEFINITION: Makita, masundan, Pagsunod o pagbakás
+CONTEXTUAL_MEANING: Matagpuan o masundan ni Flerida ang kaniyang minamahal na si Aladin.
+STANZA: 370
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+Type &#39;exit&#39; to end the session.
+
+Question: Ano ang pagkakaiba ng literal at kontekstuwal na kahulugan ng salitang dalamhati?
+
+======================================================================
+RAG ANSWER
+======================================================================
+Ang **literal na kahulugan** ng salitang *dalamhati* ay ang nakasaad sa diksyunaryo: “masidhing kalungkutan na karaniwang nauugnay sa kamatayan ng isang minamahal” (Pahina 2).  
+Samantalang ang **kontekstuwal na kahulugan** ay ang partikular na paglalarawan ng salitang ito sa isang tiyak na sitwasyon: “matinding kalungkutan at pagdurusang inilalarawan sa kapaligiran ng kagubatan” (Pahina 2).
+
+Configuration: CFG3 | Retrieval: 0.0557s | Generation: 0.6758s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 2 | Chunk CFG3_p2_c0 | Cosine distance 0.1273
+----------------------------------------------------------------------
+WORD: dalamhati
+PART_OF_SPEECH: pangngalan
+DEFINITION: masidhing kalungkutan na karaniwang nauugnay sa kamatayan ng isang minamahal
+CONTEXTUAL_MEANING: matinding kalungkutan at pagdurusang inilalarawan sa kapaligiran ng kagubatan
+STANZA: FL-002
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 33 | Chunk CFG3_p33_c2 | Cosine distance 0.1366
+----------------------------------------------------------------------
+VOCABULARY ENTRY 096
+WORD: di taglay sa dibdib
+PART_OF_SPEECH: pariralang pandiwa
+DEFINITION: Hindi tunay na nagtataglay sa puso o kalooban ng isang katangian, damdamin, o pag-uugali.
+CONTEXTUAL_MEANING: Tumutukoy sa kabaitang ipinakikita ni Adolfo na hindi naman tunay na bahagi ng kaniyang pagkatao. Ginamit niya ito upang makamit ang karangalan at paghanga ng iba.
+
+[3] Page 94 | Chunk CFG3_p94_c0 | Cosine distance 0.1451
+----------------------------------------------------------------------
+CONTEXTUAL_MEANING: Nakadama ng matinding awa sa isang taong nagdurusa o nakararanas ng kasawian.
+STANZA: 391
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 271
+WORD: Natalos
+PART_OF_SPEECH: pang-uri
+DEFINITION: Nalaman o natutuhan.
+CONTEXTUAL_MEANING: Naunawaan o nalaman ang katotohanan tungkol sa isang pangyayari.
+STANZA: 392
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+Type &#39;exit&#39; to end the session.
+
+Question: Ano ang ipinahihiwatig ng salitang pighati sa isang akdang pampanitikan?
+
+======================================================================
+RAG ANSWER
+======================================================================
+Ang salitang **pighati** ay nagpapahiwatig ng isang kalagayan ng matinding kabiguan o kalungkutan. Sa konteksto ng akdang pampanitikan, tumutukoy ito sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante (Pahina 96).
+
+Configuration: CFG3 | Retrieval: 0.0521s | Generation: 0.5362s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 96 | Chunk CFG3_p96_c2 | Cosine distance 0.1344
+----------------------------------------------------------------------
+VOCABULARY ENTRY 279
+WORD: Nagpipighati
+PART_OF_SPEECH: pangngalan
+DEFINITION: Kalagayan ng matinding kabiguan o kalungkutan.
+CONTEXTUAL_MEANING: Tumutukoy sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante.
+STANZA: 397
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[2] Page 74 | Chunk CFG3_p74_c2 | Cosine distance 0.1541
+----------------------------------------------------------------------
+VOCABULARY ENTRY 211
+WORD: piniit
+PART_OF_SPEECH: pangngalan
+DEFINITION: Pagiging bilanggo / Lumang tawag sa bilanggo.
+CONTEXTUAL_MEANING: Ikinulong si Florante sa isang nakatatakot na bilangguan matapos siyang gapusin.
+STANZA: 338
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 212
+WORD: mapagpalayaw
+
+[3] Page 80 | Chunk CFG3_p80_c2 | Cosine distance 0.1601
+----------------------------------------------------------------------
+VOCABULARY ENTRY 229
+WORD: naphinuhod
+PART_OF_SPEECH: pandiwa
+DEFINITION: Mapagpakumbabang pagsang-ayon o pagpayag.
+CONTEXTUAL_MEANING: Tumutukoy sa pagkumbinsi kay Flerida na pumayag sa kagustuhan ng Sultan upang mailigtas si Aladin.
+STANZA: 363
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 231
+
+Type &#39;exit&#39; to end the session.
+
+Question: Batay sa dokumento, paano nagkakaiba ang kahulugan at kontekstuwal na gamit ng hilahil at pighati?
+
+======================================================================
+RAG ANSWER
+======================================================================
+**Hilahil**  
+- **Kahulugan**: “dusa, bagabag, o malalim na pagdurusa at ligalig” (Pahina 5).  
+- **Kontekstuwal na gamit**: tumutukoy sa mga paghihirap at alalahaning dinanas dahil sa pag‑ibig (Pahina 5).  
+
+**Nagpipighati**  
+- **Kahulugan**: “Kalagayan ng matinding kabiguan o kalungkutan” (Pahina 96).  
+- **Kontekstuwal na gamit**: tumutukoy sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante (Pahina 96).  
+
+**Pagkakaiba**  
+- Ang **hilahil** ay isang pangngalan na naglalarawan ng malalim at patuloy na pagdurusa, lalo na ang mga paghihirap na dulot ng pag‑ibig.  
+- Ang **nagpipighati** naman ay tumut
+
+Configuration: CFG3 | Retrieval: 0.0510s | Generation: 0.8910s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 5 | Chunk CFG3_p5_c2 | Cosine distance 0.1454
+----------------------------------------------------------------------
+VOCABULARY ENTRY 015
+WORD: hilahil
+PART_OF_SPEECH: pangngalan
+DEFINITION: dusa, bagabag, o malalim na pagdurusa at ligalig
+CONTEXTUAL_MEANING: mga paghihirap at alalahaning dinanas dahil sa pag-ibig
+STANZA: FL-042, FL-097; KS-03 (Kay Selya)
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 96 | Chunk CFG3_p96_c2 | Cosine distance 0.1492
+----------------------------------------------------------------------
+VOCABULARY ENTRY 279
+WORD: Nagpipighati
+PART_OF_SPEECH: pangngalan
+DEFINITION: Kalagayan ng matinding kabiguan o kalungkutan.
+CONTEXTUAL_MEANING: Tumutukoy sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante.
+STANZA: 397
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[3] Page 13 | Chunk CFG3_p13_c0 | Cosine distance 0.1511
+----------------------------------------------------------------------
+CONTEXTUAL_MEANING: Matalim na sandatang ginagamit sa pakikipaglaban o pagkitil ng buhay.
+STANZA: FL-092
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+VOCABULARY ENTRY 038
+WORD: lugami
+PART_OF_SPEECH: pang-uri
+DEFINITION: Nanghihina dahil sa bigat ng dinadala, dinaramdam, o anumang kapinsalaan.
+CONTEXTUAL_MEANING: Kalagayan ng matinding panghihina o pagkapiit ng kabutihan at katuwiran dahil sa paghihirap.
+STANZA: FL-017
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+Type &#39;exit&#39; to end the session.
+
+Question: Paano nakaaapekto ang konteksto ng akda sa interpretasyon ng salitang dalamhati? Ipaliwanag gamit ang ebidensiya mula sa dokumento.
+
+======================================================================
+RAG ANSWER
+======================================================================
+
+
+Configuration: CFG3 | Retrieval: 0.0560s | Generation: 0.7635s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 2 | Chunk CFG3_p2_c0 | Cosine distance 0.1402
+----------------------------------------------------------------------
+WORD: dalamhati
+PART_OF_SPEECH: pangngalan
+DEFINITION: masidhing kalungkutan na karaniwang nauugnay sa kamatayan ng isang minamahal
+CONTEXTUAL_MEANING: matinding kalungkutan at pagdurusang inilalarawan sa kapaligiran ng kagubatan
+STANZA: FL-002
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino
+
+[2] Page 33 | Chunk CFG3_p33_c2 | Cosine distance 0.1506
+----------------------------------------------------------------------
+VOCABULARY ENTRY 096
+WORD: di taglay sa dibdib
+PART_OF_SPEECH: pariralang pandiwa
+DEFINITION: Hindi tunay na nagtataglay sa puso o kalooban ng isang katangian, damdamin, o pag-uugali.
+CONTEXTUAL_MEANING: Tumutukoy sa kabaitang ipinakikita ni Adolfo na hindi naman tunay na bahagi ng kaniyang pagkatao. Ginamit niya ito upang makamit ang karangalan at paghanga ng iba.
+
+[3] Page 84 | Chunk CFG3_p84_c0 | Cosine distance 0.1528
+----------------------------------------------------------------------
+CONTEXTUAL_MEANING: Palihim na bumaba si Flerida mula sa bintana ng palasyo upang makatakas.
+STANZA: 370
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 240
+WORD: matunto
+PART_OF_SPEECH: pangngalan
+DEFINITION: Makita, masundan, Pagsunod o pagbakás
+CONTEXTUAL_MEANING: Matagpuan o masundan ni Flerida ang kaniyang minamahal na si Aladin.
+STANZA: 370
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+Type &#39;exit&#39; to end the session.
+
+Question: &quot;Sino ang kasalukuyang Pangulo ng Pilipinas?&quot;
+
+======================================================================
+RAG ANSWER
+======================================================================
+Walang sapat na impormasyon sa ibinigay na dokumento.
+
+Configuration: CFG3 | Retrieval: 0.0375s | Generation: 0.5449s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 70 | Chunk CFG3_p70_c0 | Cosine distance 0.1885
+----------------------------------------------------------------------
+DEFINITION: MILITAR Armadong paglalabanan ng mga bansa o malalakíng pangkat.
+CONTEXTUAL_MEANING: Labanan sa pagitan ng mga hukbo o kaharian.
+STANZA:
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 199
+WORD: monarka
+PART_OF_SPEECH: pangngalan
+DEFINITION: hari o reyna/ pinakamataas na pinuno
+CONTEXTUAL_MEANING: Pinunong namamahala sa isang kaharian.
+STANZA: 339
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[2] Page 92 | Chunk CFG3_p92_c1 | Cosine distance 0.1963
+----------------------------------------------------------------------
+VOCABULARY ENTRY 266
+WORD: Pinagbalaan
+PART_OF_SPEECH: pandiwa
+DEFINITION: Pagbantaan , Pagsabihan
+CONTEXTUAL_MEANING: Mahigpit na binantaan si Florante ni Adolfo na mamamatay siya kung hindi niya tatanggapin ang pag-ibig na ipinipilit sa kaniya.
+STANZA: 382
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[3] Page 96 | Chunk CFG3_p96_c2 | Cosine distance 0.1970
+----------------------------------------------------------------------
+VOCABULARY ENTRY 279
+WORD: Nagpipighati
+PART_OF_SPEECH: pangngalan
+DEFINITION: Kalagayan ng matinding kabiguan o kalungkutan.
+CONTEXTUAL_MEANING: Tumutukoy sa mga taong dating nalulungkot at nagdurusa ngunit muling nakadama ng saya sa ilalim ng pamamahala ni Florante.
+STANZA: 397
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+Type &#39;exit&#39; to end the session.
+
+Question: &quot;Ano ang sagot sa 125 × 24?&quot;
+
+======================================================================
+RAG ANSWER
+======================================================================
+Walang sapat na impormasyon sa ibinigay na dokumento.
+
+Configuration: CFG3 | Retrieval: 0.0386s | Generation: 0.3329s
+
+======================================================================
+RETRIEVED SOURCES
+======================================================================
+
+[1] Page 78 | Chunk CFG3_p78_c0 | Cosine distance 0.2063
+----------------------------------------------------------------------
+STANZA: 350
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+VOCABULARY ENTRY 221
+WORD: naganyak
+PART_OF_SPEECH: pangngalan
+DEFINITION: Pagbibigay ng sigla upang mahikayat ang kapuwa.
+CONTEXTUAL_MEANING: Nahikayat si Aladin na maglibang isang umaga habang nasa gubat sila ni Florante.
+STANZA: 350
+SOURCE: KWF Diksiyonaryo ng Wikang Filipino — taglay at dibdib
+
+[2] Page 58 | Chunk CFG3_p58_c0 | Cosine distance 0.2065
+----------------------------------------------------------------------
+SOURCE: KWF Diksiyonaryo, “ulila”; ang pagpapalawak sa paghihiwalay sa minamahal ay batay sa tula.
+
+ARALIN 17
+
+VOCABULARY ENTRY 158
+WORD: kuta
+PART_OF_SPEECH: Pangngalan
+DEFINITION: Matibay na himpilan o kanlungan para sa pagtatanggol.
+CONTEXTUAL_MEANING: Tanggulang militar ng Krotona.
+STANZA: 300
+SOURCE: KWF Diksiyonaryo, “kuta”; Florante at Laura.
+
+[3] Page 47 | Chunk CFG3_p47_c1 | Cosine distance 0.2093
+----------------------------------------------------------------------
+ARALIN 13
+
+VOCABULARY ENTRY 119
+WORD: tarok
+PART_OF_SPEECH: Pangngalan
+DEFINITION: Pag-unawa matapos suriin ang isang bagay; maaari ring tumukoy sa pagsukat ng lalim.
+CONTEXTUAL_MEANING: Pag-unawa sa tunay na hangarin at pagkatao ng isang kaaway.
+STANZA: 247
+SOURCE: KWF Diksiyonaryo, “tarok”; Florante at Laura.
+
+VOCABULARY ENTRY 120
+WORD: bumalisbis
+PART_OF_SPEECH: Pandiwa
+DEFINITION: Dumaloy nang tuloy-tuloy.
+CONTEXTUAL_MEANING: Tuloy-tuloy na pumatak ang luha ni Antenor sa pamamaalam.
+
+Type &#39;exit&#39; to end the session.
+
+Question: exit
+
+RAG session terminated.
+Total questions answered: 10
+</pre></div></section><section data-cell="34" class="cell"><b>Markdown cell 34</b><pre>### Purpose
+
+This section implements an interactive, continuous question-answering interface for the LalimSalita Retrieval-Augmented Generation (RAG) system.
+
+It allows users to submit multiple Filipino vocabulary questions without repeatedly executing the RAG function.
+
+For every valid question, the system performs semantic retrieval through ChromaDB, generates a Filipino answer through the Groq language model, and automatically displays the retrieved document sources.
+
+The system also records question-answer interactions, retrieved chunk information, execution times, and token usage for later analysis and evaluation.
+
+The interaction continues until the user entersthe `exit` command or interrupts the session.
+
+---
+
+### Code Explanation
+
+#### A. Initialize the Interactive Session
+
+**1. `active_config = DEFAULT_CONFIG`**
+
+Assigns the default chunking configuration
+to the interactive RAG session.
+
+**Purpose in the RAG System:**
+- Selects the ChromaDB collection to search.
+- Maintains a consistent configuration throughout the question-answering session.
+- Associates recorded interactions with the active chunking experiment.
+
+---
+
+**2. `qa_history = []`**
+
+Creates an empty list for storing question-answer interaction records.
+
+**Purpose:**
+Records successful RAG interactions, including questions, generated answers, execution times, and token usage.
+
+---
+
+**3. `retrieval_history = []`**
+
+Creates an empty list for storing retrieved document chunk records.
+
+**Purpose:**
+Preserves information about the chunks returned for each successfully processed question.
+
+---
+
+#### B. Display Session Information
+
+**4. `print(&quot;\n&quot; + &quot;=&quot; * 70)`**
+
+Displays a blank line and horizontal separator.
+
+**Purpose:**
+Improves readability of the notebook output.
+
+---
+
+**5. `print(&quot;CONTINUOUS RAG QUESTION ANSWERING
+— LALIMSALITA&quot;)`**
+
+Displays the interactive session heading.
+
+**Purpose:**
+Identifies the LalimSalita chatbot interface.
+
+---
+
+**6. `print(&quot;Ask Filipino vocabulary questions about the uploaded PDF.&quot;)`**
+
+Displays instructions describing the supported question domain.
+
+**Purpose:**
+Informs users that questions should relate to the vocabulary content of the uploaded PDF.
+
+---
+
+**7. `print(&quot;Command: exit&quot;)`**
+
+Displays the available session command.
+
+**Purpose:**
+Informs users how to terminate the interactive question-answering loop.
+
+---
+
+**8. `print(f&quot;Active chunking configuration:{active_config}&quot;)`**
+
+Displays the active experimental configuration.
+
+**Purpose:**
+Confirms which ChromaDB collection will be used during the session.
+
+---
+
+#### C. Start the Continuous Input Loop
+
+**9. `while True:`**
+
+Creates an indefinite loop that repeatedly accepts user questions.
+
+**Purpose in the RAG System:**
+Allows multiple questions to be processed within one notebook execution.
+
+The loop continues until a termination condition is encountered.
+
+---
+
+**10. `try:`**
+
+Begins an exception-handling block for receiving user input.
+
+**Purpose:**
+Allows the program to handle interruptions without producing an unhandled input error.
+
+---
+
+**11. `question = input(&quot;\nQuestion: &quot;).strip()`**
+
+Displays an input prompt and reads the user&#39;s vocabulary question.
+
+- `input()` — Accepts typed user input.
+- `&quot;\nQuestion: &quot;` — Displays the question prompt.
+- `.strip()` — Removes leading and trailing whitespace.
+- `question` — Stores the processed input.
+
+**Purpose in the RAG System:**
+Collects the vocabulary question that will be submitted to the RAG pipeline.
+
+---
+
+**12. `except (EOFError, KeyboardInterrupt):`**
+
+Handles input-related session interruptions.
+
+**Code Breakdown:**
+- `EOFError` — Occurs when input ends unexpectedly.
+- `KeyboardInterrupt` — Occurs when execution is interrupted by the user.
+
+**Purpose:**
+Allows the session to terminate gracefully during input collection.
+
+---
+
+**13. `print(&quot;\nRAG session terminated.&quot;)`**
+
+Displays a termination message.
+
+**Purpose:**
+Confirms that the interactive session has ended.
+
+---
+
+**14. `break`**
+
+Exits the current `while` loop.
+
+**Purpose:**
+Stops further question prompts.
+
+---
+
+#### D. Validate User Input
+
+**15. `if not question:`**
+
+Checks whether the submitted question
+is empty after whitespace removal.
+
+**Purpose:**
+Prevents empty input from being submitted to the retrieval and generation pipeline.
+
+---
+
+**16. `print(&quot;Please enter a question.&quot;)`**
+
+Displays a message when the input is empty.
+
+**Purpose:**
+Instructs the user to enter a valid question.
+
+---
+
+**17. `continue`**
+
+Skips the remaining statements in the current loop iteration.
+
+**Purpose:**
+Returns directly to the next question prompt.
+
+---
+
+#### E. Exit Command
+
+**18. `if question.lower() == &quot;exit&quot;:`**
+
+Checks whether the user entered the session termination command.
+
+- `.lower()` — Converts the input to lowercase.
+- `== &quot;exit&quot;` — Checks for the exit command.
+
+**Purpose:**
+Allows the user to end the session using `exit`, `EXIT`, or other capitalization variants.
+
+---
+
+**19. `print(&quot;\nRAG session terminated.&quot;)`**
+
+Displays the session termination message.
+
+---
+
+**20. `print(f&quot;Total questions answered:{len(qa_history)}&quot;)`**
+
+Displays the number of successfully recorded question-answer interactions.
+
+**Code Breakdown:**
+- `len(qa_history)` — Counts the stored question-answer records.
+
+**Purpose:**
+Summarizes how many questions were successfully processed during the session.
+
+**Important:**
+Failed requests are not added to `qa_history` by this code.
+
+---
+
+**21. `break`**
+
+Terminates the continuous question-answering loop.
+
+---
+
+#### F. Process the RAG Question
+
+**22. `try:`**
+
+Begins the exception-handling block for the RAG processing operations.
+
+**Purpose:**
+Prevents an individual processing error from automatically ending the entire session.
+
+---
+
+**23. `response = rag_query(question, config_id=active_config, k=TOP_K)`**
+
+Calls the complete RAG function defined in Section 9.
+
+- `question` — Submitted vocabulary question.
+- `config_id=active_config` — Active ChromaDB collection.
+- `k=TOP_K` — Number of chunks requested.
+- `response` — Stores the structured RAG output.
+
+**Purpose in the RAG System:**
+Performs the complete question-answering pipeline:
+
+1. Generate the question embedding.
+2. Search the ChromaDB vector collection.
+3. Retrieve the Top-K matching chunks.
+4. Construct the document context.
+5. Send the context and question to Groq.
+6. Generate a Filipino answer.
+7. Return results and performance measurements.
+
+---
+
+#### G. Save Question-Answer History
+
+**24. `qa_history.append({...})`**
+
+Adds the successful RAG interaction to the question-answer history list.
+
+**Purpose:**
+Creates a structured record of each successfully processed question.
+
+---
+
+**25. `&#39;timestamp_utc&#39;:
+datetime.now(timezone.utc).isoformat()`**
+
+Records the current date and time
+using Coordinated Universal Time (UTC).
+
+**Code Breakdown:**
+- `datetime.now(timezone.utc)` — Gets the current UTC date and time.
+- `.isoformat()` — Converts the timestamp into ISO 8601 format.
+
+**Purpose:**
+Provides a standardized timestamp for each question-answer record.
+
+---
+
+**26. `&#39;config&#39;: active_config`**
+
+Stores the chunking configuration used for the interaction.
+
+**Purpose:**
+Associates the answer with its experimental setup.
+
+---
+
+**27. `&#39;question&#39;: question`**
+
+Stores the user&#39;s submitted question.
+
+**Purpose:**
+Preserves the original input for evaluation.
+
+---
+
+**28. `&#39;answer&#39;: response[&#39;answer&#39;]`**
+
+Stores the generated Filipino answer.
+
+**Purpose:**
+Allows later inspection of answer quality, accuracy, and document grounding.
+
+---
+
+**29. `&#39;retrieval_seconds&#39;: response[&#39;retrieval_seconds&#39;]`**
+
+Stores the measured retrieval latency.
+
+**Purpose:**
+Records the time required for query embedding and ChromaDB similarity search.
+
+---
+
+**30. `&#39;generation_seconds&#39;: response[&#39;generation_seconds&#39;]`**
+
+Stores the measured Groq generation latency.
+
+**Purpose:**
+Records the time required for the language model completion request.
+
+---
+
+**31. `&#39;prompt_tokens&#39;:
+response[&#39;prompt_tokens&#39;]`**
+
+Stores the reported input token usage.
+
+**Purpose:**
+Supports analysis of the number of tokens submitted to the language model.
+
+---
+
+**32. `&#39;completion_tokens&#39;: response[&#39;completion_tokens&#39;]`**
+
+Stores the reported output token usage.
+
+**Purpose:**
+Supports analysis of generated token consumption.
+
+---
+
+#### H. Save Retrieval History
+
+**33. `for doc in response[&#39;retrieved&#39;]:`**
+
+Iterates through every retrieved document chunk.
+
+**Purpose:**
+Processes the source records associated with the current question.
+
+---
+
+**34. `retrieval_history.append({...})`**
+
+Adds each retrieved chunk to the retrieval history list.
+
+**Purpose:**
+Preserves the individual retrieval results for later inspection and evaluation.
+
+---
+
+**35. `&#39;config&#39;: active_config`**
+
+Stores the configuration used for retrieval.
+
+---
+
+**36. `&#39;question&#39;: question`**
+
+Associates the retrieved chunk with the corresponding vocabulary question.
+
+---
+
+**37. `&#39;rank&#39;: doc[&#39;rank&#39;]`**
+
+Stores the chunk&#39;s retrieval ranking.
+
+**Purpose:**
+Provides the ranking information needed for rank-based retrieval evaluation.
+
+---
+
+**38. `&#39;page&#39;: doc[&#39;page&#39;]`**
+
+Stores the original source PDF page number.
+
+**Purpose:**
+Supports source tracing and verification.
+
+---
+
+**39. `&#39;chunk_id&#39;: doc[&#39;id&#39;]`**
+
+Stores the unique retrieved chunk identifier.
+
+**Purpose:**
+Allows the exact retrieved chunk to be identified.
+
+---
+
+**40. `&#39;cosine_distance&#39;: doc[&#39;distance&#39;]`**
+
+Stores the cosine distance returned by ChromaDB.
+
+**Purpose:**
+Preserves the vector distance measurement associated with the retrieved chunk.
+
+---
+
+**41. `&#39;retrieved_text&#39;: doc[&#39;text&#39;]`**
+
+Stores the full retrieved document chunk.
+
+**Purpose:**
+Allows manual relevance judgment without having to rerun the same retrieval request.
+
+---
+
+#### I. Display the Generated RAG Answer
+
+**42. `print(&quot;RAG ANSWER&quot;)`**
+
+Displays the answer section heading.
+
+**Purpose:**
+Separates the generated response from the retrieval information.
+
+---
+
+**43. `print(response[&#39;answer&#39;])`**
+
+Displays the Filipino answer generated by the Groq language model.
+
+**Purpose:**
+Presents the answer to the user&#39;s question.
+
+**Important:**
+The answer is generated using the retrieved document excerpts supplied in Section 9.
+
+---
+
+**44. `print(f&quot;\nConfiguration: ...&quot;)`**
+
+Displays the configuration identifier, retrieval time, and generation time.
+
+**Purpose:**
+Provides immediate information about the experimental setup and execution latency.
+
+---
+
+#### J. Automatically Display Retrieved Sources
+
+**45. `print(&quot;RETRIEVED SOURCES&quot;)`**
+
+Displays the retrieved source section heading.
+
+**Purpose:**
+Separates supporting document excerpts from the generated answer.
+
+---
+
+**46. `for doc in response[&#39;retrieved&#39;]:`**
+
+Iterates through the retrieved chunks.
+
+**Purpose:**
+Automatically displays all returned source records after each answer.
+
+---
+
+**47. `print(f&quot;\n[{doc[&#39;rank&#39;]}] ...&quot;)`**
+
+Displays the retrieval rank, source page, chunk identifier, and cosine distance.
+
+**Purpose:**
+Provides source information that helps the researcher inspect the retrieved evidence.
+
+**Example Structure:**
+
+[1] Page 13 | Chunk CFG1_p13_c0 |
+Cosine distance 0.1234
+
+**Important:**
+The example values are illustrative only.
+
+---
+
+**48. `print(&quot;-&quot; * 70)`**
+
+Displays a separator before the chunk text.
+
+**Purpose:**
+Improves readability of individual results.
+
+---
+
+**49. `print(doc[&#39;text&#39;])`**
+
+Displays the full text of the retrieved chunk.
+
+**Purpose in the RAG System:**
+- Shows the evidence supplied to the LLM.
+- Supports manual verification of definitions.
+- Helps identify incomplete or irrelevant chunks.
+- Provides information for retrieval evaluation.
+
+---
+
+**50. `print(&quot;\nType &#39;exit&#39; to end the session.&quot;)`**
+
+Reminds the user how to terminate the interactive session.
+
+**Purpose:**
+Provides clear navigation instructions after each successful question.
+
+---
+
+#### K. Error Handling
+
+**51. `except Exception as exc:`**
+
+Catches ordinary exceptions raised during the RAG processing block.
+
+**Purpose:**
+Allows the session to continue when an individual request fails.
+
+---
+
+**52. `print(f&quot;\nERROR:{type(exc).__name__}: {exc}&quot;)`**
+
+Displays the exception type and error message.
+
+- `type(exc).__name__` — Gets the exception class name.
+- `exc` — Contains the exception details.
+
+**Purpose:**
+Provides diagnostic information for troubleshooting failed requests.
+
+---
+
+**53. `print(&quot;The question could not
+be processed. ...&quot;)`**
+
+Displays a troubleshooting message.
+
+**Purpose:**
+Advises the user to check possible API key, rate limit, or collection issues.
+
+</pre></section><section data-cell="35" class="cell"><b>Markdown cell 35</b><pre>## 10 · Export audit-ready outputs</pre></section><section data-cell="36" class="cell"><div class="r"><i>In [38]:</i><pre># ============================================================
+# 10. EXPORT ACTUAL RESULTS FOR THIS CONFIGURATION
+# ============================================================
+# Export after ending the continuous Q&amp;A cell with &#39;exit&#39;.
+# Separate run folder prevents overwriting previous experiment files.
+run_stamp = datetime.now(timezone.utc).strftime(&#39;%Y%m%d_%H%M%S_%f&#39;)
+RUN_DIR = ROOT / f&quot;{DEFAULT_CONFIG}_{run_stamp}&quot;
+RUN_DIR.mkdir(parents=True, exist_ok=False)
+
+chunks_df = pd.DataFrame(chunk_rows)
+logs_df = pd.DataFrame(experiment_logs)
+responses_df = pd.DataFrame(globals().get(&#39;qa_history&#39;, []))
+retrieval_df = pd.DataFrame(globals().get(&#39;retrieval_history&#39;, []))
+
+chunks_df.to_csv(RUN_DIR / &#39;chunks.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)
+logs_df.to_csv(RUN_DIR / &#39;experiment_logs.csv&#39;, index=False)
+if not responses_df.empty:
+    responses_df.to_csv(RUN_DIR / &#39;chatbot_responses.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)
+if not retrieval_df.empty:
+    retrieval_df.to_csv(RUN_DIR / &#39;retrieval_results.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)
+
+with pd.ExcelWriter(RUN_DIR / &#39;OMG_Project_Experiment.xlsx&#39;, engine=&#39;openpyxl&#39;) as writer:
+    logs_df.to_excel(writer, sheet_name=&#39;Chunking_Results&#39;, index=False)
+    chunks_df.to_excel(writer, sheet_name=&#39;Chunks&#39;, index=False)
+    if not responses_df.empty:
+        responses_df.to_excel(writer, sheet_name=&#39;Actual_Responses&#39;, index=False)
+    if not retrieval_df.empty:
+        retrieval_df.to_excel(writer, sheet_name=&#39;Retrieval_Log&#39;, index=False)
+
+metadata = {
+    &#39;pdf_name&#39;: PDF_PATH.name,
+    &#39;pdf_sha256&#39;: hashlib.sha256(PDF_PATH.read_bytes()).hexdigest(),
+    &#39;embedding_model&#39;: EMBED_MODEL, &#39;groq_model&#39;: GROQ_MODEL,
+    &#39;temperature&#39;: TEMPERATURE, &#39;top_k&#39;: TOP_K,
+    &#39;active_configuration&#39;: ACTIVE_CONFIG, &#39;seed&#39;: SEED,
+    &#39;python&#39;: sys.version, &#39;timestamp_utc&#39;: datetime.now(timezone.utc).isoformat(),
+    &#39;continuous_qa_questions_recorded&#39;: len(responses_df),
+    &#39;retrieval_metrics_computed_in_notebook&#39;: False,
+}
+(RUN_DIR / &#39;run_metadata.json&#39;).write_text(
+    json.dumps(metadata, ensure_ascii=False, indent=2), encoding=&#39;utf-8&#39;)
+print(&#39;Saved current run in:&#39;, RUN_DIR.resolve())
+for file in sorted(RUN_DIR.iterdir()):
+    print(&#39;-&#39;, file.name)
+</pre></div><div class="r out"><i>Out:</i><pre>Saved current run in: /content/OMG_Project_outputs/CFG3_20261109_093635_873975
+- OMG_Project_Experiment.xlsx
+- chatbot_responses.csv
+- chunks.csv
+- experiment_logs.csv
+- retrieval_results.csv
+- run_metadata.json
+</pre></div></section><section data-cell="37" class="cell"><b>Markdown cell 37</b><pre>### Purpose
+
+This section exports the experimental results generated by the LalimSalita Retrieval-Augmented Generation (RAG) system for the currently active chunking configuration.
+
+It organizes the collected data into a uniquely named experiment folder and saves the results in CSV, Excel, and JSON formats.
+
+The exported records include:
+
+1. Generated document chunks and their metadata.
+2. Chunking configuration and processing statistics.
+3. Recorded chatbot questions and generated answers.
+4. Retrieved document chunks and their rankings.
+5. Experimental settings and source document information.
+
+These files provide the data needed for manual retrieval evaluation, answer-quality assessment, and comparison of different chunking configurations.
+
+This section should be executed after the continuous question-answering session in Section 9A has ended.
+
+---
+
+### Code Explanation
+
+#### A. Generate a Unique Experiment Folder
+
+**1. `run_stamp = datetime.now(timezone.utc).strftime(&#39;%Y%m%d_%H%M%S_%f&#39;)`**
+
+Generates a timestamp identifying the current experimental run.
+
+**Code Breakdown:**
+
+- `datetime.now(timezone.utc)` — Retrieves the current date and time in UTC.
+- `.strftime()` — Formats the date and time into a filename-friendly string.
+- `%Y` — Four-digit year.
+- `%m` — Two-digit month.
+- `%d` — Two-digit day.
+- `%H` — Hour in 24-hour format.
+- `%M` — Minute.
+- `%S` — Second.
+- `%f` — Microseconds.
+
+**Purpose:**
+Creates a timestamp that helps distinguish the current run from previous experiments.
+
+---
+
+**2. `RUN_DIR = ROOT / f&quot;{DEFAULT_CONFIG}_{run_stamp}&quot;`**
+
+Constructs the output directory path for the current experiment.
+
+- `ROOT` — Main output folder created in Section 2A.
+- `DEFAULT_CONFIG` — Active chunking configuration.
+- `run_stamp` — Timestamp identifying the run.
+- `/` — Path joining operator from pathlib.
+
+**Purpose in the RAG System:**
+Organizes the exported files by experimental configuration and execution time.
+
+---
+
+**3. `RUN_DIR.mkdir(parents=True, exist_ok=False)`**
+
+Creates the experiment output directory.
+
+**Parameters:**
+
+`parents=True`
+
+Allows missing parent directories to be created automatically.
+
+`exist_ok=False`
+
+Raises an error if the target directory already exists.
+
+**Purpose:**
+Reduces the risk of accidentally overwriting files from a previous experimental run.
+
+---
+
+#### B. Convert Experimental Records to DataFrames
+
+**4. `chunks_df = pd.DataFrame(chunk_rows)`**
+
+Converts the chunk records from Section 6 into a pandas DataFrame.
+
+**Stored Information:**
+
+- Configuration identifier.
+- Chunk identifier.
+- Source PDF page.
+- Chunk text.
+- Character count.
+
+**Purpose:**
+Prepares the generated chunk records for CSV and Excel export.
+
+---
+
+**5. `logs_df = pd.DataFrame(experiment_logs)`**
+
+Converts the experimental statistics from Section 6 into a pandas DataFrame.
+
+**Stored Information:**
+
+- Configuration identifier.
+- Chunk size.
+- Chunk overlap.
+- Number of source pages.
+- Number of generated chunks.
+- Average chunk length.
+- Minimum and maximum chunk lengths.
+- Chunking execution time.
+- Embedding execution time.
+- Indexing execution time.
+- Vector dimensions.
+
+**Purpose:**
+Preserves the processing characteristics of the active chunking configuration.
+
+---
+
+**6. `responses_df = pd.DataFrame(globals().get(&#39;qa_history&#39;, []))`**
+
+Converts the recorded question-answer history into a pandas DataFrame.
+
+`globals()`
+
+Accesses the current global namespace.
+
+`.get(&#39;qa_history&#39;, [])`
+
+Retrieves the `qa_history` variable if it exists.
+
+If it does not exist, an empty list is returned.
+
+`pd.DataFrame()`
+
+Converts the retrieved records into a tabular structure.
+
+**Purpose:**
+Prepares the chatbot interactions for later analysis and export.
+
+**Important:**
+If Section 9A was not executed, the resulting DataFrame may be empty.
+
+---
+
+**7. `retrieval_df = pd.DataFrame(globals().get(&#39;retrieval_history&#39;, []))`**
+
+Converts the recorded retrieval history into a pandas DataFrame.
+
+**Stored Information:**
+
+- Configuration identifier.
+- Vocabulary question.
+- Retrieval rank.
+- Source PDF page.
+- Chunk identifier.
+- Cosine distance.
+- Retrieved chunk text.
+
+**Purpose:**
+Preserves the evidence returned by the vector retrieval system.
+
+---
+
+#### C. Export CSV Files
+
+**8. `chunks_df.to_csv(RUN_DIR / &#39;chunks.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)`**
+
+Exports the generated document chunks to a CSV file.
+
+`to_csv()`
+
+Writes a DataFrame into CSV format.
+
+`RUN_DIR / &#39;chunks.csv&#39;`
+
+Specifies the destination file.
+
+`index=False`
+
+Prevents the pandas row index from being included as an extra column.
+
+`encoding=&#39;utf-8-sig&#39;`
+
+Uses UTF-8 encoding with a byte order mark, which can improve compatibility with Excel when opening Filipino text.
+
+**Purpose:**
+Creates a reusable record of the generated vocabulary chunks.
+
+---
+
+**9. `logs_df.to_csv(RUN_DIR / &#39;experiment_logs.csv&#39;, index=False)`**
+
+Exports the experimental processing statistics to a CSV file.
+
+**Purpose:**
+Preserves the configuration settings, chunking statistics, and execution times.
+
+---
+
+**10. `if not responses_df.empty:`**
+
+Checks whether recorded chatbot responses exist.
+
+**Purpose:**
+Prevents creation of a chatbot response CSV when the DataFrame contains no records.
+
+---
+
+**11. `responses_df.to_csv(RUN_DIR / &#39;chatbot_responses.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)`**
+
+Exports the question-answer interaction history.
+
+**Purpose:**
+Preserves generated answers and associated performance measurements.
+
+---
+
+**12. `if not retrieval_df.empty:`**
+
+Checks whether retrieval records exist.
+
+**Purpose:**
+Prevents creation of the retrieval results CSV when no retrieval history was recorded.
+
+---
+
+**13. `retrieval_df.to_csv(RUN_DIR / &#39;retrieval_results.csv&#39;, index=False, encoding=&#39;utf-8-sig&#39;)`**
+
+Exports the retrieval history to a CSV file.
+
+**Purpose:**
+Preserves retrieved chunks and their ranking information.
+
+---
+
+#### D. Export Excel Workbook
+
+**14. `with pd.ExcelWriter(RUN_DIR / &#39;OMG_Project_Experiment.xlsx&#39;, engine=&#39;openpyxl&#39;) as writer:`**
+
+Creates an Excel workbook using pandas and the openpyxl engine.
+
+`pd.ExcelWriter()`
+
+Creates a writer for an Excel workbook.
+
+`RUN_DIR / &#39;OMG_Project_Experiment.xlsx&#39;`
+
+Specifies the Excel output filename.
+
+`engine=&#39;openpyxl&#39;`
+
+Uses openpyxl to write the Excel file.
+
+`with`
+
+Automatically closes the writer when the block finishes.
+
+**Purpose:**
+Combines the experimental records into one workbook with multiple worksheets.
+
+---
+
+**15. `logs_df.to_excel(writer, sheet_name=&#39;Chunking_Results&#39;,
+index=False)`**
+
+Creates the `Chunking_Results` worksheet.
+
+**Purpose:**
+Stores the experimental configuration and processing statistics.
+
+---
+
+**16. `chunks_df.to_excel(writer, sheet_name=&#39;Chunks&#39;, index=False)`**
+
+Creates the `Chunks` worksheet.
+
+**Purpose:**
+Stores the generated vocabulary chunks and their associated metadata.
+
+---
+
+**17. `if not responses_df.empty:`**
+
+Checks whether question-answer records are available.
+
+**Purpose:**
+Creates the response worksheet only when recorded interactions exist.
+
+---
+
+**18. `responses_df.to_excel(writer, sheet_name=&#39;Actual_Responses&#39;,
+index=False)`**
+
+Creates the `Actual_Responses` worksheet.
+
+**Purpose:**
+Stores the submitted questions, generated answers, and performance data.
+
+---
+
+**19. `if not retrieval_df.empty:`**
+
+Checks whether retrieval records exist.
+
+**Purpose:**
+Creates the retrieval worksheet only when retrieval data is available.
+
+---
+
+**20. `retrieval_df.to_excel(writer, sheet_name=&#39;Retrieval_Log&#39;, index=False)`**
+
+Creates the `Retrieval_Log` worksheet.
+
+**Purpose:**
+Stores the retrieved chunk rankings, source information, cosine distances, and text.
+
+---
+
+#### E. Create Experiment Metadata
+
+**21. `metadata = {...}`**
+
+Creates a dictionary containing information about the current experimental run.
+
+**Purpose:**
+Documents the settings and source information needed to interpret the exported results.
+
+---
+
+**22. `&#39;pdf_name&#39;: PDF_PATH.name`**
+
+Stores the filename of the uploaded PDF.
+
+**Purpose:**
+Identifies the source document used in the experiment.
+
+---
+
+**23. `&#39;pdf_sha256&#39;:hashlib.sha256(PDF_PATH.read_bytes()).hexdigest()`**
+
+Computes the SHA-256 hash of the source PDF.
+
+`PDF_PATH.read_bytes()`
+
+Reads the PDF as binary data.
+
+`hashlib.sha256()`
+
+Computes its SHA-256 digest.
+
+`.hexdigest()`
+
+Converts the digest into a hexadecimal string.
+
+**Purpose:**
+Provides a document fingerprint that can be used to compare PDF file contents between experimental runs.
+
+---
+
+**24. `&#39;embedding_model&#39;: EMBED_MODEL`**
+
+Stores the selected embedding model.
+
+**Purpose:**
+Documents the model used to generate query and passage embeddings.
+
+---
+
+**25. `&#39;groq_model&#39;: GROQ_MODEL`**
+
+Stores the selected Groq language model.
+
+**Purpose:**
+Documents the model used for answer generation.
+
+---
+
+**26. `&#39;temperature&#39;: TEMPERATURE`**
+
+Stores the configured generation temperature.
+
+**Purpose:**
+Documents a language model generation parameter.
+
+---
+
+**27. `&#39;top_k&#39;: TOP_K`**
+
+Stores the retrieval cutoff.
+
+**Purpose:**
+Identifies the maximum number of chunks requested during retrieval.
+
+---
+
+**28. `&#39;active_configuration&#39;: ACTIVE_CONFIG`**
+
+Stores the complete active chunking configuration.
+
+**Purpose:**
+Preserves the configuration identifier, chunk size, and chunk overlap.
+
+---
+
+**29. `&#39;seed&#39;: SEED`**
+
+Stores the configured random seed.
+
+**Purpose:**
+Documents the seed value used in the notebook.
+
+**Important:**
+Recording a seed does not guarantee complete reproducibility of API responses
+or all model operations.
+
+---
+
+**30. `&#39;python&#39;: sys.version`**
+
+Stores the Python interpreter version.
+
+**Purpose:**
+Documents part of the software environment used to execute the experiment.
+
+---
+
+**31. `&#39;timestamp_utc&#39;:datetime.now(timezone.utc).isoformat()`**
+
+Stores the UTC timestamp at the time the metadata dictionary is created.
+
+**Purpose:**
+Documents when the experiment results were exported.
+
+---
+
+**32. `&#39;continuous_qa_questions_recorded&#39;:len(responses_df)`**
+
+Stores the number of question-answer records exported from the interactive session.
+
+**Purpose:**
+Documents the number of recorded successful interactions.
+
+---
+
+**33. `&#39;retrieval_metrics_computed_in_notebook&#39;:False`**
+
+Indicates that retrieval evaluation metrics have not been computed in the notebook.
+
+**Purpose:**
+Distinguishes raw experimental results from completed retrieval evaluation.
+
+---
+
+#### F. Save Metadata as JSON
+
+**34. `(RUN_DIR / &#39;run_metadata.json&#39;).write_text(...)`**
+
+Writes the experiment metadata to a JSON file.
+
+**Purpose:**
+Preserves experiment settings in a structured, machine-readable format.
+
+---
+
+**35. `json.dumps(metadata, ensure_ascii=False, indent=2)`**
+
+Converts the metadata dictionary into formatted JSON text.
+
+
+`json.dumps()`
+
+Serializes the dictionary into JSON.
+
+`ensure_ascii=False`
+
+Preserves Unicode characters directly instead of unnecessarily escaping them.
+
+`indent=2`
+
+Formats the JSON using two spaces per indentation level.
+
+**Purpose:**
+Produces a readable metadata file.
+
+---
+
+**36. `encoding=&#39;utf-8&#39;`**
+
+Specifies UTF-8 encoding for the metadata file.
+
+**Purpose:**
+Supports Unicode characters in the exported JSON.
+
+---
+
+#### G. Display Exported Files
+
+**37. `print(&#39;Saved current run in:&#39;, RUN_DIR.resolve())`**
+
+Displays the absolute path of the experiment output directory.
+
+**Purpose:**
+Allows the researcher to locate the exported files.
+
+---
+
+**38. `for file in sorted(RUN_DIR.iterdir()):`**
+
+Iterates through the files inside the experiment folder.
+
+`RUN_DIR.iterdir()`
+
+Retrieves the directory contents.
+
+`sorted()`
+
+Sorts the entries.
+
+`for file in ...`
+
+Iterates through the entries.
+
+**Purpose:**
+Lists the generated export files in a consistent order.
+
+---
+
+**39. `print(&#39;-&#39;, file.name)`**
+
+Displays the filename of each exported item.
+
+**Purpose:**
+Confirms which files were created during the export process.
+</pre></section><section data-cell="38" class="cell"><b>Markdown cell 38</b><pre>## 11 · Optional ZIP download in Colab</pre></section><section data-cell="39" class="cell"><div class="r"><i>In [40]:</i><pre>import shutil
+if &#39;RUN_DIR&#39; not in globals():
+    raise RuntimeError(&#39;Run the export cell before creating the ZIP.&#39;)
+archive = shutil.make_archive(str(RUN_DIR), &#39;zip&#39;, root_dir=str(RUN_DIR))
+print(&#39;Archive:&#39;, archive)
+# In Colab, uncomment these lines to download:
+# from google.colab import files
+# files.download(archive)</pre></div><div class="r out"><i>Out:</i><pre>Archive: /content/OMG_Project_outputs/CFG3_20261109_093635_873975.zip
+</pre></div></section><section data-cell="40" class="cell"><b>Markdown cell 40</b><pre>### Purpose
+
+This section creates a compressed ZIP archive containing the exported experimental results of the active LalimSalita RAG configuration.
+
+It uses Python&#39;s built-in `shutil` module to package the CSV, Excel, and JSON files generated in Section 10 into a single archive.
+
+Before creating the archive, the code verifies that the `RUN_DIR` variable exists in the current Python environment.
+
+The ZIP archive can then be downloaded from Google Colab for backup, documentation, and subsequent experimental evaluation.
+
+---
+
+### Code Explanation
+
+#### A. Import the Archive Utility
+
+**1. `import shutil`**
+
+Imports Python&#39;s built-in `shutil` module.
+
+**Purpose:**
+Provides utilities for file operations, including creating compressed archives.
+
+**Role in the RAG System:**
+Supports packaging and preservation of experimental outputs rather than retrieval or answer generation.
+
+---
+
+#### B. Verify the Export Directory Variable
+
+**2. `if &#39;RUN_DIR&#39; not in globals():`**
+
+Checks whether the variable `RUN_DIR` exists in the current global Python namespace.
+
+- `globals()` — Returns the current global namespace as a dictionary.
+- `&#39;RUN_DIR&#39;` — Name of the variable containing the experiment output directory.
+- `not in` — Checks whether that variable is absent from the namespace.
+
+**Purpose:**
+Prevents archive creation when the export directory variable has not been initialized.
+
+---
+
+**3. `raise RuntimeError(
+&#39;Run the export cell before creating the ZIP.&#39;)`**
+
+Raises an exception if `RUN_DIR` is unavailable.
+
+**Purpose:**
+Stops execution and informs the researcher that Section 10 must be executed first.
+
+
+
+---
+
+#### C. Create the ZIP Archive
+
+**4. `archive = shutil.make_archive(str(RUN_DIR), &#39;zip&#39;, root_dir=str(RUN_DIR))`**
+
+Creates a ZIP archive containing the files inside the current experiment directory.
+
+`shutil.make_archive()`
+
+Creates an archive from a specified directory.
+
+`str(RUN_DIR)`
+
+Provides the base filename for the archive.
+
+`&#39;zip&#39;`
+
+Specifies ZIP as the archive format.
+
+`root_dir=str(RUN_DIR)`
+
+Specifies the directory whose contents will be included in the archive.
+
+`archive`
+
+Stores the path of the created ZIP file.
+
+**Purpose:**
+Packages the experimental results into a single compressed file.
+
+---
+
+#### D. Display Archive Location
+
+**5. `print(&#39;Archive:&#39;, archive)`**
+
+Displays the generated ZIP archive path.
+
+**Purpose:**
+Confirms the location of the created archive.
+
+**Expected Output:**
+
+`Archive: OMG_Project_outputs/CFG1_20261109_071500_123456.zip`
+
+The actual path depends on the experiment folder created in Section 10.
+
+---
+
+#### E. Optional Google Colab Download
+
+**6. `# from google.colab import files`**
+
+Contains a commented import statement for Google Colab&#39;s file utility.
+
+**Purpose:**
+Provides an optional method for downloading the archive to the user&#39;s computer.
+
+Because the line is commented, it is not executed automatically.
+
+---
+
+**7. `# files.download(archive)`**
+
+Contains a commented download command.
+
+**Purpose:**
+Allows the generated ZIP archive to be downloaded through the Google Colab interface.
+
+To enable downloading, remove the `#` characters from both download-related lines.</pre></section></main>
