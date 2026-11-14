@@ -409,11 +409,29 @@
 
           <div class="projects__panel" id="c508-finals-panel" role="tabpanel" aria-labelledby="c508-finals-tab" hidden>
             <div class="projects__list">
-              <div class="project-entry project-entry--single">
+              <div class="project-entry">
+                <div class="project-entry__left">
+                  <div class="project-entry__img project-entry__document-cover" role="img" aria-label="PT-F1 Optimizing Chunk Size and Overlap document cover">
+                    <span>Lab Exercise PT-F1</span>
+                    <strong>Optimizing Chunk<br />Size and Overlap</strong>
+                    <small>ITC-C508 · Finals</small>
+                  </div>
+                  <div class="project-entry__file-btns">
+                    <a class="project-entry__file-btn" href="finals/JohnLaurence_OptimizingChunkSizeandOverlap.ipynb" download>Download Notebook</a>
+                  </div>
+                </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">ITC-C508 Finals</h3>
-                    <p class="project-entry__desc">No final entry added yet.</p>
+                    <h3 class="project-entry__category">Lab Exercise PT-F1 (Initial Steps)</h3>
+                    <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Optimizing Chunk Size and Overlap for RAG Retrieval</p>
+                    <p class="project-entry__label">Short Description:</p>
+                    <p class="project-entry__desc">This activity prepares a controlled RAG retrieval experiment to identify the chunk-size and overlap configuration that best supports LalimSalita's vocabulary knowledge base. The notebook extracts text from the source PDF, creates chunks, generates multilingual embeddings, and stores them in a FAISS vector index for retrieval.</p>
+                    <p class="project-entry__label">Experiment Focus:</p>
+                    <p class="project-entry__desc">The activity compares chunking configurations using dataset-based test questions of different difficulty levels. Retrieval quality will be measured through Precision@3, Recall@3, and MRR@3, while the final configuration will be selected using measured evidence and efficiency.</p>
+                    <p class="project-entry__label">Initial Configuration:</p>
+                    <p class="project-entry__desc">The notebook begins with a 1,200-character chunk size, a 50-character overlap, and Top-K retrieval of three chunks. It uses the multilingual E5 embedding model, FAISS for similarity search, and Qwen3-8B with 4-bit quantization for the generation stage.</p>
+                    <p class="project-entry__label">Reflection:</p>
+                    <p class="project-entry__desc">This activity helped me understand that RAG quality depends on how the source document is divided before the language model receives any evidence. A chunk that is too small may lose important context, while a chunk that is too large may retrieve unnecessary information. Testing chunk size and overlap with clear retrieval metrics makes the configuration decision more evidence-based and helps produce more grounded answers.</p>
                   </div>
                 </div>
               </div>
