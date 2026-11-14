@@ -22,12 +22,31 @@
   </nav>
 
   <nav class="side-nav" aria-label="Quick portfolio navigation">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#skills">Skills</a>
-    <button type="button" onclick="goToC508Term('c508-prelims-tab')">Prelims</button>
-    <button type="button" onclick="goToC508Term('c508-midterms-tab')">Midterms</button>
-    <button type="button" onclick="goToC508Term('c508-finals-tab')">Finals</button>
+    <button class="side-nav__toggle" type="button" aria-expanded="false" aria-controls="side-nav-panel" onclick="toggleSideNav()">
+      <span>Activities</span><span class="side-nav__toggle-icon" aria-hidden="true">+</span>
+    </button>
+    <div class="side-nav__panel" id="side-nav-panel" hidden>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Outputs</a>
+
+      <p class="side-nav__label">ITC-C508 · Prelims</p>
+      <button type="button" onclick="goToC508Activity('c508-prelims-tab', 'activity-ww-p2')">WW-P2 · NLP Concepts</button>
+      <button type="button" onclick="goToC508Activity('c508-prelims-tab', 'activity-pt-p1')">PT-P1 · Deep Learning</button>
+      <button type="button" onclick="goToC508Activity('c508-prelims-tab', 'activity-pt-p2')">PT-P2 · Training</button>
+
+      <p class="side-nav__label">ITC-C508 · Midterms</p>
+      <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-pt-m1')">PT-M1 · RAG Chatbot</button>
+      <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-proposal')">Project Proposal</button>
+      <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-revised-proposal')">Revised Proposal</button>
+
+      <p class="side-nav__label">ITC-C508 · Finals</p>
+      <button type="button" onclick="goToC508Activity('c508-finals-tab', 'activity-pt-f1')">PT-F1 · Chunk Setup</button>
+      <button type="button" onclick="goToC508Activity('c508-finals-tab', 'activity-pt-f2')">PT-F2 · Chunk Testing</button>
+      <button type="button" onclick="goToC508Activity('c508-finals-tab', 'activity-rag-experiment')">RAG CPU-GPU Test</button>
+      <button type="button" onclick="goToC508Activity('c508-finals-tab', 'activity-final-project')">Final Project</button>
+    </div>
   </nav>
 
   <!-- ── HERO ────────────────────────────────────────────────────── -->
@@ -249,7 +268,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">WW-P2 : Introduction to NLP Concept</h3>
+                    <h3 class="project-entry__category" id="activity-ww-p2">WW-P2 : Introduction to NLP Concept</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; From Words to Meaning: A Hands On Exploration of Natural Language Processing</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity explores foundational Natural Language Processing concepts through hands-on exercises in text summarization, language detection, and personally identifiable information detection. It examines how machines process and interpret human language using techniques such as tokenization, text preprocessing, TF-IDF, embeddings, and context vectors.</p>
@@ -277,7 +296,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Exercise PT-P1 : Deep Learning (Neural Networks)</h3>
+                    <h3 class="project-entry__category" id="activity-pt-p1">Exercise PT-P1 : Deep Learning (Neural Networks)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Hotel Review Classification Using Tagged Learning and Model Refinement</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity applies Natural Language Processing and neural-network-based tagged learning to classify hotel reviews as Positive Praise, Negative Complaint, or Urgent Support. The model was tested with direct phrases, sarcasm, indirect meanings, and unfamiliar expressions to examine its performance on different forms of customer feedback.</p>
@@ -306,7 +325,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">PT-P2 : Neural Network Training (Hyperparameters)</h3>
+                    <h3 class="project-entry__category" id="activity-pt-p2">PT-P2 : Neural Network Training (Hyperparameters)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Hyperparameter Optimization of a Neural Network for Hotel Customer Feedback Classification</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity trains and optimizes a TensorFlow/Keras neural network for classifying hotel customer feedback by sentiment and intent. The experiment evaluates changes to learning rate, hidden-layer size, dropout, batch size, epochs, optimizer, early stopping, and dataset size while comparing the results with the earlier PT-P1 no-code baseline.</p>
@@ -342,7 +361,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Lab Exercise PT-M1 (Building and Evaluating a RAG Chatbot)</h3>
+                    <h3 class="project-entry__category" id="activity-pt-m1">Lab Exercise PT-M1 (Building and Evaluating a RAG Chatbot)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Beyond Generation: Evaluating Grounding and Hallucination in a Study Skills RAG Assistant</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity builds a Retrieval-Augmented Generation chatbot for the Study Skills domain under SDG 4: Quality Education. It loads and chunks a reference document, generates embeddings, stores them in ChromaDB, retrieves relevant passages, and uses a Groq-hosted language model to produce responses grounded in the supplied learning material.</p>
@@ -372,7 +391,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Project Proposal</h3>
+                    <h3 class="project-entry__category" id="activity-proposal">Project Proposal</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: A RAG-Based Contextual Vocabulary Tool for Difficult Filipino Words in <em>Florante at Laura</em></p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This proposal presents LalimSalita, a Retrieval-Augmented Generation (RAG) vocabulary tool that helps Grade 8 students understand unfamiliar, deep, figurative, and context-dependent Filipino words in <em>Florante at Laura</em>.</p>
@@ -400,7 +419,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Final Project Proposal (Revised)</h3>
+                    <h3 class="project-entry__category" id="activity-revised-proposal">Final Project Proposal (Revised)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: A RAG-Based Contextual Vocabulary Tool for Difficult Filipino Words in <em>Florante at Laura</em></p>
                     <p class="project-entry__label">Revision Summary:</p>
                     <p class="project-entry__desc">After presenting the proposal to Dr. Raga, our group documented the feedback and identified the revisions needed for the project. The main change was the language model selected for the chatbot.</p>
@@ -431,7 +450,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Lab Exercise PT-F1 (Initial Steps)</h3>
+                    <h3 class="project-entry__category" id="activity-pt-f1">Lab Exercise PT-F1 (Initial Steps)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Optimizing Chunk Size and Overlap for RAG Retrieval</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity prepares a controlled RAG retrieval experiment to identify the chunk-size and overlap configuration that best supports LalimSalita's vocabulary knowledge base. The notebook extracts text from the source PDF, creates chunks, generates multilingual embeddings, and stores them in a FAISS vector index for retrieval.</p>
@@ -462,7 +481,7 @@
                 </div>
                 <div class="project-entry__right">
                   <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Lab Exercise PT-F2 (Part 2: Experimenting to Determine the Best Chunk Size and Overlap)</h3>
+                    <h3 class="project-entry__category" id="activity-pt-f2">Lab Exercise PT-F2 (Part 2: Experimenting to Determine the Best Chunk Size and Overlap)</h3>
                     <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: Optimizing Chunk Size and Overlap for Filipino Vocabulary Retrieval</p>
                     <p class="project-entry__label">Short Description:</p>
                     <p class="project-entry__desc">This activity continues the RAG retrieval experiment by testing multiple chunk-size and overlap configurations against the Filipino vocabulary source. The experiment records the generated chunk count and evaluates retrieval performance for each configuration.</p>
@@ -490,7 +509,7 @@
                   </div>
                 </div>
                 <div class="project-entry__right"><div class="project-entry__right-text">
-                  <h3 class="project-entry__category">RAG Experiment: Optimization and CPU-GPU Testing</h3>
+                  <h3 class="project-entry__category" id="activity-rag-experiment">RAG Experiment: Optimization and CPU-GPU Testing</h3>
                   <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: A RAG-Based Contextual Vocabulary for Difficult Filipino Words in <em>Florante at Laura</em></p>
                   <p class="project-entry__label">Short Description:</p>
                   <p class="project-entry__desc">This activity develops a LalimSalita RAG prototype for difficult Filipino vocabulary in <em>Florante at Laura</em>. It tests chunk size, overlap, and Top-K using the same dataset and questions, then compares the runtime performance of the pipeline on CPU and GPU in Google Colab.</p>
@@ -522,7 +541,7 @@
                   </div>
                 </div>
                 <div class="project-entry__right"><div class="project-entry__right-text">
-                  <h3 class="project-entry__category">Final Project: LalimSalita RAG Chatbot</h3>
+                  <h3 class="project-entry__category" id="activity-final-project">Final Project: LalimSalita RAG Chatbot</h3>
                   <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: Bridging Literary Language and Meaning Through a Retrieval-Augmented Filipino Vocabulary Assistant</p>
                   <p class="project-entry__label">Short Description:</p>
                   <p class="project-entry__desc">LalimSalita is a Retrieval-Augmented Generation chatbot that helps learners understand difficult Filipino vocabulary in <em>Florante at Laura</em>. It processes the vocabulary knowledge base, retrieves supporting passages, and generates contextual explanations grounded in the retrieved information.</p>
@@ -2666,6 +2685,21 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('fourth-year-tab').click();
       document.getElementById(tabId).click();
       document.getElementById('projects').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function toggleSideNav() {
+      const panel = document.getElementById('side-nav-panel');
+      const toggle = document.querySelector('.side-nav__toggle');
+      const isOpening = panel.hidden;
+      panel.hidden = !isOpening;
+      toggle.setAttribute('aria-expanded', String(isOpening));
+      toggle.querySelector('.side-nav__toggle-icon').textContent = isOpening ? '−' : '+';
+    }
+    function goToC508Activity(tabId, activityId) {
+      document.getElementById('fourth-year-tab').click();
+      document.getElementById(tabId).click();
+      requestAnimationFrame(() => {
+        document.getElementById(activityId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
     function openEvidenceModal() {
       document.getElementById('evidence-modal').classList.add('pdf-modal--open');
