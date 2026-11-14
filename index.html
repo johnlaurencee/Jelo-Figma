@@ -469,6 +469,27 @@
                   </div>
                 </div>
               </div>
+              <div class="project-entry">
+                <div class="project-entry__left">
+                  <div class="project-entry__img project-entry__document-cover" role="img" aria-label="RAG optimization and CPU GPU testing document cover"><span>RAG Experiment</span><strong>Optimization and<br />CPU-GPU Testing</strong><small>ITC-C508 · Finals</small></div>
+                  <div class="project-entry__file-btns">
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/OMG_RAG_Experiment_Report.pdf')">View Report</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openRAGExperimentNotebook()">View Notebook</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openRAGExperimentResults()">View Results</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Talasalitaan_Dataset_Cleaned.pdf')">View Dataset</button>
+                  </div>
+                </div>
+                <div class="project-entry__right"><div class="project-entry__right-text">
+                  <h3 class="project-entry__category">RAG Experiment: Optimization and CPU-GPU Testing</h3>
+                  <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Optimizing RAG Parameters and Comparing CPU and GPU Performance</p>
+                  <p class="project-entry__label">Short Description:</p>
+                  <p class="project-entry__desc">This activity develops a LalimSalita RAG prototype for difficult Filipino vocabulary in <em>Florante at Laura</em>. It tests chunk size, overlap, and Top-K using the same dataset and questions, then compares the runtime performance of the pipeline on CPU and GPU in Google Colab.</p>
+                  <p class="project-entry__label">Experiment Focus:</p>
+                  <p class="project-entry__desc">The recorded results measure indexing, retrieval, generation, and total response time, alongside answer correctness and retrieval relevance. The experiment uses the evidence to identify a practical configuration that balances response quality, processing speed, and available computing resources.</p>
+                  <p class="project-entry__label">Tools Used:</p>
+                  <p class="project-entry__desc">The notebook uses document chunking, multilingual embeddings, a Chroma vector database, retrieval-augmented prompting, and a Hugging Face language model. The results workbook documents repeated tests for different configurations and runtime devices.</p>
+                </div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -2446,6 +2467,9 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <div id="rag-notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="RAG Experiment Notebook Viewer"><div class="pdf-modal__backdrop" onclick="closeRAGExperimentNotebook()"></div><div class="pdf-modal__box"><button class="pdf-modal__close" onclick="closeRAGExperimentNotebook()" aria-label="Close RAG experiment notebook viewer">&times;</button><iframe id="rag-notebook-frame" class="pdf-modal__frame" src="" title="RAG experiment notebook viewer"></iframe></div></div>
+  <div id="rag-results-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="RAG Experiment Results Viewer"><div class="pdf-modal__backdrop" onclick="closeRAGExperimentResults()"></div><div class="pdf-modal__box"><button class="pdf-modal__close" onclick="closeRAGExperimentResults()" aria-label="Close RAG experiment results viewer">&times;</button><iframe id="rag-results-frame" class="pdf-modal__frame" src="" title="RAG experiment results viewer"></iframe></div></div>
+
   <div id="evidence-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
     <div class="pdf-modal__backdrop" onclick="closeEvidenceModal()"></div>
     <div class="pdf-modal__box evidence-modal__box">
@@ -2581,6 +2605,10 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('ptf2-logs-frame').src = '';
       document.body.style.overflow = '';
     }
+    function openRAGExperimentNotebook() { document.getElementById('rag-notebook-frame').src = 'finals/RAG_Experiment_Notebook_preview.html'; document.getElementById('rag-notebook-modal').classList.add('pdf-modal--open'); document.body.style.overflow = 'hidden'; }
+    function closeRAGExperimentNotebook() { document.getElementById('rag-notebook-modal').classList.remove('pdf-modal--open'); document.getElementById('rag-notebook-frame').src = ''; document.body.style.overflow = ''; }
+    function openRAGExperimentResults() { document.getElementById('rag-results-frame').src = 'finals/RAG_Experiment_Results_preview.html'; document.getElementById('rag-results-modal').classList.add('pdf-modal--open'); document.body.style.overflow = 'hidden'; }
+    function closeRAGExperimentResults() { document.getElementById('rag-results-modal').classList.remove('pdf-modal--open'); document.getElementById('rag-results-frame').src = ''; document.body.style.overflow = ''; }
     function goToC508Midterms() {
       document.getElementById('fourth-year-tab').click();
       document.getElementById('c508-midterms-tab').click();
@@ -2707,7 +2735,7 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closePTF1NotebookModal(); closePTF2NotebookModal(); closePTF2LogsModal(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closePTF1NotebookModal(); closePTF2NotebookModal(); closePTF2LogsModal(); closeRAGExperimentNotebook(); closeRAGExperimentResults(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
 
     function bindTabGroup(tabSelector, panelSelector) {
