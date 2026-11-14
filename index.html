@@ -431,7 +431,7 @@
                     <p class="project-entry__label">Initial Configuration:</p>
                     <p class="project-entry__desc">The notebook begins with a 1,200-character chunk size, a 50-character overlap, and Top-K retrieval of three chunks. It uses the multilingual E5 embedding model, FAISS for similarity search, and Qwen3-8B with 4-bit quantization for the generation stage.</p>
                     <p class="project-entry__label">Reflection:</p>
-                    <p class="project-entry__desc">This activity helped me understand that RAG quality depends on how the source document is divided before the language model receives any evidence. A chunk that is too small may lose important context, while a chunk that is too large may retrieve unnecessary information. Testing chunk size and overlap with clear retrieval metrics makes the configuration decision more evidence-based and helps produce more grounded answers.</p>
+                    <p class="project-entry__desc">Through iterative experimentation with chunk size and overlap, I observed how these hyperparameters affect the retrieval of relevant chunks. I prepared test questions with different levels of difficulty to compare the results and understand the impact of each configuration. I also used Qwen in the actual experiment and encountered a practical challenge: the model is too large for a free GPU and especially difficult to run on a CPU. This led me to use its quantized version. Overall, the activity showed me how to make the model applicable to our domain while using chunk size and overlap to support more effective retrieval.</p>
                   </div>
                 </div>
               </div>
