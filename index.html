@@ -33,6 +33,7 @@
 
       <p class="side-nav__label">ITC-C508 · Midterms</p>
       <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-pt-m1')">PT-M1 · RAG Chatbot</button>
+      <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-midterm-quiz-exam')">Long Quiz &amp; Midterm Exam</button>
       <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-proposal')">Project Proposal</button>
       <button type="button" onclick="goToC508Activity('c508-midterms-tab', 'activity-revised-proposal')">Revised Proposal</button>
 
@@ -346,7 +347,7 @@
                     <p class="project-entry__label">Assessment Coverage:</p>
                     <p class="project-entry__desc">The quiz and preliminary examination cover the introduction to Natural Language Processing, with particular focus on embeddings and how word embeddings work behind code automation. They also examine how NLP differs from traditional models, the intelligence of a model, and the principles that guide how a model learns.</p>
                     <p class="project-entry__label">Reflection:</p>
-                    <p class="project-entry__desc">My score in this quiz and preliminary examination was not ideal, but it honestly showed me that I was still adjusting to a new area of study. This was my first time encountering NLP in detail, and I was confused by how language can be represented and processed behind the code. Concepts such as embeddings were difficult at first because I could see the automated output, but I did not yet fully understand how the model turned words into numerical representations or used those representations to identify meaning and relationships.</p>
+                    <p class="project-entry__desc">My score in this quiz and preliminary examination was not ideal, but it honestly showed me that I was still adjusting to a new area of study. This was my first time encountering NLP in detail, and I was confused by how language can be represented and processed behind the code. Concepts such as embeddings were difficult at first because I was not yet able to visualize clearly what was happening behind the automated code. I could see the output, but I did not fully understand how the model turned words into numerical representations or used them to identify meaning and relationships.</p>
                     <p class="project-entry__desc">The assessment also helped me recognize the difference between NLP and the traditional models I was more familiar with. Instead of working mainly with clear columns and numerical values, NLP requires the model to learn from unstructured language, context, and patterns in words. Although the result was not what I hoped for, it became a useful starting point. It showed me which ideas I needed to revisit and encouraged me to study how embeddings, model learning, and language understanding work together. As I continued the course activities, I became more comfortable connecting the code, the model's output, and the NLP concepts behind them.</p>
                   </div>
                 </div>
@@ -386,6 +387,27 @@
                     <p class="project-entry__desc">The activity also involved debugging the provided code. I learned that the versions of the language model, embedding model, and RAG framework must be compatible with one another for the system to work properly. Resolving these compatibility issues helped me understand that building an NLP application requires not only knowledge of the model but also careful management of the tools, packages, and frameworks that connect its components.</p>
                     <p class="project-entry__desc">The activity also compared different temperature configurations and tested the chatbot with and without grounding and fallback instructions. From my observations, setting the temperature to 0 produced more concise, direct, and controlled responses, while setting it to 1 produced more detailed and varied information. This helped me understand that a higher temperature increases the variation in a model's answers.</p>
                     <p class="project-entry__desc">When a query was outside the chatbot's domain, the grounding and fallback instructions written in the system prompt prevented the model from attempting to answer a question that was unsupported by the provided context. When the temperature was set to 1 without those grounding instructions, the output was still similar to the grounded response. Based on the tested queries in this activity, no hallucinated response was observed because the model recognized that the available domain context was insufficient to support an answer.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="project-entry">
+                <div class="project-entry__left">
+                  <div class="project-entry__img project-entry__img--contain">
+                    <img src="midterms/Long_Quiz_and_Midterm_Exam.jpg" alt="Cover of the Long Quiz and Midterm Examination book showing scores" />
+                  </div>
+                </div>
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text">
+                    <h3 class="project-entry__category" id="activity-midterm-quiz-exam">Long Quiz and Midterm Examination</h3>
+                    <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Long Quiz and Midterm Examination</p>
+                    <p class="project-entry__label">Assessment Coverage:</p>
+                    <p class="project-entry__desc">This assessment covers the difference between traditional models and the LLM process. It also focuses on how to determine an appropriate chunk size and the strategies that can be used to make chunking better suited to a specific dataset.</p>
+                    <p class="project-entry__label">Results:</p>
+                    <p class="project-entry__desc">Long Quiz: 10/10 &nbsp;·&nbsp; Midterm Examination: 19/20</p>
+                    <p class="project-entry__label">Reflection:</p>
+                    <p class="project-entry__desc">Receiving 10/10 on the long quiz and 19/20 on the midterm examination showed me how much my understanding had improved since the earlier assessments. I was able to grasp the difference between traditional models and LLM-based processes more clearly, especially how LLM applications work with language, context, and retrieved information instead of only structured inputs.</p>
+                    <p class="project-entry__desc">I also became more confident in explaining why chunking matters in a RAG workflow. I understood that chunk size affects how much context is kept together, while the chunking strategy must fit the structure and purpose of the dataset. A chunk that is too small can lose important context, while one that is too large can include unnecessary information and make retrieval less focused. This assessment helped me comprehend the effectiveness and impact of chunking in retrieving more relevant information, and it gave me a stronger foundation for the later RAG activities.</p>
                   </div>
                 </div>
               </div>
