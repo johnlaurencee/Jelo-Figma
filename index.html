@@ -507,16 +507,21 @@
                     <a class="project-entry__file-btn" href="finals/OMG_RetrievalResults.xlsx">View Logs</a>
                     <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Talasalitaan_Dataset.pdf')">View Knowledge Base</button>
                     <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/OMG_Project_Integrity.pdf')">View Integrity</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/OMG_MRM.pdf')">View MRM</button>
                     <a class="project-entry__file-btn" href="finals/OMG_ZIP_Configurations.zip" download>Download ZIP</a>
                   </div>
                 </div>
                 <div class="project-entry__right"><div class="project-entry__right-text">
                   <h3 class="project-entry__category">Final Project: LalimSalita RAG Chatbot</h3>
-                  <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: A RAG-Based Contextual Vocabulary Tool for Difficult Filipino Words in <em>Florante at Laura</em></p>
+                  <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; LalimSalita: Bridging Literary Language and Meaning Through a Retrieval-Augmented Filipino Vocabulary Assistant</p>
                   <p class="project-entry__label">Short Description:</p>
                   <p class="project-entry__desc">LalimSalita is a Retrieval-Augmented Generation chatbot that helps learners understand difficult Filipino vocabulary in <em>Florante at Laura</em>. It processes the vocabulary knowledge base, retrieves supporting passages, and generates contextual explanations grounded in the retrieved information.</p>
                   <p class="project-entry__label">Project Evidence:</p>
                   <p class="project-entry__desc">The final project includes a reproducible Python notebook, retrieval-result logs, configuration records, an IEEE report, a project-integrity document, and a responsibility matrix. The deployed website provides the working chatbot experience.</p>
+                  <p class="project-entry__label">Reflection:</p>
+                  <p class="project-entry__desc">As John Laurence Ong, my responsibilities focused on the embedding, vector-database, retrieval, and RAG-integration parts of LalimSalita. I implemented multilingual-e5-small embeddings with the correct query and passage prefixes, then used ChromaDB to index and persist the vocabulary vectors. This work showed me how the knowledge base is transformed from Filipino vocabulary text into representations that the system can search semantically.</p>
+                  <p class="project-entry__desc">I also implemented query embedding, Top-K cosine-similarity retrieval, context assembly, and the Groq LLM integration. Through these tasks, I learned that an answer is only as useful as the evidence retrieved before generation. The system needs to locate relevant vocabulary entries, assemble enough context, and give the language model clear source-based information so that its explanation remains connected to <em>Florante at Laura</em>.</p>
+                  <p class="project-entry__desc">Working on these components helped me understand how several RAG parts must work together: embeddings support similarity search, the vector database stores and retrieves the evidence, and the LLM uses the retrieved context to explain difficult Filipino words. The final project gave me practical experience in building and evaluating a complete RAG assistant, while the retrieval logs and configuration records helped make the development process more traceable and reproducible.</p>
                 </div></div>
               </div>
             </div>
