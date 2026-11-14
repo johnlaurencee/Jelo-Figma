@@ -2388,6 +2388,14 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <div id="ptf1-notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PT-F1 Python Notebook Viewer">
+    <div class="pdf-modal__backdrop" onclick="closePTF1NotebookModal()"></div>
+    <div class="pdf-modal__box">
+      <button class="pdf-modal__close" onclick="closePTF1NotebookModal()" aria-label="Close PT-F1 Python notebook viewer">&times;</button>
+      <iframe id="ptf1-notebook-frame" class="pdf-modal__frame" src="" title="PT-F1 Python notebook viewer"></iframe>
+    </div>
+  </div>
+
   <div id="evidence-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
     <div class="pdf-modal__backdrop" onclick="closeEvidenceModal()"></div>
     <div class="pdf-modal__box evidence-modal__box">
@@ -2494,9 +2502,14 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.body.style.overflow = '';
     }
     function openPTF1NotebookModal() {
-      document.getElementById('pdf-frame').src = 'finals/PT-F1_Notebook_preview.html';
-      document.getElementById('pdf-modal').classList.add('pdf-modal--open');
+      document.getElementById('ptf1-notebook-frame').src = 'finals/PT-F1_Python_Notebook_preview.html';
+      document.getElementById('ptf1-notebook-modal').classList.add('pdf-modal--open');
       document.body.style.overflow = 'hidden';
+    }
+    function closePTF1NotebookModal() {
+      document.getElementById('ptf1-notebook-modal').classList.remove('pdf-modal--open');
+      document.getElementById('ptf1-notebook-frame').src = '';
+      document.body.style.overflow = '';
     }
     function goToC508Midterms() {
       document.getElementById('fourth-year-tab').click();
@@ -2624,7 +2637,7 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closePTF1NotebookModal(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
 
     function bindTabGroup(tabSelector, panelSelector) {

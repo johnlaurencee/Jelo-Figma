@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PT-F1 Python Notebook</title>
+  <style>
+    :root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#172033;font:15px/1.6 Arial,sans-serif}header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:20px;padding:14px 22px;background:rgba(255,255,255,.96);border-bottom:1px solid #d8dee8;backdrop-filter:blur(8px)}header strong{display:block}header span{font-size:12px;color:#68768a}main{max-width:1120px;margin:0 auto;padding:26px 22px 70px}.cell{margin:0 0 14px;background:#fff;border:1px solid #dbe1ea;border-radius:10px;box-shadow:0 3px 14px rgba(20,30,50,.04)}.markdown-cell{padding:18px 24px}h1,h2,h3{line-height:1.25;margin:.2em 0 .6em;color:#111827}h1{font-size:29px}h2{font-size:23px}h3{font-size:19px}p{margin:.55em 0}ul{margin:.4em 0;padding-left:24px}code{font-family:Consolas,'Courier New',monospace}.input-row,.output-row{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;padding:14px 16px}.output-row{border-top:1px solid #e3e7ee;background:#fbfcfe;border-radius:0 0 10px 10px}.prompt{color:#1769aa;font:12px/1.5 Consolas,monospace;text-align:right;padding-top:2px}pre{margin:0;overflow:auto;white-space:pre-wrap;word-break:break-word}.output-body{min-width:0;overflow:auto}.output-text{font:13px/1.5 Consolas,monospace}.note{color:#536174}@media(max-width:640px){header{padding:12px 14px}main{padding:14px 8px 50px}.input-row,.output-row{grid-template-columns:1fr}.prompt{text-align:left}.markdown-cell{padding:15px}}
+  </style>
+</head>
+<body>
+  <header><div><strong>PT-F1 · Python Notebook</strong><span>Optimizing Chunk Size and Overlap for RAG Retrieval</span></div><span>View only · Static saved preview</span></header>
+  <main>
+    <section class="cell markdown-cell"><h1>Component I. Vector Indexing and Embedding</h1><p>This saved notebook documents the RAG indexing experiment for LalimSalita. It processes a Filipino vocabulary PDF, creates embeddings, builds a FAISS index, and evaluates the effect of chunk size and overlap on retrieval.</p><p class="note">This is an embedded portfolio preview, matching the Prelims and Midterms notebook viewers. It does not download or fetch the notebook at runtime.</p></section>
+
+    <section class="cell markdown-cell"><h2>Environment Setup</h2><p>The workflow uses <code>faiss-cpu</code> for vector search, <code>sentence-transformers</code> for embeddings, <code>pypdf</code> for source extraction, and Hugging Face Transformers with 4-bit quantization for Qwen3-8B.</p></section>
+    <section class="cell"><div class="input-row"><span class="prompt">In&nbsp;[1]:</span><pre><code>!pip install -q \
+    faiss-cpu sentence-transformers pypdf transformers \
+    sentencepiece pandas openpyxl accelerate bitsandbytes
+
+from google.colab import files
+from pypdf import PdfReader
+from sentence_transformers import SentenceTransformer
+import faiss, numpy as np, pandas as pd</code></pre></div></section>
+
+    <section class="cell markdown-cell"><h2>Indexing Parameters</h2><p>The experiment begins with 1,200-character chunks and a 50-character overlap. The overlap preserves context at chunk boundaries, while the top-three setting limits the retrieval evidence sent to the answer-generation stage.</p></section>
+    <section class="cell"><div class="input-row"><span class="prompt">In&nbsp;[3]:</span><pre><code># Change these values to experiment with chunking.
+CHUNK_SIZE = 1200
+CHUNK_OVERLAP = 50
+TOP_K = 3
+
+EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-small"</code></pre></div><div class="output-row"><span class="prompt">Out:</span><div class="output-body"><pre class="output-text">RAG INDEXING CONFIGURATION
+Chunk size       : 1200
+Chunk overlap    : 50
+Top-K            : 3
+Embedding model  : intfloat/multilingual-e5-small</pre></div></div></section>
+
+    <section class="cell markdown-cell"><h2>Chunking and Vector Index</h2><p>Each PDF page is normalized, split into overlapping character chunks, and saved with a chunk ID and source-page reference. The multilingual E5 model converts each chunk into a vector. FAISS then searches those vectors to identify the most relevant evidence for a question.</p></section>
+    <section class="cell"><div class="input-row"><span class="prompt">In&nbsp;[8]:</span><pre><code>def create_chunks(pages, chunk_size, chunk_overlap):
+    chunks = []
+    step = chunk_size - chunk_overlap
+    for page in pages:
+        text = page["text"]
+        for start in range(0, len(text), step):
+            piece = text[start:start + chunk_size].strip()
+            if piece:
+                chunks.append({"text": piece, "page": page["page"]})
+    return chunks
+
+embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+vectors = embedding_model.encode([item["text"] for item in chunks], normalize_embeddings=True)
+index = faiss.IndexFlatIP(vectors.shape[1])
+index.add(np.asarray(vectors, dtype="float32"))</code></pre></div></section>
+
+    <section class="cell markdown-cell"><h2>Retrieval Evaluation</h2><p>The notebook compares retrieval configurations using Precision@3, Recall@3, and MRR@3. These measures check whether the correct source appears among the top results and how highly it ranks, helping identify a chunk size and overlap that retain useful context without adding unnecessary text.</p></section>
+    <section class="cell"><div class="input-row"><span class="prompt">In&nbsp;[15]:</span><pre><code>def evaluate_retrieval(test_cases):
+    # Retrieve TOP_K chunks for each question.
+    # Record Precision@3, Recall@3, and MRR@3.
+    # Compare results after changing CHUNK_SIZE and CHUNK_OVERLAP.
+    return results</code></pre></div></section>
+
+    <section class="cell markdown-cell"><h2>Generation Model and Reflection</h2><p>Retrieved Filipino-vocabulary evidence is passed to Qwen3-8B, loaded in 4-bit precision for a practical Colab workflow. The activity shows that retrieval quality is not only about the LLM: carefully chosen chunk boundaries, overlap, embedding similarity, and top-k evidence affect whether the response is grounded in the source material.</p></section>
+    <section class="cell"><div class="input-row"><span class="prompt">In&nbsp;[20]:</span><pre><code>from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+quantization = BitsAndBytesConfig(load_in_4bit=True)
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-8B")
+model = AutoModelForCausalLM.from_pretrained(
+    "Qwen/Qwen3-8B",
+    quantization_config=quantization,
+    device_map="auto"
+)</code></pre></div></section>
+  </main>
+</body>
+</html>
