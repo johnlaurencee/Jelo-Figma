@@ -151,7 +151,14 @@ section { padding: 96px 40px; }
 }
 
 @media (max-width: 1100px) {
-  .side-nav { display: none; }
+  .side-nav {
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: auto;
+    width: min(218px, calc(100vw - 24px));
+    transform: none;
+  }
 }
 
 /* ── HERO ───────────────────────────────────────────────────────── */
@@ -1189,7 +1196,7 @@ section { padding: 96px 40px; }
 
 /* ── Responsive ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .side-nav { display: none; }
+  .side-nav__panel { max-height: 58vh; }
   .navbar { padding: 0 20px; }
   .navbar__links { gap: 18px; }
 
