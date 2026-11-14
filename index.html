@@ -21,6 +21,15 @@
     </ul>
   </nav>
 
+  <nav class="side-nav" aria-label="Quick portfolio navigation">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <button type="button" onclick="goToC508Term('c508-prelims-tab')">Prelims</button>
+    <button type="button" onclick="goToC508Term('c508-midterms-tab')">Midterms</button>
+    <button type="button" onclick="goToC508Term('c508-finals-tab')">Finals</button>
+  </nav>
+
   <!-- ── HERO ────────────────────────────────────────────────────── -->
   <section id="home" class="hero">
     <div class="hero__text">
@@ -2652,6 +2661,11 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('fourth-year-tab').click();
       document.getElementById('c508-midterms-tab').click();
       document.getElementById('c508-midterms-tab').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function goToC508Term(tabId) {
+      document.getElementById('fourth-year-tab').click();
+      document.getElementById(tabId).click();
+      document.getElementById('projects').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     function openEvidenceModal() {
       document.getElementById('evidence-modal').classList.add('pdf-modal--open');
