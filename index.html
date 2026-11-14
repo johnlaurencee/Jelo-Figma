@@ -11,21 +11,15 @@
 </head>
 <body>
 
-  <!-- ── NAVBAR ──────────────────────────────────────────────────── -->
-  <nav class="navbar">
-    <ul class="navbar__links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#projects">Outputs</a></li>
-    </ul>
-  </nav>
-
   <nav class="side-nav" aria-label="Quick portfolio navigation">
-    <button class="side-nav__toggle" type="button" aria-expanded="false" aria-controls="side-nav-panel" onclick="toggleSideNav()">
-      <span>Activities</span><span class="side-nav__toggle-icon" aria-hidden="true">+</span>
+    <div class="side-nav__brand">
+      <span>John Laurence Ong</span>
+      <small>ITC-C508 ePortfolio</small>
+    </div>
+    <button class="side-nav__toggle" type="button" aria-expanded="true" aria-controls="side-nav-panel" onclick="toggleSideNav()">
+      <span>Activities</span><span class="side-nav__toggle-icon" aria-hidden="true">−</span>
     </button>
-    <div class="side-nav__panel" id="side-nav-panel" hidden>
+    <div class="side-nav__panel" id="side-nav-panel">
       <a href="#home">Home</a>
       <a href="#about">About</a>
       <a href="#skills">Skills</a>
@@ -2694,11 +2688,16 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       toggle.setAttribute('aria-expanded', String(isOpening));
       toggle.querySelector('.side-nav__toggle-icon').textContent = isOpening ? '−' : '+';
     }
+    if (window.matchMedia('(max-width: 1100px)').matches) {
+      toggleSideNav();
+    }
     function goToC508Activity(tabId, activityId) {
       document.getElementById('fourth-year-tab').click();
       document.getElementById(tabId).click();
       requestAnimationFrame(() => {
-        document.getElementById(activityId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const activityHeading = document.getElementById(activityId);
+        const activityCard = activityHeading.closest('.project-entry');
+        activityCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
     function openEvidenceModal() {
