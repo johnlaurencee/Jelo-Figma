@@ -404,35 +404,6 @@
                   </div>
                 </div>
               </div>
-              <div class="project-entry">
-                <div class="project-entry__left">
-                  <div class="project-entry__img project-entry__document-cover" role="img" aria-label="PT-F2 experimenting to determine the best chunk size and overlap document cover">
-                    <span>Lab Exercise PT-F2</span>
-                    <strong>Experimenting to Determine<br />the Best Chunk</strong>
-                    <small>ITC-C508 · Finals</small>
-                  </div>
-                  <div class="project-entry__file-btns">
-                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Ong_PT-F2.pdf')">View Activity PDF</button>
-                    <button class="project-entry__file-btn" type="button" onclick="openPTF2NotebookModal()">View Notebook</button>
-                    <button class="project-entry__file-btn" type="button" onclick="openPTF2LogsModal()">View Experiment Logs</button>
-                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Talasalitaan_Aralin_1-10.pdf')">View Source PDF</button>
-                  </div>
-                </div>
-                <div class="project-entry__right">
-                  <div class="project-entry__right-text">
-                    <h3 class="project-entry__category">Lab Exercise PT-F2 (Part 2: Experimenting to Determine the Best Chunk Size and Overlap)</h3>
-                    <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Experimenting to Determine the Best Chunk Size and Overlap for RAG Retrieval</p>
-                    <p class="project-entry__label">Short Description:</p>
-                    <p class="project-entry__desc">This activity continues the RAG retrieval experiment by testing multiple chunk-size and overlap configurations against the Filipino vocabulary source. The experiment records the generated chunk count and evaluates retrieval performance for each configuration.</p>
-                    <p class="project-entry__label">Experiment Evidence:</p>
-                    <p class="project-entry__desc">The experiment logs compare configurations from 300-character chunks with no overlap through 1,200-character chunks with 120-character overlap. The results are measured using MRR, Recall, and Precision across easy, average, and difficult test questions, with detailed retrieval logs for the expected evidence.</p>
-                    <p class="project-entry__label">Tools Used:</p>
-                    <p class="project-entry__desc">The notebook uses multilingual E5 embeddings, FAISS similarity search, the Qwen3-8B model in 4-bit quantization, and an Excel log to document the retrieval results. The Talasalitaan Aralin 1-10 PDF serves as the vocabulary knowledge source for the experiment.</p>
-                    <p class="project-entry__label">Reflection:</p>
-                    <p class="project-entry__desc">This activity showed me that choosing a chunk size and overlap should be based on measured retrieval results, not only on a preferred setting. Comparing the same questions across configurations made it easier to see how chunk boundaries and repeated context affect the evidence returned to the RAG system.</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -461,6 +432,35 @@
                     <p class="project-entry__desc">The notebook begins with a 1,200-character chunk size, a 50-character overlap, and Top-K retrieval of three chunks. It uses the multilingual E5 embedding model, FAISS for similarity search, and Qwen3-8B with 4-bit quantization for the generation stage.</p>
                     <p class="project-entry__label">Reflection:</p>
                     <p class="project-entry__desc">This activity gave me hands-on experience with how chunk size and overlap affect RAG retrieval. By iteratively changing these hyperparameters and preparing test questions with different levels of difficulty, I was able to observe how the retrieved chunks changed and why the settings matter. I also used Qwen in the actual experiment, which introduced a practical challenge: the model is too large for a free GPU and especially difficult to run on a CPU. This experience led me to use a quantized version of Qwen so the model could be used more efficiently. Overall, the experiment helped me understand how Qwen can be applied to our domain and how careful chunking decisions support more relevant retrieval.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="project-entry">
+                <div class="project-entry__left">
+                  <div class="project-entry__img project-entry__document-cover" role="img" aria-label="PT-F2 experimenting to determine the best chunk size and overlap document cover">
+                    <span>Lab Exercise PT-F2</span>
+                    <strong>Experimenting to Determine<br />the Best Chunk</strong>
+                    <small>ITC-C508 · Finals</small>
+                  </div>
+                  <div class="project-entry__file-btns">
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Ong_PT-F2.pdf')">View Activity PDF</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPTF2NotebookModal()">View Notebook</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPTF2LogsModal()">View Experiment Logs</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Talasalitaan_Aralin_1-10.pdf')">View Source PDF</button>
+                  </div>
+                </div>
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text">
+                    <h3 class="project-entry__category">Lab Exercise PT-F2 (Part 2: Experimenting to Determine the Best Chunk Size and Overlap)</h3>
+                    <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Experimenting to Determine the Best Chunk Size and Overlap for RAG Retrieval</p>
+                    <p class="project-entry__label">Short Description:</p>
+                    <p class="project-entry__desc">This activity continues the RAG retrieval experiment by testing multiple chunk-size and overlap configurations against the Filipino vocabulary source. The experiment records the generated chunk count and evaluates retrieval performance for each configuration.</p>
+                    <p class="project-entry__label">Experiment Evidence:</p>
+                    <p class="project-entry__desc">The experiment logs compare configurations from 300-character chunks with no overlap through 1,200-character chunks with 120-character overlap. The results are measured using MRR, Recall, and Precision across easy, average, and difficult test questions, with detailed retrieval logs for the expected evidence.</p>
+                    <p class="project-entry__label">Tools Used:</p>
+                    <p class="project-entry__desc">The notebook uses multilingual E5 embeddings, FAISS similarity search, the Qwen3-8B model in 4-bit quantization, and an Excel log to document the retrieval results. The Talasalitaan Aralin 1-10 PDF serves as the vocabulary knowledge source for the experiment.</p>
+                    <p class="project-entry__label">Reflection:</p>
+                    <p class="project-entry__desc">This activity showed me that choosing a chunk size and overlap should be based on measured retrieval results, not only on a preferred setting. Comparing the same questions across configurations made it easier to see how chunk boundaries and repeated context affect the evidence returned to the RAG system.</p>
                   </div>
                 </div>
               </div>
