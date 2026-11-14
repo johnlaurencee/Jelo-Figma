@@ -404,6 +404,35 @@
                   </div>
                 </div>
               </div>
+              <div class="project-entry">
+                <div class="project-entry__left">
+                  <div class="project-entry__img project-entry__document-cover" role="img" aria-label="PT-F2 experimenting to determine the best chunk size and overlap document cover">
+                    <span>Lab Exercise PT-F2</span>
+                    <strong>Experimenting to Determine<br />the Best Chunk</strong>
+                    <small>ITC-C508 · Finals</small>
+                  </div>
+                  <div class="project-entry__file-btns">
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Ong_PT-F2.pdf')">View Activity PDF</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPTF2NotebookModal()">View Notebook</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPTF2LogsModal()">View Experiment Logs</button>
+                    <button class="project-entry__file-btn" type="button" onclick="openPdf('finals/Talasalitaan_Aralin_1-10.pdf')">View Source PDF</button>
+                  </div>
+                </div>
+                <div class="project-entry__right">
+                  <div class="project-entry__right-text">
+                    <h3 class="project-entry__category">Lab Exercise PT-F2 (Part 2: Experimenting to Determine the Best Chunk Size and Overlap)</h3>
+                    <p class="project-entry__title-line"><span>Title:</span>&nbsp;&nbsp; Experimenting to Determine the Best Chunk Size and Overlap for RAG Retrieval</p>
+                    <p class="project-entry__label">Short Description:</p>
+                    <p class="project-entry__desc">This activity continues the RAG retrieval experiment by testing multiple chunk-size and overlap configurations against the Filipino vocabulary source. The experiment records the generated chunk count and evaluates retrieval performance for each configuration.</p>
+                    <p class="project-entry__label">Experiment Evidence:</p>
+                    <p class="project-entry__desc">The experiment logs compare configurations from 300-character chunks with no overlap through 1,200-character chunks with 120-character overlap. The results are measured using MRR, Recall, and Precision across easy, average, and difficult test questions, with detailed retrieval logs for the expected evidence.</p>
+                    <p class="project-entry__label">Tools Used:</p>
+                    <p class="project-entry__desc">The notebook uses multilingual E5 embeddings, FAISS similarity search, the Qwen3-8B model in 4-bit quantization, and an Excel log to document the retrieval results. The Talasalitaan Aralin 1-10 PDF serves as the vocabulary knowledge source for the experiment.</p>
+                    <p class="project-entry__label">Reflection:</p>
+                    <p class="project-entry__desc">This activity showed me that choosing a chunk size and overlap should be based on measured retrieval results, not only on a preferred setting. Comparing the same questions across configurations made it easier to see how chunk boundaries and repeated context affect the evidence returned to the RAG system.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -2396,6 +2425,22 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     </div>
   </div>
 
+  <div id="ptf2-notebook-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PT-F2 Python Notebook Viewer">
+    <div class="pdf-modal__backdrop" onclick="closePTF2NotebookModal()"></div>
+    <div class="pdf-modal__box">
+      <button class="pdf-modal__close" onclick="closePTF2NotebookModal()" aria-label="Close PT-F2 Python notebook viewer">&times;</button>
+      <iframe id="ptf2-notebook-frame" class="pdf-modal__frame" src="" title="PT-F2 Python notebook viewer"></iframe>
+    </div>
+  </div>
+
+  <div id="ptf2-logs-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-label="PT-F2 Experiment Logs Viewer">
+    <div class="pdf-modal__backdrop" onclick="closePTF2LogsModal()"></div>
+    <div class="pdf-modal__box">
+      <button class="pdf-modal__close" onclick="closePTF2LogsModal()" aria-label="Close PT-F2 experiment logs viewer">&times;</button>
+      <iframe id="ptf2-logs-frame" class="pdf-modal__frame" src="" title="PT-F2 experiment logs viewer"></iframe>
+    </div>
+  </div>
+
   <div id="evidence-modal" class="pdf-modal" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
     <div class="pdf-modal__backdrop" onclick="closeEvidenceModal()"></div>
     <div class="pdf-modal__box evidence-modal__box">
@@ -2509,6 +2554,26 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
     function closePTF1NotebookModal() {
       document.getElementById('ptf1-notebook-modal').classList.remove('pdf-modal--open');
       document.getElementById('ptf1-notebook-frame').src = '';
+      document.body.style.overflow = '';
+    }
+    function openPTF2NotebookModal() {
+      document.getElementById('ptf2-notebook-frame').src = 'finals/PT-F2_Python_Notebook_preview.html';
+      document.getElementById('ptf2-notebook-modal').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePTF2NotebookModal() {
+      document.getElementById('ptf2-notebook-modal').classList.remove('pdf-modal--open');
+      document.getElementById('ptf2-notebook-frame').src = '';
+      document.body.style.overflow = '';
+    }
+    function openPTF2LogsModal() {
+      document.getElementById('ptf2-logs-frame').src = 'finals/PT-F2_Experiment_Logs_preview.html';
+      document.getElementById('ptf2-logs-modal').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePTF2LogsModal() {
+      document.getElementById('ptf2-logs-modal').classList.remove('pdf-modal--open');
+      document.getElementById('ptf2-logs-frame').src = '';
       document.body.style.overflow = '';
     }
     function goToC508Midterms() {
@@ -2637,7 +2702,7 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closePTF1NotebookModal(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
+      if (e.key === 'Escape') { closePdf(); closeExcelModal(); closePTP2ExcelModal(); closePTP2NotebookModal(); closePTM1NotebookModal(); closePTF1NotebookModal(); closePTF2NotebookModal(); closePTF2LogsModal(); closeEvidenceModal(); closePTP1EvidenceModal(); closeTextModal(); closeTextModal2(); closeTextModal3(); closeTextModal4(); closeTextModal5(); closeTextModal6(); closeTextModal7(); closeTextModal8(); closeTextModal9(); closeTextModal10(); closeNotebook(); closeNotebookWW(); closeNotebookLR(); }
     });
 
     function bindTabGroup(tabSelector, panelSelector) {
