@@ -417,7 +417,7 @@
                     <small>ITC-C508 · Finals</small>
                   </div>
                   <div class="project-entry__file-btns">
-                    <a class="project-entry__file-btn" href="finals/JohnLaurence_OptimizingChunkSizeandOverlap.ipynb" download>Download Notebook</a>
+                    <button class="project-entry__file-btn" type="button" onclick="openPTF1NotebookModal()">View Notebook</button>
                   </div>
                 </div>
                 <div class="project-entry__right">
@@ -2492,6 +2492,11 @@ df_model.to_csv(&quot;/content/cleaned_encoded_cafe_sales.csv&quot;, index=False
       document.getElementById('ptm1-notebook-modal').classList.remove('pdf-modal--open');
       document.getElementById('ptm1-notebook-frame').src = '';
       document.body.style.overflow = '';
+    }
+    function openPTF1NotebookModal() {
+      document.getElementById('pdf-frame').src = 'finals/PT-F1_Notebook_preview.html';
+      document.getElementById('pdf-modal').classList.add('pdf-modal--open');
+      document.body.style.overflow = 'hidden';
     }
     function goToC508Midterms() {
       document.getElementById('fourth-year-tab').click();

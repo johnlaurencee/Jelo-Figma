@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PT-F1 Notebook Viewer</title>
+  <style>
+    :root { --bg: #0f1115; --surface: #181c24; --border: #303744; --text: #edf1f7; --muted: #aab4c3; --accent: #82b1ff; --code: #111827; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial, sans-serif; line-height: 1.6; }
+    header { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; gap: 20px; padding: 16px 24px; background: rgba(15,17,21,.96); border-bottom: 1px solid var(--border); }
+    h1 { margin: 0; font-size: 18px; } .status { color: var(--muted); font-size: 14px; }
+    main { width: min(1100px, 100%); margin: 0 auto; padding: 24px; }
+    .cell { margin-bottom: 18px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); }
+    .cell__type { padding: 7px 14px; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .cell--markdown .cell__type { color: var(--accent); }
+    .cell__content { padding: 18px; }
+    .cell__content h2, .cell__content h3, .cell__content h4 { margin: 0 0 12px; color: var(--text); line-height: 1.25; }
+    .cell__content h2 { font-size: 24px; } .cell__content h3 { font-size: 20px; } .cell__content h4 { font-size: 17px; }
+    .cell__content p { margin: 0 0 12px; color: var(--text); white-space: pre-wrap; }
+    pre { margin: 0; padding: 16px; overflow: auto; background: var(--code); color: #d1e7ff; font: 13px/1.55 Consolas, 'Courier New', monospace; white-space: pre; }
+    .output { border-top: 1px solid var(--border); } .output .cell__type { color: #b8dca8; }
+    .error { color: #ffb4a9; }
+  </style>
+</head>
+<body>
+  <header><h1>PT-F1: Optimizing Chunk Size and Overlap</h1><span id="status" class="status">Loading notebook...</span></header>
+  <main id="notebook" aria-live="polite"></main>
+  <script>
+    (function () {
+      var container = document.getElementById('notebook');
+      var status = document.getElementById('status');
+      function escapeHtml(value) { return String(value).replace(/[&<>"']/g, function (character) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]; }); }
+      function sourceText(cell) { return Array.isArray(cell.source) ? cell.source.join('') : String(cell.source || ''); }
+      function markdownHtml(text) {
+        return escapeHtml(text).split(/\n{2,}/).map(function (block) {
+          var line = block.trim();
+          if (!line) return '';
+          var heading = line.match(/^(#{1,4})\s+(.+)/);
+          if (heading) { var level = heading[1].length + 1; return '<h' + level + '>' + heading[2] + '</h' + level + '>'; }
+          return '<p>' + line.replace(/`([^`]+)`/g, '<code>$1</code>') + '</p>';
+        }).join('');
+      }
+      function appendCell(type, content, extraClass) {
+        var cell = document.createElement('section');
+        cell.className = 'cell ' + (extraClass || '');
+        cell.innerHTML = '<div class="cell__type">' + type + '</div><div class="cell__content">' + content + '</div>';
+        container.appendChild(cell);
+      }
+      fetch('JohnLaurence_OptimizingChunkSizeandOverlap.ipynb')
+        .then(function (response) { if (!response.ok) throw new Error('The notebook could not be loaded.'); return response.json(); })
+        .then(function (notebook) {
+          var cells = notebook.cells || [];
+          cells.forEach(function (cell) {
+            var text = sourceText(cell);
+            if (cell.cell_type === 'markdown') appendCell('Markdown', markdownHtml(text), 'cell--markdown');
+            if (cell.cell_type === 'code') {
+              appendCell('Code', '<pre><code>' + escapeHtml(text) + '</code></pre>', 'cell--code');
+              (cell.outputs || []).forEach(function (output) {
+                var outputText = output.text || output['text/plain'];
+                if (Array.isArray(outputText)) outputText = outputText.join('');
+                if (outputText) appendCell('Output', '<pre><code>' + escapeHtml(outputText) + '</code></pre>', 'output');
+              });
+            }
+          });
+          status.textContent = cells.length + ' cells · View only';
+        })
+        .catch(function (error) { container.innerHTML = '<p class="error">' + escapeHtml(error.message) + '</p>'; status.textContent = 'Unable to load notebook'; });
+    })();
+  </script>
+</body>
+</html>
